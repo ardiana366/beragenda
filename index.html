@@ -1836,6 +1836,9 @@
     function playNotificationTone() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
@@ -2345,6 +2348,9 @@
         itemEl.className = `p-2.5 rounded-xl border transition cursor-pointer flex items-start justify-between gap-2 ${isUnread ? 'bg-rose-50/70 border-rose-200 hover:bg-rose-100/70' : 'bg-slate-50/60 border-slate-200/70 hover:bg-slate-100'
           }`;
 
+        const isAnon = item.lastChatSenderId === "anonymous" || !item.lastChatSenderName || item.lastChatSenderName === "Anonim";
+        const senderPrefix = isAnon ? '' : `<b>${escapeHtml(item.lastChatSenderName)}:</b> `;
+
         itemEl.innerHTML = `
           <div class="flex items-start gap-2 overflow-hidden">
             <div class="h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${isUnread ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-700'
@@ -2357,7 +2363,7 @@
                 ${isUnread ? '<span class="h-2 w-2 rounded-full bg-rose-500 shrink-0 badge-unread-ping"></span>' : ''}
               </div>
               <p class="text-[11px] text-slate-500 truncate mt-0.5">
-                <b>${item.lastChatSenderName || 'Anggota'}:</b> ${item.lastChatText || 'Mengirim pesan'}
+                ${senderPrefix}${escapeHtml(item.lastChatText || 'Mengirim pesan')}
               </p>
             </div>
           </div>
@@ -3662,6 +3668,37 @@
         }
         initialLoadDone = true;
 
+        // Auto-heal: sinkronisasi komentar lama jika lastChatTime belum tercatat di dokumen agenda
+        snapshot.forEach(async (docSnap) => {
+          const data = docSnap.data();
+          if (!data.lastChatTime) {
+            try {
+              const chatsRef = collection(db, "agendas", docSnap.id, "chats");
+              const chatSnaps = await getDocs(chatsRef);
+              if (!chatSnaps.empty) {
+                let latestChat = null;
+                let latestTime = 0;
+                chatSnaps.forEach(c => {
+                  const cData = c.data();
+                  const t = cData.timestamp?.toMillis ? cData.timestamp.toMillis() : (cData.localCreatedAt || 0);
+                  if (t >= latestTime) {
+                    latestTime = t;
+                    latestChat = cData;
+                  }
+                });
+                if (latestChat && latestTime > 0) {
+                  await updateDoc(doc(db, "agendas", docSnap.id), {
+                    lastChatTime: latestTime,
+                    lastChatSenderId: latestChat.senderId || "anonymous",
+                    lastChatSenderName: latestChat.isAnonymous ? "" : (latestChat.senderName || ""),
+                    lastChatText: latestChat.text || ""
+                  });
+                }
+              }
+            } catch (err) { }
+          }
+        });
+
         allAgendas.sort((a, b) => new Date(a.start) - new Date(b.start));
 
         renderCalendar();
@@ -3769,14 +3806,11 @@
       const bubble = document.createElement("div");
 
       if (isAnon) {
-        // Pesan anonim dari Publish Room — tampilkan dengan gaya khusus
+        // Pesan komentar dari Publish Room — tanpa label anonim, hanya teks saja
         bubble.className = 'flex flex-col items-start';
         bubble.innerHTML = `
-          <div class="flex items-center justify-between gap-2 max-w-[85%] w-full mb-0.5 px-1">
-            <span class="text-[10px] text-amber-600 font-semibold flex items-center gap-1">
-              👤 Anonim <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">PUBLISH</span>
-            </span>
-            <button type="button" class="btn-delete-anon-chat text-rose-500 hover:text-rose-700 p-0.5 flex items-center gap-1 text-[10px] font-medium transition" data-chat-doc-id="${msg.id}" title="Hapus komentar anonim ini dari database">
+          <div class="flex items-center justify-end max-w-[85%] w-full mb-0.5 px-1">
+            <button type="button" class="btn-delete-anon-chat text-rose-500 hover:text-rose-700 p-0.5 flex items-center gap-1 text-[10px] font-medium transition" data-chat-doc-id="${msg.id}" title="Hapus komentar ini dari database">
               <i data-lucide="trash-2" class="h-3 w-3"></i>
               <span class="text-[9px]">Hapus</span>
             </button>
@@ -3870,7 +3904,7 @@
             e.stopPropagation();
             const chatDocId = btn.dataset.chatDocId;
             if (!chatDocId || !currentActiveChatAgendaId) return;
-            if (!confirm("Hapus komentar anonim ini dari database?")) return;
+            if (!confirm("Hapus komentar ini dari database?")) return;
 
             try {
               await deleteDoc(doc(db, "agendas", currentActiveChatAgendaId, "chats", chatDocId));
