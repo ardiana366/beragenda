@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,8 +17,16 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    #map { height: 320px; border-radius: 0.875rem; }
-    #locationPickerMap { height: 280px; width: 100%; border-radius: 0.75rem; }
+    #map {
+      height: 320px;
+      border-radius: 0.875rem;
+    }
+
+    #locationPickerMap {
+      height: 280px;
+      width: 100%;
+      border-radius: 0.75rem;
+    }
 
     /* Tooltip Bubble untuk Agenda di Peta */
     .agenda-bubble-tooltip {
@@ -34,14 +43,17 @@
       white-space: nowrap !important;
       pointer-events: auto !important;
     }
+
     .agenda-bubble-tooltip.active {
       background: rgba(49, 46, 129, 0.96) !important;
       border: 1.5px solid #818cf8 !important;
       box-shadow: 0 0 16px rgba(99, 102, 241, 0.45) !important;
     }
+
     .agenda-bubble-tooltip::before {
       border-top-color: rgba(15, 23, 42, 0.94) !important;
     }
+
     .agenda-bubble-tooltip.active::before {
       border-top-color: #818cf8 !important;
     }
@@ -60,6 +72,7 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
       white-space: nowrap !important;
     }
+
     .member-bubble-tooltip::before {
       border-top-color: rgba(255, 255, 255, 0.95) !important;
     }
@@ -72,11 +85,14 @@
 
     /* Animasi Berkedip Merah untuk Kolom Tanggal Kalender */
     @keyframes pulse-red-box {
-      0%, 100% {
+
+      0%,
+      100% {
         background-color: rgba(254, 226, 226, 0.95);
         border-color: #ef4444;
         box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
       }
+
       50% {
         background-color: rgba(254, 202, 202, 0.5);
         border-color: #b91c1c;
@@ -89,9 +105,19 @@
     }
 
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.25); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.5;
+        transform: scale(1.25);
+      }
     }
+
     .badge-unread-ping {
       animation: pulse-dot 1s infinite ease-in-out;
     }
@@ -107,9 +133,11 @@
       margin-bottom: 6px;
       scrollbar-width: none;
     }
+
     .tabs-container::-webkit-scrollbar {
       display: none;
     }
+
     .tab-btn {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -126,16 +154,19 @@
       gap: 5px;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
+
     .tab-btn:hover {
       color: #1e293b;
       background: #f8fafc;
       border-color: #cbd5e1;
     }
+
     .tab-btn.active {
       background: #0f172a;
       color: #ffffff;
       border-color: #0f172a;
     }
+
     .tab-badge {
       background: #f1f5f9;
       color: #475569;
@@ -144,6 +175,7 @@
       font-size: 0.675rem;
       font-weight: 700;
     }
+
     .tab-btn.active .tab-badge {
       background: rgba(255, 255, 255, 0.2);
       color: #ffffff;
@@ -164,6 +196,7 @@
       flex-direction: column;
       gap: 8px;
     }
+
     .item-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -176,23 +209,28 @@
       cursor: pointer;
       touch-action: pan-y;
     }
+
     .item-card.dragging {
       opacity: 0.4;
       border: 2px dashed #2563eb;
     }
+
     .item-card:hover {
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
       border-color: #94a3b8;
     }
+
     .item-card.completed {
       background-color: #f8fafc;
       border-color: #e2e8f0;
       opacity: 0.88;
     }
+
     .item-card.completed .item-title {
       text-decoration: line-through;
       color: #94a3b8;
     }
+
     .item-card::before {
       content: "";
       position: absolute;
@@ -202,19 +240,33 @@
       width: 4px;
       background: #2563eb;
     }
-    .item-card.badge-done-border::before { background: #16a34a; }
-    .item-card.badge-upcoming-border::before { background: #d97706; }
-    .item-card.badge-passed-border::before { background: #dc2626; }
-    .item-card.badge-once-border::before { background: #64748b; }
+
+    .item-card.badge-done-border::before {
+      background: #16a34a;
+    }
+
+    .item-card.badge-upcoming-border::before {
+      background: #d97706;
+    }
+
+    .item-card.badge-passed-border::before {
+      background: #dc2626;
+    }
+
+    .item-card.badge-once-border::before {
+      background: #64748b;
+    }
 
     .item-header-row {
       display: flex;
       align-items: flex-start;
       gap: 10px;
     }
+
     .checkbox-wrap {
       padding-top: 1px;
     }
+
     .custom-checkbox {
       appearance: none;
       -webkit-appearance: none;
@@ -229,10 +281,12 @@
       transition: all 0.2s;
       background: #fff;
     }
+
     .custom-checkbox:checked {
       background-color: #16a34a;
       border-color: #16a34a;
     }
+
     .custom-checkbox:checked::before {
       content: "";
       width: 9px;
@@ -241,10 +295,12 @@
       border-bottom: 2px solid #fff;
       transform: rotate(-45deg) translate(1px, -1px);
     }
+
     .item-content {
       flex: 1;
       min-width: 0;
     }
+
     .item-title {
       font-size: 0.85rem;
       font-weight: 600;
@@ -252,6 +308,7 @@
       color: #0f172a;
       word-break: break-word;
     }
+
     .item-meta {
       display: flex;
       flex-wrap: wrap;
@@ -261,6 +318,7 @@
       font-size: 0.725rem;
       color: #64748b;
     }
+
     .status-badge {
       font-size: 0.65rem;
       padding: 1.5px 6.5px;
@@ -269,12 +327,42 @@
       text-transform: uppercase;
       letter-spacing: 0.3px;
     }
-    .badge-running { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
-    .badge-upcoming { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
-    .badge-passed { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-    .badge-done { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-    .badge-today-done { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-    .badge-once { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+    .badge-running {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #dbeafe;
+    }
+
+    .badge-upcoming {
+      background: #fef3c7;
+      color: #d97706;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-passed {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .badge-done {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-today-done {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-once {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+    }
 
     .progress-container {
       margin-top: 8px;
@@ -284,15 +372,25 @@
       height: 5px;
       width: 100%;
     }
+
     .progress-bar {
       height: 100%;
       background: #2563eb;
       border-radius: 4px;
       transition: width 0.4s ease;
     }
-    .progress-bar.done { background: #16a34a; }
-    .progress-bar.passed { background: #dc2626; }
-    .progress-bar.today-done { background: #16a34a; }
+
+    .progress-bar.done {
+      background: #16a34a;
+    }
+
+    .progress-bar.passed {
+      background: #dc2626;
+    }
+
+    .progress-bar.today-done {
+      background: #16a34a;
+    }
 
     .time-remaining {
       font-size: 0.7rem;
@@ -302,6 +400,7 @@
       justify-content: space-between;
       font-weight: 500;
     }
+
     .drag-handle {
       color: #94a3b8;
       cursor: grab;
@@ -310,11 +409,13 @@
       align-items: center;
       user-select: none;
     }
+
     .drag-handle:active {
       cursor: grabbing;
     }
   </style>
 </head>
+
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen pb-16">
 
   <!-- ONBOARDING MODAL / PROFIL AWAL -->
@@ -322,34 +423,64 @@
     <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 p-8 shadow-md">
       <div class="text-center mb-6">
         <h1 class="text-2xl font-bold tracking-tight text-slate-900">GroupSync</h1>
-        <p class="text-xs text-slate-500 mt-1">Berbagi agenda, lokasi live, dan obrolan untuk keluarga, tim, atau komunitas</p>
+        <p class="text-xs text-slate-500 mt-1">Berbagi agenda, lokasi live, dan obrolan untuk keluarga, tim, atau
+          komunitas</p>
       </div>
 
       <form id="joinForm" class="space-y-4">
+        <!-- Banner Undangan Grup (muncul jika membuka dari tautan share) -->
+        <div id="joinInviteBanner" class="hidden p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-between gap-3 text-xs text-indigo-950">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <i data-lucide="users" class="h-4 w-4"></i>
+            </div>
+            <div class="overflow-hidden">
+              <p class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Tautan Undangan Grup</p>
+              <p class="font-bold text-sm text-slate-900 leading-tight truncate">Bergabung ke <span id="joinInviteCodeText" class="font-mono text-indigo-700 font-extrabold"></span></p>
+            </div>
+          </div>
+          <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-bold shrink-0">Otomatis Terisi</span>
+        </div>
+
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Panggilan</label>
-          <input id="inputName" type="text" required placeholder="Contoh: Ari" class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <input id="inputName" type="text" required placeholder="Contoh: Ari"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <p id="inputNameHelpText" class="hidden text-[11px] text-indigo-600 font-medium mt-1.5 flex items-center gap-1">
+            <span>👉 Cukup ketik nama Anda untuk langsung bergabung ke grup di atas.</span>
+          </p>
         </div>
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Jenis Kelamin</label>
           <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center justify-center gap-2 rounded-lg border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
+            <label
+              class="flex items-center justify-center gap-2 rounded-lg border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
               <input type="radio" name="gender" value="male" checked class="hidden" />
               <span>👨 Laki-laki</span>
             </label>
-            <label class="flex items-center justify-center gap-2 rounded-lg border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-700">
+            <label
+              class="flex items-center justify-center gap-2 rounded-lg border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-700">
               <input type="radio" name="gender" value="female" class="hidden" />
               <span>👩 Perempuan</span>
             </label>
           </div>
         </div>
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Kode Grup (Group Code)</label>
-          <input id="inputPairCode" type="text" required placeholder="Contoh: KELUARGA-BESAR / TIM-RIDE" class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none uppercase font-mono" />
-          <p class="text-[11px] text-slate-400 mt-1">Bagikan kode ini kepada seluruh anggota agar terhubung dalam grup yang sama.</p>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Kode Grup (Group
+              Code)</label>
+            <span id="joinInviteLockBadge" class="hidden text-[10px] text-indigo-600 font-semibold flex items-center gap-1">
+              <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i> Dari Tautan Undangan
+            </span>
+          </div>
+          <input id="inputPairCode" type="text" required placeholder="Contoh: KELUARGA-BESAR / TIM-RIDE"
+            class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none uppercase font-mono transition" />
+          <p id="groupCodeHelpText" class="text-[11px] text-slate-400 mt-1">Bagikan kode ini kepada seluruh anggota agar terhubung dalam grup
+            yang sama.</p>
         </div>
 
-        <button type="submit" class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
+        <button type="submit"
+          class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
           Masuk ke Ruang Grup
         </button>
       </form>
@@ -359,13 +490,37 @@
   <!-- MAIN APP SCREEN -->
   <div id="appScreen" class="hidden max-w-6xl mx-auto px-4 pt-3 sm:pt-4 space-y-5">
 
+    <!-- Guest Preview Banner (hanya muncul untuk penerima link yang belum login) -->
+    <div id="guestStickyBanner"
+      class="hidden glass-card rounded-2xl border border-indigo-200 bg-indigo-900 text-white p-3 sm:p-3.5 shadow-md flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="h-8 w-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+          <i data-lucide="eye" class="h-4 w-4 text-indigo-300"></i>
+        </div>
+        <div class="overflow-hidden">
+          <p class="text-xs font-bold leading-tight truncate">Mode Pratinjau Grup: <span id="guestBannerGroupCode"
+              class="font-mono text-indigo-200 uppercase font-extrabold"></span></p>
+          <p class="text-[11px] text-indigo-200/80 leading-tight truncate">Anda dapat melihat jadwal. Ketuk untuk bergabung penuh & sinkronisasi lokasi.</p>
+        </div>
+      </div>
+      <button id="btnGuestJoinNow" type="button"
+        class="rounded-xl bg-white px-3.5 py-2 text-xs font-bold text-indigo-900 hover:bg-indigo-50 transition shrink-0 shadow-sm flex items-center gap-1.5 cursor-pointer">
+        <i data-lucide="log-in" class="h-3.5 w-3.5"></i>
+        <span>Gabung Sekarang</span>
+      </button>
+    </div>
+
     <!-- Top Header (Sticky on Top saat di-scroll) -->
-    <header class="sticky top-3 z-40 glass-card rounded-2xl border border-slate-200/80 p-3.5 sm:p-4 flex items-center justify-between shadow-md">
-      
+    <header
+      class="sticky top-3 z-40 glass-card rounded-2xl border border-slate-200/80 p-3.5 sm:p-4 flex items-center justify-between shadow-md">
+
       <!-- User Profile & Dropdown Container -->
       <div class="relative">
-        <button id="btnUserDropdown" class="flex items-center space-x-3 text-left p-1 rounded-xl hover:bg-slate-100/70 transition">
-          <div id="userAvatar" class="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-sm ring-2 ring-white">U</div>
+        <button id="btnUserDropdown"
+          class="flex items-center space-x-3 text-left p-1 rounded-xl hover:bg-slate-100/70 transition">
+          <div id="userAvatar"
+            class="h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-sm ring-2 ring-white">
+            U</div>
           <div>
             <div class="flex items-center gap-2">
               <h2 class="text-base font-bold text-slate-900" id="headerUserName">Nama</h2>
@@ -375,18 +530,28 @@
             <p class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
               <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Grup: <span id="headerPairCode" class="font-semibold text-slate-800 uppercase font-mono"></span>
+              <button id="btnQuickCopyCode" type="button" class="ml-1 text-slate-400 hover:text-indigo-600 transition p-0.5 rounded hover:bg-slate-100" title="Bagikan / salin link undangan grup">
+                <i data-lucide="share-2" class="h-3 w-3"></i>
+              </button>
             </p>
           </div>
         </button>
 
         <!-- Dropdown Menu -->
-        <div id="userDropdownMenu" class="hidden absolute left-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-2 text-xs space-y-1 z-50">
+        <div id="userDropdownMenu"
+          class="hidden absolute left-0 mt-2 w-56 rounded-2xl bg-white border border-slate-200 shadow-xl p-2 text-xs space-y-1 z-50">
           <div class="px-3 py-2 border-b border-slate-100">
             <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Profil Saya</p>
             <p class="font-bold text-slate-800 text-sm truncate" id="dropdownUserName">User</p>
             <p class="text-slate-500 text-[11px] font-mono mt-0.5" id="dropdownGroupCode">Grup: -</p>
           </div>
-          <button id="btnDropdownSwitchAccount" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-medium transition text-left">
+          <button id="btnDropdownShareGroup" type="button"
+            class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-indigo-600 hover:bg-indigo-50 font-medium transition text-left">
+            <i data-lucide="share-2" class="h-4 w-4"></i>
+            <span>Bagikan Link Grup</span>
+          </button>
+          <button id="btnDropdownSwitchAccount"
+            class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-medium transition text-left">
             <i data-lucide="log-out" class="h-4 w-4"></i>
             <span>Ganti Profil / Keluar</span>
           </button>
@@ -395,20 +560,32 @@
 
       <!-- Header Right: Live Clock & Notification Tray -->
       <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Tombol Bagikan Link Grup -->
+        <button id="btnShareGroup" type="button"
+          class="rounded-xl border border-indigo-200/90 bg-indigo-50/80 hover:bg-indigo-100/80 px-3 py-2 text-xs font-semibold text-indigo-700 transition shadow-xs flex items-center gap-1.5"
+          title="Bagikan tautan undangan grup">
+          <i data-lucide="share-2" class="h-4 w-4 text-indigo-600"></i>
+          <span class="hidden sm:inline">Bagikan Grup</span>
+        </button>
+
         <div class="relative">
-          <button id="btnNotifTray" class="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition shadow-sm flex items-center justify-center">
+          <button id="btnNotifTray"
+            class="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition shadow-sm flex items-center justify-center">
             <i data-lucide="bell" class="h-5 w-5"></i>
-            <span id="notifBadgeCounter" class="hidden absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-sm badge-unread-ping">0</span>
+            <span id="notifBadgeCounter"
+              class="hidden absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-sm badge-unread-ping">0</span>
           </button>
 
           <!-- Notification Tray Floating Panel -->
-          <div id="notificationTray" class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 space-y-3">
+          <div id="notificationTray"
+            class="hidden absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-slate-200 shadow-2xl p-4 z-50 space-y-3">
             <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
               <h4 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
                 <i data-lucide="bell" class="h-4 w-4 text-indigo-600"></i>
                 Notifikasi & Chat Terbaru
               </h4>
-              <span id="notifTrayUnreadText" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">0 Baru</span>
+              <span id="notifTrayUnreadText"
+                class="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">0 Baru</span>
             </div>
 
             <!-- List Notifikasi -->
@@ -430,10 +607,15 @@
         </h3>
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
-            <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-white shadow-2xs"></span> Anggota</span>
-            <span class="flex items-center gap-1"><span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white shadow-2xs"></span> Agenda</span>
+            <span class="flex items-center gap-1"><span
+                class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-white shadow-2xs"></span>
+              Anggota</span>
+            <span class="flex items-center gap-1"><span
+                class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white shadow-2xs"></span>
+              Agenda</span>
           </div>
-          <button id="btnUpdateLocation" type="button" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition font-medium">
+          <button id="btnUpdateLocation" type="button"
+            class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition font-medium">
             <i data-lucide="refresh-cw" class="h-3.5 w-3.5"></i> Perbarui Lokasi Saya
           </button>
         </div>
@@ -449,20 +631,29 @@
         <div class="flex items-center justify-between border-b border-slate-200 pb-3">
           <h3 id="currentMonthYearLabel" class="text-base font-bold text-slate-900">Bulan Tahun</h3>
           <div class="flex items-center gap-1">
-            <button id="btnPrevMonth" class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
+            <button id="btnPrevMonth"
+              class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
               <i data-lucide="chevron-left" class="h-4 w-4"></i>
             </button>
-            <button id="btnTodayMonth" class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">
+            <button id="btnTodayMonth"
+              class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">
               Hari Ini
             </button>
-            <button id="btnNextMonth" class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
+            <button id="btnNextMonth"
+              class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
               <i data-lucide="chevron-right" class="h-4 w-4"></i>
             </button>
           </div>
         </div>
 
         <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          <div>Min</div><div>Sen</div><div>Sel</div><div>Rab</div><div>Kam</div><div>Jum</div><div>Sab</div>
+          <div>Min</div>
+          <div>Sen</div>
+          <div>Sel</div>
+          <div>Rab</div>
+          <div>Kam</div>
+          <div>Jum</div>
+          <div>Sab</div>
         </div>
 
         <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-sm">
@@ -486,28 +677,32 @@
       </section>
 
       <!-- Kolom Kanan: Detail Agenda Tanggal & Checklist Agenda -->
-      <section id="rightSection" class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-5 flex flex-col justify-between space-y-4 min-h-[420px]">
-        
+      <section id="rightSection"
+        class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-5 flex flex-col justify-between space-y-4 min-h-[420px]">
+
         <!-- VIEW 1: Detail Agenda Tanggal (Default) -->
         <div id="viewAgendaList" class="space-y-4">
           <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
             <div>
               <div class="flex items-center gap-2">
                 <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Agenda Tanggal</p>
-                <span id="selectedDayCount" class="text-[10px] rounded-full bg-slate-200 px-2 py-0.5 font-semibold text-slate-700">0 Jadwal</span>
+                <span id="selectedDayCount"
+                  class="text-[10px] rounded-full bg-slate-200 px-2 py-0.5 font-semibold text-slate-700">0 Jadwal</span>
               </div>
               <h4 id="selectedDateTitle" class="text-base font-bold text-slate-900 mt-0.5">Pilih Tanggal</h4>
             </div>
 
             <!-- Tombol Tambah Agenda -->
-            <button id="btnOpenAddModal" class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm shrink-0">
+            <button id="btnOpenAddModal"
+              class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm shrink-0">
               <i data-lucide="plus" class="h-4 w-4"></i>
               <span>Tambah Agenda</span>
             </button>
           </div>
 
           <div id="dayAgendaList" class="space-y-3 pt-1 max-h-[420px] overflow-y-auto pr-1">
-            <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender untuk melihat jam dan detail agenda.</p>
+            <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender untuk melihat jam dan detail
+              agenda.</p>
           </div>
         </div>
 
@@ -516,16 +711,19 @@
           <!-- Checklist Header: Back button, Agenda Info, Action buttons -->
           <div class="border-b border-slate-200 pb-3 space-y-2.5">
             <div class="flex items-center justify-between gap-2">
-              <button id="btnBackToAgendas" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-sm">
+              <button id="btnBackToAgendas" type="button"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-sm">
                 <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i>
                 <span>Kembali ke Jadwal</span>
               </button>
               <div class="flex items-center gap-1.5">
-                <button id="btnAddCategoryBtn" type="button" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition shadow-sm">
+                <button id="btnAddCategoryBtn" type="button"
+                  class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition shadow-sm">
                   <i data-lucide="folder-plus" class="h-3.5 w-3.5 text-indigo-600"></i>
                   <span>+ Kategori</span>
                 </button>
-                <button id="btnAddChecklistItemBtn" type="button" class="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
+                <button id="btnAddChecklistItemBtn" type="button"
+                  class="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
                   <i data-lucide="plus" class="h-3.5 w-3.5"></i>
                   <span>+ Checklist</span>
                 </button>
@@ -536,15 +734,19 @@
             <div class="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2 overflow-hidden">
-                  <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk Agenda</span>
+                  <span
+                    class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk
+                    Agenda</span>
                   <h4 id="checklistAgendaTitle" class="text-sm font-bold text-slate-900 truncate">Judul Agenda</h4>
                 </div>
-                <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0 Selesai</span>
+                <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0
+                  Selesai</span>
               </div>
-              
+
               <!-- Mini Overall Progress Bar -->
               <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
-                <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+                  style="width: 0%"></div>
               </div>
             </div>
           </div>
@@ -554,15 +756,20 @@
 
           <!-- Banner Kategori Aktif & Aksi -->
           <div id="checklistCategoryBanner" class="category-banner flex items-center justify-between">
-            <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer" id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
+            <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer"
+              id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
               <span id="currentCategoryTitle">Kategori</span>
               <span class="hint text-[10px] text-slate-400 font-normal">(Ketuk untuk edit)</span>
             </div>
             <div class="flex items-center gap-1">
-              <button id="btnQuickEditCategory" type="button" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Edit Kategori">
+              <button id="btnQuickEditCategory" type="button"
+                class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                title="Edit Kategori">
                 <i data-lucide="edit-2" class="h-3.5 w-3.5"></i>
               </button>
-              <button id="btnQuickDeleteCategory" type="button" class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
+              <button id="btnQuickDeleteCategory" type="button"
+                class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                title="Hapus Kategori">
                 <i data-lucide="trash" class="h-3.5 w-3.5"></i>
               </button>
             </div>
@@ -580,14 +787,16 @@
   </div>
 
   <!-- MODAL FORM AGENDA (CREATE & UPDATE) -->
-  <div id="agendaModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+  <div id="agendaModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
     <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
         <h4 id="agendaModalTitle" class="text-base font-bold text-slate-900 flex items-center gap-2">
           <i data-lucide="calendar-plus" class="h-4 w-4 text-slate-700"></i>
           Tambah Agenda Baru
         </h4>
-        <button id="btnCloseAgendaModal" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+        <button id="btnCloseAgendaModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -596,11 +805,13 @@
         <input id="editAgendaId" type="hidden" value="" />
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">Judul Agenda</label>
-          <input id="agendaTitle" type="text" required placeholder="Contoh: Rapat Tim / Acara Keluarga / Kerja Mandiri" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <input id="agendaTitle" type="text" required placeholder="Contoh: Rapat Tim / Acara Keluarga / Kerja Mandiri"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
         </div>
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">Sifat Agenda</label>
-          <select id="agendaType" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none bg-white">
+          <select id="agendaType"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none bg-white">
             <option value="couple">Agenda Grup (Kegiatan Bersama)</option>
             <option value="private">Agenda Personal (Jadwal Mandiri)</option>
           </select>
@@ -608,31 +819,37 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-600 mb-1">Mulai (Tanggal & Jam)</label>
-            <input id="agendaStart" type="datetime-local" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+            <input id="agendaStart" type="datetime-local" required
+              class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600 mb-1">Selesai (Tanggal & Jam)</label>
-            <input id="agendaEnd" type="datetime-local" required class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+            <input id="agendaEnd" type="datetime-local" required
+              class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
           </div>
         </div>
         <!-- Lokasi Agenda dengan Map Picker -->
         <div>
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-medium text-slate-600">Lokasi Agenda (Opsional)</label>
-            <button id="btnOpenLocationPicker" type="button" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition">
+            <button id="btnOpenLocationPicker" type="button"
+              class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 transition">
               <i data-lucide="map-pin" class="h-3.5 w-3.5"></i>
               <span>Pilih dari Peta</span>
             </button>
           </div>
-          <input id="agendaLocationName" type="text" placeholder="Ketik nama tempat atau klik 'Pilih dari Peta'..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <input id="agendaLocationName" type="text" placeholder="Ketik nama tempat atau klik 'Pilih dari Peta'..."
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
           <input id="agendaLocationLat" type="hidden" value="" />
           <input id="agendaLocationLng" type="hidden" value="" />
           <input id="agendaLocationAddress" type="hidden" value="" />
 
           <!-- Preview Lokasi Terpilih -->
-          <div id="agendaLocationPreview" class="hidden mt-2 p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200/80 flex items-start justify-between gap-2 text-xs">
+          <div id="agendaLocationPreview"
+            class="hidden mt-2 p-2.5 rounded-xl bg-indigo-50/80 border border-indigo-200/80 flex items-start justify-between gap-2 text-xs">
             <div class="flex items-start gap-2 min-w-0">
-              <div class="h-6 w-6 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+              <div
+                class="h-6 w-6 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
                 <i data-lucide="map-pin" class="h-3.5 w-3.5"></i>
               </div>
               <div class="overflow-hidden">
@@ -640,7 +857,9 @@
                 <p id="agendaLocationPreviewCoords" class="text-[10px] text-slate-500 truncate mt-0.5">-</p>
               </div>
             </div>
-            <button id="btnClearAgendaLocation" type="button" class="shrink-0 text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-white transition" title="Hapus lokasi agenda">
+            <button id="btnClearAgendaLocation" type="button"
+              class="shrink-0 text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-white transition"
+              title="Hapus lokasi agenda">
               <i data-lucide="x" class="h-4 w-4"></i>
             </button>
           </div>
@@ -648,17 +867,22 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">Catatan Tambahan (Opsional)</label>
-          <textarea id="agendaDesc" rows="2" placeholder="Catatan rundown, perlengkapan, atau deskripsi agenda..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none"></textarea>
+          <textarea id="agendaDesc" rows="2" placeholder="Catatan rundown, perlengkapan, atau deskripsi agenda..."
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none"></textarea>
         </div>
-        <button id="btnSubmitAgenda" type="submit" class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">Simpan Agenda</button>
+        <button id="btnSubmitAgenda" type="submit"
+          class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">Simpan
+          Agenda</button>
       </form>
     </div>
   </div>
 
   <!-- MODAL MAP PICKER UNTUK LOKASI AGENDA -->
-  <div id="locationPickerModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4">
-    <div class="glass-card w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xl flex flex-col max-h-[92vh]">
-      
+  <div id="locationPickerModal"
+    class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-3 sm:p-4">
+    <div
+      class="glass-card w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xl flex flex-col max-h-[92vh]">
+
       <!-- Modal Header -->
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-3">
         <div class="flex items-center gap-2.5">
@@ -670,7 +894,8 @@
             <p class="text-[11px] text-slate-500">Klik / geser pin di peta, atau cari nama tempat</p>
           </div>
         </div>
-        <button id="btnCloseLocationPicker" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
+        <button id="btnCloseLocationPicker" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -680,25 +905,32 @@
         <div class="flex items-center gap-2">
           <div class="relative flex-1">
             <i data-lucide="search" class="absolute left-3 top-2.5 h-4 w-4 text-slate-400"></i>
-            <input id="pickerSearchInput" type="text" placeholder="Ketik nama tempat, jalan, atau gedung..." class="w-full rounded-xl border border-slate-300 pl-9 pr-3 py-2 text-xs sm:text-sm focus:border-indigo-600 focus:outline-none" />
+            <input id="pickerSearchInput" type="text" placeholder="Ketik nama tempat, jalan, atau gedung..."
+              class="w-full rounded-xl border border-slate-300 pl-9 pr-3 py-2 text-xs sm:text-sm focus:border-indigo-600 focus:outline-none" />
           </div>
-          <button id="btnPickerSearch" type="button" class="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-indigo-700 transition flex items-center gap-1 shrink-0 shadow-sm">
+          <button id="btnPickerSearch" type="button"
+            class="rounded-xl bg-indigo-600 px-3.5 py-2 text-xs sm:text-sm font-semibold text-white hover:bg-indigo-700 transition flex items-center gap-1 shrink-0 shadow-sm">
             <span>Cari</span>
           </button>
-          <button id="btnPickerCurrentLocation" type="button" class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0" title="Gunakan koordinat GPS perangkat saya">
+          <button id="btnPickerCurrentLocation" type="button"
+            class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs sm:text-sm font-medium text-slate-700 hover:bg-slate-100 transition flex items-center gap-1.5 shrink-0"
+            title="Gunakan koordinat GPS perangkat saya">
             <i data-lucide="crosshair" class="h-4 w-4 text-indigo-600"></i>
             <span class="hidden sm:inline">Lokasi Saya</span>
           </button>
         </div>
 
         <!-- Search Results Dropdown List -->
-        <div id="pickerSearchResults" class="hidden absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-2xl text-xs divide-y divide-slate-100 z-[800]"></div>
+        <div id="pickerSearchResults"
+          class="hidden absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-2xl text-xs divide-y divide-slate-100 z-[800]">
+        </div>
       </div>
 
       <!-- Leaflet Map Container -->
       <div class="relative flex-1 rounded-xl overflow-hidden border border-slate-200 min-h-[220px] sm:min-h-[280px]">
         <div id="locationPickerMap"></div>
-        <div class="absolute bottom-2 left-2 z-[400] bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[10px] text-slate-600 shadow-sm border border-slate-200 pointer-events-none">
+        <div
+          class="absolute bottom-2 left-2 z-[400] bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-lg text-[10px] text-slate-600 shadow-sm border border-slate-200 pointer-events-none">
           💡 Klik atau geser pin merah untuk menandai lokasi
         </div>
       </div>
@@ -706,19 +938,26 @@
       <!-- Selected Location Info Card -->
       <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
         <div class="flex items-center justify-between">
-          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Nama Tempat Terpilih</label>
-          <span id="pickerCoordsBadge" class="text-[10px] font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">Lat: -, Lng: -</span>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500">Nama Tempat
+            Terpilih</label>
+          <span id="pickerCoordsBadge"
+            class="text-[10px] font-mono text-slate-600 bg-white px-2 py-0.5 rounded border border-slate-200">Lat: -,
+            Lng: -</span>
         </div>
-        <input id="pickerCustomName" type="text" placeholder="Beri nama tempat (contoh: Kafe Kenangan / Gedung Pertemuan)" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none" />
+        <input id="pickerCustomName" type="text"
+          placeholder="Beri nama tempat (contoh: Kafe Kenangan / Gedung Pertemuan)"
+          class="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none" />
         <p id="pickerAddressDisplay" class="text-[11px] text-slate-500 leading-snug truncate">Alamat: Belum dipilih</p>
       </div>
 
       <!-- Modal Footer Action Buttons -->
       <div class="mt-3 pt-2.5 border-t border-slate-200 flex items-center justify-end gap-2 shrink-0">
-        <button id="btnCancelLocationPicker" type="button" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
+        <button id="btnCancelLocationPicker" type="button"
+          class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
           Batal
         </button>
-        <button id="btnApplyLocationPicker" type="button" class="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition flex items-center gap-1.5">
+        <button id="btnApplyLocationPicker" type="button"
+          class="rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 shadow-sm transition flex items-center gap-1.5">
           <i data-lucide="check" class="h-3.5 w-3.5"></i>
           <span>Gunakan Lokasi Ini</span>
         </button>
@@ -728,25 +967,33 @@
   </div>
 
   <!-- MODAL CHAT ROOM PER AGENDA -->
-  <div id="chatModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-    <div class="glass-card w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl flex flex-col h-[520px]">
-      
+  <div id="chatModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    <div
+      class="glass-card w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-5 shadow-xl flex flex-col h-[520px]">
+
       <!-- Modal Header (Title clickable -> Go to Date) -->
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <button id="btnChatGoToDate" type="button" title="Klik untuk melompat ke tanggal agenda ini di kalender" class="flex items-start gap-2.5 text-left p-1 -ml-1 rounded-xl hover:bg-slate-100/80 transition group max-w-[85%]">
-          <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-indigo-600 group-hover:text-white transition">
+        <button id="btnChatGoToDate" type="button" title="Klik untuk melompat ke tanggal agenda ini di kalender"
+          class="flex items-start gap-2.5 text-left p-1 -ml-1 rounded-xl hover:bg-slate-100/80 transition group max-w-[85%]">
+          <div
+            class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:bg-indigo-600 group-hover:text-white transition">
             <i data-lucide="calendar-days" class="h-4 w-4"></i>
           </div>
           <div class="overflow-hidden">
             <div class="flex items-center gap-1.5">
-              <h4 id="chatModalTitle" class="text-base font-bold text-slate-900 truncate group-hover:text-indigo-600 transition">Ruang Obrolan</h4>
-              <i data-lucide="arrow-up-right" class="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition shrink-0"></i>
+              <h4 id="chatModalTitle"
+                class="text-base font-bold text-slate-900 truncate group-hover:text-indigo-600 transition">Ruang Obrolan
+              </h4>
+              <i data-lucide="arrow-up-right"
+                class="h-3.5 w-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition shrink-0"></i>
             </div>
             <p id="chatModalSubtitle" class="text-xs text-slate-500 truncate">Klik untuk lihat di kalender</p>
           </div>
         </button>
 
-        <button id="btnCloseChat" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+        <button id="btnCloseChat" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -758,8 +1005,10 @@
 
       <!-- Form Kirim Pesan -->
       <form id="chatForm" class="flex gap-2 pt-3 border-t border-slate-200">
-        <input id="chatInput" type="text" required autocomplete="off" placeholder="Tulis pesan atau link..." class="flex-1 rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none" />
-        <button type="submit" id="btnSendChat" class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition flex items-center gap-1">
+        <input id="chatInput" type="text" required autocomplete="off" placeholder="Tulis pesan atau link..."
+          class="flex-1 rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+        <button type="submit" id="btnSendChat"
+          class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 transition flex items-center gap-1">
           <i data-lucide="send" class="h-4 w-4"></i>
         </button>
       </form>
@@ -767,14 +1016,16 @@
   </div>
 
   <!-- MODAL FORM KATEGORI CHECKLIST -->
-  <div id="checklistCategoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+  <div id="checklistCategoryModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
     <div class="glass-card w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
         <h4 id="checklistCategoryModalTitle" class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
           <i data-lucide="folder" class="h-4 w-4 text-indigo-600"></i>
           <span>Kategori Checklist</span>
         </h4>
-        <button id="btnCloseCategoryModal" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+        <button id="btnCloseCategoryModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -782,15 +1033,19 @@
         <input type="hidden" id="checklistCategoryId" value="" />
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Kategori</label>
-          <input type="text" id="checklistCategoryName" required placeholder="Contoh: Pra-Operasi, Pemulihan, Diet" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <input type="text" id="checklistCategoryName" required placeholder="Contoh: Pra-Operasi, Pemulihan, Diet"
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
         </div>
         <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-          <button type="button" id="btnDeleteCategoryModal" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
+          <button type="button" id="btnDeleteCategoryModal"
+            class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
             Hapus Kategori
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="btnCancelCategoryModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
-            <button type="submit" class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
+            <button type="button" id="btnCancelCategoryModal"
+              class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
+            <button type="submit"
+              class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
           </div>
         </div>
       </form>
@@ -798,14 +1053,16 @@
   </div>
 
   <!-- MODAL FORM ITEM CHECKLIST -->
-  <div id="checklistItemModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+  <div id="checklistItemModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
     <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
         <h4 id="checklistItemModalTitle" class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
           <i data-lucide="check-square" class="h-4 w-4 text-indigo-600"></i>
           <span>Checklist Aktivitas</span>
         </h4>
-        <button id="btnCloseItemModal" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+        <button id="btnCloseItemModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -813,31 +1070,173 @@
         <input type="hidden" id="checklistItemId" value="" />
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
-          <select id="checklistItemCategory" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none bg-white"></select>
+          <select id="checklistItemCategory" required
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none bg-white"></select>
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Checklist / Aktivitas</label>
-          <input type="text" id="checklistItemTitle" required placeholder="Deskripsi aktivitas atau perlengkapan..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+          <input type="text" id="checklistItemTitle" required placeholder="Deskripsi aktivitas atau perlengkapan..."
+            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Mulai (Tgl & Jam)</label>
-            <input type="datetime-local" id="checklistItemStart" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+            <input type="datetime-local" id="checklistItemStart"
+              class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-600 mb-1">Selesai (Tgl & Jam)</label>
-            <input type="datetime-local" id="checklistItemEnd" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+            <input type="datetime-local" id="checklistItemEnd"
+              class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
           </div>
         </div>
-        <p class="text-[11px] text-slate-400 leading-tight">Kosongkan tanggal jika checklist tidak memerlukan hitungan linimasa.</p>
+        <p class="text-[11px] text-slate-400 leading-tight">Kosongkan tanggal jika checklist tidak memerlukan hitungan
+          linimasa.</p>
         <div class="flex items-center justify-between pt-2 border-t border-slate-100">
-          <button type="button" id="btnDeleteItemModal" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
+          <button type="button" id="btnDeleteItemModal"
+            class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
             Hapus Item
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="btnCancelItemModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
-            <button type="submit" class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
+            <button type="button" id="btnCancelItemModal"
+              class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
+            <button type="submit"
+              class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
           </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL BAGIKAN LINK GRUP -->
+  <div id="shareGroupModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
+            <i data-lucide="share-2" class="h-4 w-4"></i>
+          </div>
+          <span>Undang Anggota Grup</span>
+        </h4>
+        <button id="btnCloseShareModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <!-- Info Grup & Petunjuk -->
+      <div class="p-3.5 rounded-xl bg-indigo-50/80 border border-indigo-100/90 space-y-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Kode Grup Aktif</span>
+          <span id="shareModalGroupBadge" class="font-mono text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
+        </div>
+        <p class="text-xs text-indigo-950/80 leading-relaxed">
+          Bagikan tautan ini ke keluarga atau rekan tim. Penerima tautan <strong>hanya tinggal mengetik nama</strong> untuk langsung bergabung ke grup ini.
+        </p>
+      </div>
+
+      <!-- Input Link & Tombol Salin -->
+      <div class="space-y-1.5">
+        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Tautan Undangan</label>
+        <div class="flex items-center gap-2">
+          <input id="shareLinkInput" type="text" readonly
+            class="flex-1 rounded-xl border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-800 select-all focus:outline-none truncate" />
+          <button id="btnCopyShareLink" type="button"
+            class="rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition flex items-center gap-1.5 shrink-0 shadow-sm">
+            <i data-lucide="copy" class="h-3.5 w-3.5"></i>
+            <span id="copyShareBtnText">Salin</span>
+          </button>
+        </div>
+        <p id="shareCopiedFeedback" class="hidden text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+          <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i> Tautan berhasil disalin ke clipboard!
+        </p>
+      </div>
+
+      <!-- Tombol Aksi Cepat: WhatsApp & Native Share -->
+      <div class="pt-2 border-t border-slate-100 space-y-2">
+        <a id="btnShareWhatsApp" href="#" target="_blank" rel="noopener noreferrer"
+          class="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm">
+          <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+          </svg>
+          <span>Kirim Undangan via WhatsApp</span>
+        </a>
+        <button id="btnNativeShare" type="button"
+          class="w-full rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 py-2.5 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm">
+          <i data-lucide="share" class="h-4 w-4 text-indigo-600"></i>
+          <span>Bagikan ke Aplikasi Lain...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL MASUKKAN IDENTITAS (GUEST JOIN) -->
+  <div id="identityModal"
+    class="hidden fixed inset-0 z-[80] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <i data-lucide="user-check" class="h-4 w-4"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-slate-900">Gabung ke Grup</h4>
+            <p class="text-[11px] text-slate-500">Masukkan identitas Anda untuk mulai berpartisipasi</p>
+          </div>
+        </div>
+        <button id="btnCloseIdentityModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition" title="Tutup dan lanjut melihat">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <!-- Info Grup Terhubung -->
+      <div class="p-3 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs text-slate-600 font-medium">Grup Tujuan:</span>
+        </div>
+        <span id="identityModalGroupBadge" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
+      </div>
+
+      <form id="identityForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Panggilan</label>
+          <input id="identityInputName" type="text" required placeholder="Contoh: Budi / Siti"
+            class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:border-indigo-600 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Jenis Kelamin</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label
+              class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50 has-[:checked]:text-blue-700">
+              <input type="radio" name="identityGender" value="male" checked class="hidden" />
+              <span>👨 Laki-laki</span>
+            </label>
+            <label
+              class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 p-2.5 text-xs font-medium cursor-pointer hover:bg-slate-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-700">
+              <input type="radio" name="identityGender" value="female" class="hidden" />
+              <span>👩 Perempuan</span>
+            </label>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-slate-400 leading-snug flex items-center gap-1.5">
+          <i data-lucide="map-pin" class="h-3.5 w-3.5 text-indigo-500 shrink-0"></i>
+          <span>Izin lokasi GPS akan diminta setelah Anda bergabung.</span>
+        </p>
+
+        <div class="flex items-center gap-2 pt-1">
+          <button id="btnDismissIdentityModal" type="button"
+            class="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition text-center">
+            Hanya Melihat
+          </button>
+          <button type="submit"
+            class="flex-[2] rounded-xl bg-slate-900 py-2.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm text-center">
+            Masuk ke Ruang Grup
+          </button>
         </div>
       </form>
     </div>
@@ -846,18 +1245,18 @@
   <!-- FIREBASE MODULAR SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc, 
-      collection, 
-      addDoc, 
-      updateDoc, 
-      deleteDoc, 
-      query, 
-      where, 
-      onSnapshot, 
-      serverTimestamp 
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      collection,
+      addDoc,
+      updateDoc,
+      deleteDoc,
+      query,
+      where,
+      onSnapshot,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
     // ----------------------------------------------------
@@ -1029,7 +1428,7 @@
       customNameInput: null,
       coordsBadge: null,
       addressDisplay: null,
-      
+
       map: null,
       marker: null,
       selectedLat: null,
@@ -1177,7 +1576,7 @@
           if (data && data.display_name) {
             this.selectedAddress = data.display_name;
             if (this.addressDisplay) this.addressDisplay.textContent = `Alamat: ${data.display_name}`;
-            
+
             const placeName = data.name || data.address?.amenity || data.address?.building || data.address?.road || data.display_name.split(',')[0];
             if (!this.customNameInput.value.trim()) {
               this.customNameInput.value = placeName;
@@ -1387,7 +1786,7 @@
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.35);
-      } catch (err) {}
+      } catch (err) { }
     }
 
     function checkHasUnreadChat(agenda) {
@@ -1418,8 +1817,8 @@
 
       const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/gi;
 
-      const linkColorClass = isMine 
-        ? "text-white underline font-medium hover:text-slate-200" 
+      const linkColorClass = isMine
+        ? "text-white underline font-medium hover:text-slate-200"
         : "text-blue-600 underline font-medium hover:text-blue-800";
 
       return escaped.replace(urlRegex, (url) => {
@@ -1431,29 +1830,236 @@
       });
     }
 
-    if (userProfile && userProfile.pairCode) {
-      loadMainApp();
-    } else {
-      joinScreen.classList.remove("hidden");
-      appScreen.classList.add("hidden");
+    // ----------------------------------------------------
+    // FITUR SHARE LINK GRUP & SEAMLESS JOIN
+    // ----------------------------------------------------
+    function getGroupShareUrl(pairCode) {
+      const code = pairCode || (userProfile ? userProfile.pairCode : "");
+      if (window.location.protocol === "file:") {
+        return `${window.location.href.split('?')[0]}?group=${encodeURIComponent(code)}`;
+      }
+      return `${window.location.origin}${window.location.pathname}?group=${encodeURIComponent(code)}`;
     }
 
-    document.getElementById("joinForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const name = document.getElementById("inputName").value.trim();
-      const gender = document.querySelector('input[name="gender"]:checked').value;
-      const pairCode = document.getElementById("inputPairCode").value.trim().toUpperCase();
+    function checkUrlForInvite() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let inviteCode = urlParams.get("group") || urlParams.get("code") || urlParams.get("pairCode");
 
-      if (!name || !pairCode) return;
-      userProfile = { uid: deviceId, name, gender, pairCode };
-      localStorage.setItem("group_user_profile", JSON.stringify(userProfile));
-      loadMainApp();
+      if (!inviteCode && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, "?"));
+        inviteCode = hashParams.get("group") || hashParams.get("code") || hashParams.get("pairCode");
+      }
+
+      return inviteCode ? inviteCode.trim().toUpperCase() : null;
+    }
+
+    function setupJoinInviteState(inviteCode, defaultName = "") {
+      const banner = document.getElementById("joinInviteBanner");
+      const codeText = document.getElementById("joinInviteCodeText");
+      const lockBadge = document.getElementById("joinInviteLockBadge");
+      const nameHelp = document.getElementById("inputNameHelpText");
+      const codeHelp = document.getElementById("groupCodeHelpText");
+      const pairCodeInput = document.getElementById("inputPairCode");
+      const nameInput = document.getElementById("inputName");
+
+      if (banner) banner.classList.remove("hidden");
+      if (codeText) codeText.textContent = inviteCode;
+      if (lockBadge) lockBadge.classList.remove("hidden");
+      if (nameHelp) nameHelp.classList.remove("hidden");
+      if (codeHelp) codeHelp.textContent = "Kode grup terisi otomatis dari tautan undangan yang Anda buka.";
+
+      if (pairCodeInput) {
+        pairCodeInput.value = inviteCode;
+        pairCodeInput.classList.add("bg-indigo-50/70", "border-indigo-300", "text-indigo-950", "font-bold");
+      }
+
+      if (defaultName && nameInput) {
+        nameInput.value = defaultName;
+      }
+
+      setTimeout(() => {
+        if (nameInput) {
+          nameInput.focus();
+          if (defaultName) nameInput.select();
+        }
+      }, 150);
+
+      lucide.createIcons();
+    }
+
+    function openShareGroupModal() {
+      if (!userProfile || !userProfile.pairCode) return;
+      const pairCode = userProfile.pairCode;
+      const shareUrl = getGroupShareUrl(pairCode);
+
+      document.getElementById("shareModalGroupBadge").textContent = pairCode;
+      const shareInput = document.getElementById("shareLinkInput");
+      shareInput.value = shareUrl;
+
+      const waText = encodeURIComponent(
+        `Halo! Bergabunglah dengan grup "${pairCode}" di GroupSync untuk berbagi agenda, checklist, live lokasi, dan obrolan bersama.\n\nKlik link ini untuk langsung bergabung (cukup ketik nama Anda):\n${shareUrl}`
+      );
+      document.getElementById("btnShareWhatsApp").href = `https://api.whatsapp.com/send?text=${waText}`;
+
+      document.getElementById("shareCopiedFeedback").classList.add("hidden");
+      document.getElementById("copyShareBtnText").textContent = "Salin";
+
+      document.getElementById("shareGroupModal").classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    function closeShareGroupModal() {
+      document.getElementById("shareGroupModal").classList.add("hidden");
+    }
+
+    document.getElementById("btnCloseShareModal")?.addEventListener("click", closeShareGroupModal);
+    document.getElementById("shareGroupModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "shareGroupModal") closeShareGroupModal();
     });
 
-    function loadMainApp() {
-      joinScreen.classList.add("hidden");
-      appScreen.classList.remove("hidden");
+    document.getElementById("btnCopyShareLink")?.addEventListener("click", async () => {
+      const shareInput = document.getElementById("shareLinkInput");
+      shareInput.select();
+      shareInput.setSelectionRange(0, 99999);
 
+      try {
+        await navigator.clipboard.writeText(shareInput.value);
+      } catch (err) {
+        document.execCommand("copy");
+      }
+
+      document.getElementById("copyShareBtnText").textContent = "Tersalin!";
+      document.getElementById("shareCopiedFeedback").classList.remove("hidden");
+      lucide.createIcons();
+
+      setTimeout(() => {
+        document.getElementById("copyShareBtnText").textContent = "Salin";
+      }, 2500);
+    });
+
+    document.getElementById("btnNativeShare")?.addEventListener("click", async () => {
+      if (!userProfile || !userProfile.pairCode) return;
+      const shareUrl = getGroupShareUrl(userProfile.pairCode);
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `Undangan Grup ${userProfile.pairCode} - GroupSync`,
+            text: `Bergabunglah ke grup "${userProfile.pairCode}" di GroupSync. Cukup klik link ini dan masukkan nama kamu:`,
+            url: shareUrl
+          });
+          return;
+        } catch (err) {
+          if (err.name !== "AbortError") {
+            console.warn("Share gagal:", err);
+          }
+        }
+      } else {
+        document.getElementById("btnCopyShareLink").click();
+      }
+    });
+
+    document.getElementById("btnShareGroup")?.addEventListener("click", openShareGroupModal);
+    document.getElementById("btnDropdownShareGroup")?.addEventListener("click", () => {
+      userDropdownMenu.classList.add("hidden");
+      openShareGroupModal();
+    });
+    document.getElementById("btnQuickCopyCode")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openShareGroupModal();
+    });
+
+    let isGuestMode = false;
+    let guestPairCode = null;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isScrollingTouch = false;
+
+    document.addEventListener("touchstart", (e) => {
+      if (!isGuestMode) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      isScrollingTouch = false;
+    }, { passive: true });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!isGuestMode) return;
+      const deltaX = Math.abs(e.touches[0].clientX - touchStartX);
+      const deltaY = Math.abs(e.touches[0].clientY - touchStartY);
+      if (deltaX > 10 || deltaY > 10) {
+        isScrollingTouch = true;
+      }
+    }, { passive: true });
+
+    // Saat mode tamu: bisa scroll bebas, tapi jika tap/klik di tampilan utama langsung muncul modal identitas
+    document.getElementById("appScreen").addEventListener("click", (e) => {
+      if (!isGuestMode) return;
+      if (isScrollingTouch) return;
+
+      // Jika klik berada di dalam modal identitas atau modal share, jangan cegah
+      if (e.target.closest("#identityModal") || e.target.closest("#shareGroupModal")) {
+        return;
+      }
+
+      // Cegah aksi interaktif saat masih mode tamu (agar tidak memicu aksi agenda/chat sebelum punya identitas)
+      e.preventDefault();
+      e.stopPropagation();
+
+      openIdentityModal();
+    }, true);
+
+    function openIdentityModal() {
+      const pairCode = guestPairCode || userProfile?.pairCode || "";
+      document.getElementById("identityModalGroupBadge").textContent = pairCode;
+
+      const nameInput = document.getElementById("identityInputName");
+      if (nameInput && userProfile?.name && userProfile.name !== "Tamu") {
+        nameInput.value = userProfile.name;
+      }
+
+      document.getElementById("identityModal").classList.remove("hidden");
+      lucide.createIcons();
+
+      setTimeout(() => {
+        if (nameInput) {
+          nameInput.focus();
+          if (nameInput.value) nameInput.select();
+        }
+      }, 150);
+    }
+
+    function closeIdentityModal() {
+      document.getElementById("identityModal").classList.add("hidden");
+    }
+
+    document.getElementById("btnCloseIdentityModal")?.addEventListener("click", closeIdentityModal);
+    document.getElementById("btnDismissIdentityModal")?.addEventListener("click", closeIdentityModal);
+    document.getElementById("btnGuestJoinNow")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openIdentityModal();
+    });
+
+    document.getElementById("identityModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "identityModal") closeIdentityModal();
+    });
+
+    document.getElementById("identityForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("identityInputName").value.trim();
+      const gender = document.querySelector('input[name="identityGender"]:checked')?.value || "male";
+      const pairCode = guestPairCode || userProfile?.pairCode;
+
+      if (!name || !pairCode) return;
+
+      // Buat profil pengguna resmi
+      userProfile = { uid: deviceId, name, gender, pairCode };
+      localStorage.setItem("group_user_profile", JSON.stringify(userProfile));
+      isGuestMode = false;
+
+      closeIdentityModal();
+
+      // Perbarui tampilan header
       document.getElementById("headerUserName").textContent = userProfile.name;
       document.getElementById("headerPairCode").textContent = userProfile.pairCode;
       document.getElementById("dropdownUserName").textContent = userProfile.name;
@@ -1473,11 +2079,125 @@
       }
       avatar.textContent = userProfile.name.charAt(0).toUpperCase();
 
+      const guestBanner = document.getElementById("guestStickyBanner");
+      if (guestBanner) guestBanner.classList.add("hidden");
+
+      // Bersihkan parameter query di URL tanpa reload agar rapi
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      // SETELAH MASUK: MINTA LOCATION PERMISSION!
+      syncLocation();
+
+      renderCalendar();
+      renderSelectedDayAgendas();
+      lucide.createIcons();
+    });
+
+    const incomingInviteGroup = checkUrlForInvite();
+
+    if (incomingInviteGroup) {
+      if (userProfile && userProfile.pairCode && userProfile.pairCode.toUpperCase() === incomingInviteGroup && !userProfile.isGuest) {
+        isGuestMode = false;
+        loadMainApp();
+      } else {
+        // Penerima link langsung masuk ke tampilan utama (bisa scroll, tanpa location permission)!
+        isGuestMode = true;
+        guestPairCode = incomingInviteGroup;
+        userProfile = {
+          uid: deviceId,
+          name: (userProfile?.name && userProfile.name !== "Tamu") ? userProfile.name : "Tamu",
+          gender: userProfile?.gender || "male",
+          pairCode: incomingInviteGroup,
+          isGuest: true
+        };
+        loadMainApp();
+      }
+    } else {
+      if (userProfile && userProfile.pairCode && !userProfile.isGuest) {
+        isGuestMode = false;
+        loadMainApp();
+      } else {
+        joinScreen.classList.remove("hidden");
+        appScreen.classList.add("hidden");
+      }
+    }
+
+    document.getElementById("joinForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("inputName").value.trim();
+      const gender = document.querySelector('input[name="gender"]:checked').value;
+      const pairCode = document.getElementById("inputPairCode").value.trim().toUpperCase();
+
+      if (!name || !pairCode) return;
+      userProfile = { uid: deviceId, name, gender, pairCode };
+      localStorage.setItem("group_user_profile", JSON.stringify(userProfile));
+
+      // Bersihkan parameter query di URL tanpa reload agar rapi
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
+      isGuestMode = false;
+      loadMainApp();
+      syncLocation();
+    });
+
+    function loadMainApp() {
+      joinScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+
+      const avatar = document.getElementById("userAvatar");
+      const badge = document.getElementById("headerGenderBadge");
+
+      if (isGuestMode) {
+        document.getElementById("headerUserName").textContent = "Tamu (Ketuk untuk Masuk)";
+        document.getElementById("headerPairCode").textContent = userProfile.pairCode;
+        document.getElementById("dropdownUserName").textContent = "Tamu (Mode Pratinjau)";
+        document.getElementById("dropdownGroupCode").textContent = `Grup: ${userProfile.pairCode}`;
+
+        avatar.className = "h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm text-white bg-indigo-600 shadow-sm ring-2 ring-white";
+        avatar.innerHTML = `<i data-lucide="eye" class="h-5 w-5 text-white"></i>`;
+        badge.className = "text-[10px] px-2 py-0.5 rounded-full font-semibold bg-indigo-100 text-indigo-700";
+        badge.textContent = "👀 Pratinjau";
+
+        const guestBanner = document.getElementById("guestStickyBanner");
+        if (guestBanner) {
+          guestBanner.classList.remove("hidden");
+          document.getElementById("guestBannerGroupCode").textContent = userProfile.pairCode;
+        }
+      } else {
+        document.getElementById("headerUserName").textContent = userProfile.name;
+        document.getElementById("headerPairCode").textContent = userProfile.pairCode;
+        document.getElementById("dropdownUserName").textContent = userProfile.name;
+        document.getElementById("dropdownGroupCode").textContent = `Grup: ${userProfile.pairCode}`;
+
+        if (userProfile.gender === "female") {
+          avatar.className = "h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm text-white bg-rose-500 shadow-sm ring-2 ring-white";
+          badge.className = "text-[10px] px-2 py-0.5 rounded-full font-semibold bg-rose-100 text-rose-700";
+          badge.textContent = "👩 Perempuan";
+        } else {
+          avatar.className = "h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm text-white bg-blue-600 shadow-sm ring-2 ring-white";
+          badge.className = "text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-100 text-blue-700";
+          badge.textContent = "👨 Laki-laki";
+        }
+        avatar.textContent = (userProfile.name || 'U').charAt(0).toUpperCase();
+
+        const guestBanner = document.getElementById("guestStickyBanner");
+        if (guestBanner) guestBanner.classList.add("hidden");
+      }
+
       lucide.createIcons();
       IndonesianTime.init();
       LocationPicker.init();
       initMap();
-      syncLocation();
+
+      // PENTING: JANGAN MINTA LOCATION PERMISSION SAAT MASIH MODE TAMU!
+      if (!isGuestMode) {
+        syncLocation();
+      }
+
       listenToLocations();
       listenToAgendas();
       renderCalendar();
@@ -1489,7 +2209,7 @@
       document.getElementById("editAgendaId").value = "";
       document.getElementById("agendaModalTitle").innerHTML = `<i data-lucide="calendar-plus" class="h-4 w-4 text-slate-700"></i> Tambah Agenda Baru`;
       document.getElementById("btnSubmitAgenda").textContent = "Simpan Agenda";
-      
+
       const defaultStart = `${selectedDateStr}T09:00`;
       const defaultEnd = `${selectedDateStr}T11:00`;
       document.getElementById("agendaForm").reset();
@@ -1514,7 +2234,7 @@
     // ----------------------------------------------------
     function renderNotificationTray() {
       const unreadAgendas = allAgendas.filter(a => checkHasUnreadChat(a));
-      
+
       if (unreadAgendas.length > 0) {
         notifBadgeCounter.textContent = unreadAgendas.length;
         notifBadgeCounter.classList.remove("hidden");
@@ -1543,15 +2263,13 @@
         const dateStr = item.lastChatTime ? IndonesianTime.formatDateShort(new Date(item.lastChatTime)) : '';
 
         const itemEl = document.createElement("div");
-        itemEl.className = `p-2.5 rounded-xl border transition cursor-pointer flex items-start justify-between gap-2 ${
-          isUnread ? 'bg-rose-50/70 border-rose-200 hover:bg-rose-100/70' : 'bg-slate-50/60 border-slate-200/70 hover:bg-slate-100'
-        }`;
+        itemEl.className = `p-2.5 rounded-xl border transition cursor-pointer flex items-start justify-between gap-2 ${isUnread ? 'bg-rose-50/70 border-rose-200 hover:bg-rose-100/70' : 'bg-slate-50/60 border-slate-200/70 hover:bg-slate-100'
+          }`;
 
         itemEl.innerHTML = `
           <div class="flex items-start gap-2 overflow-hidden">
-            <div class="h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
-              isUnread ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-700'
-            }">
+            <div class="h-7 w-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${isUnread ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-700'
+          }">
               <i data-lucide="message-square" class="h-3.5 w-3.5"></i>
             </div>
             <div class="overflow-hidden">
@@ -1860,7 +2578,7 @@
         const cell = document.createElement("div");
 
         let cellBaseClass = "h-16 md:h-20 p-1.5 border rounded-xl cursor-pointer transition flex flex-col justify-between text-xs relative ";
-        
+
         if (hasAnyUnreadInThisDay) {
           cellBaseClass += "cell-unread-blink font-bold text-rose-950 shadow-sm ";
         } else if (isSelected) {
@@ -2068,9 +2786,8 @@
               <span>Checklist</span>
               ${hasChk ? `<span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${doneChk === totalChk ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}">${doneChk}/${totalChk}</span>` : '<span class="text-[10px] text-slate-400 font-bold">+</span>'}
             </button>
-            <button data-chat-id="${item.id}" data-chat-title="${item.title}" data-chat-start="${item.start}" type="button" class="btn-open-chat flex-1 justify-center relative rounded-lg ${
-              hasUnread ? 'bg-rose-600 text-white hover:bg-rose-700 font-bold' : 'bg-slate-900 text-white hover:bg-slate-800'
-            } py-2 px-3 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+            <button data-chat-id="${item.id}" data-chat-title="${item.title}" data-chat-start="${item.start}" type="button" class="btn-open-chat flex-1 justify-center relative rounded-lg ${hasUnread ? 'bg-rose-600 text-white hover:bg-rose-700 font-bold' : 'bg-slate-900 text-white hover:bg-slate-800'
+          } py-2 px-3 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
               <i data-lucide="message-square" class="h-3.5 w-3.5 shrink-0"></i>
               <span>Chat</span>
               ${hasUnread ? '<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span></span>' : ''}
@@ -2249,7 +2966,7 @@
         const diffDays = Math.floor(diffHours / 24);
         const remH = diffHours % 24;
         let startWaitStr = diffDays > 0 ? `${diffDays} hari ${remH} jam lagi` : `${diffHours} jam lagi`;
-        
+
         if (item.completed) {
           return { label: "Hari Ini Selesai", class: "badge-today-done", borderClass: "badge-done-border", progress: 0, barClass: "today-done", text: `Aktivitas hari ini selesai (Mulai ${startWaitStr})` };
         }
@@ -2361,7 +3078,7 @@
       const totalItems = items.length;
       const completedItems = items.filter(i => i.completed).length;
       const percent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-      
+
       document.getElementById("checklistOverallBadge").textContent = `${completedItems}/${totalItems} Selesai (${percent}%)`;
       document.getElementById("checklistOverallBar").style.width = `${percent}%`;
 
@@ -2738,7 +3455,7 @@
         idInput.value = "";
         if (activeChecklistTabId) catSelect.value = activeChecklistTabId;
         titleInput.value = "";
-        
+
         const defaultTime = agenda.start ? agenda.start : `${selectedDateStr}T09:00`;
         startInput.value = defaultTime;
         endInput.value = defaultTime;
@@ -2760,7 +3477,7 @@
     document.getElementById("btnCancelItemModal").addEventListener("click", closeChecklistItemModal);
     document.getElementById("btnAddChecklistItemBtn").addEventListener("click", () => openChecklistItemModal());
 
-    document.getElementById("checklistItemStart").addEventListener("change", function() {
+    document.getElementById("checklistItemStart").addEventListener("change", function () {
       const endEl = document.getElementById("checklistItemEnd");
       if (this.value && !endEl.value) {
         endEl.value = this.value;
@@ -2972,8 +3689,7 @@
       bubble.className = `flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
       bubble.innerHTML = `
         <span class="text-[10px] text-slate-400 mb-0.5 px-1">${msg.senderName || 'User'} (${msg.senderGender === 'female' ? '👩' : '👨'})</span>
-        <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words ${
-          isMine ? 'bg-slate-900 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'
+        <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words ${isMine ? 'bg-slate-900 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'
         }">
           ${formattedText}
         </div>
@@ -2993,13 +3709,13 @@
       currentActiveChatAgendaDate = agendaStart ? agendaStart.split('T')[0] : null;
 
       document.getElementById("chatModalTitle").textContent = agendaTitle;
-      
-      const formattedDate = currentActiveChatAgendaDate 
+
+      const formattedDate = currentActiveChatAgendaDate
         ? IndonesianTime.formatDateStandard(new Date(currentActiveChatAgendaDate + "T00:00:00"))
         : '';
-      
+
       document.getElementById("chatModalSubtitle").textContent = formattedDate ? `📅 ${formattedDate} • Klik untuk lihat di kalender` : 'Klik untuk lihat di kalender';
-      
+
       chatMessages.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Memuat obrolan...</p>`;
       chatModal.classList.remove("hidden");
       lucide.createIcons();
@@ -3098,4 +3814,5 @@
 
   </script>
 </body>
+
 </html>
