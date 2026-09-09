@@ -48,6 +48,224 @@
     .badge-unread-ping {
       animation: pulse-dot 1s infinite ease-in-out;
     }
+
+    /* ==================================================== */
+    /* TIMELINE CHECKLIST COMPONENT STYLES                  */
+    /* ==================================================== */
+    .tabs-container {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .tabs-container::-webkit-scrollbar {
+      display: none;
+    }
+    .tab-btn {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #64748b;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    }
+    .tab-btn:hover {
+      color: #1e293b;
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .tab-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    .tab-badge {
+      background: #f1f5f9;
+      color: #475569;
+      padding: 0.5px 6px;
+      border-radius: 9999px;
+      font-size: 0.675rem;
+      font-weight: 700;
+    }
+    .tab-btn.active .tab-badge {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    /* Category Banner */
+    .category-banner {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 7px 12px;
+      margin-bottom: 8px;
+    }
+
+    /* Item Cards Grid */
+    .item-cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .item-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 11px 13px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    .item-card.dragging {
+      opacity: 0.4;
+      border: 2px dashed #2563eb;
+    }
+    .item-card:hover {
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+      border-color: #94a3b8;
+    }
+    .item-card.completed {
+      background-color: #f8fafc;
+      border-color: #e2e8f0;
+      opacity: 0.88;
+    }
+    .item-card.completed .item-title {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+    .item-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #2563eb;
+    }
+    .item-card.badge-done-border::before { background: #16a34a; }
+    .item-card.badge-upcoming-border::before { background: #d97706; }
+    .item-card.badge-passed-border::before { background: #dc2626; }
+    .item-card.badge-once-border::before { background: #64748b; }
+
+    .item-header-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .checkbox-wrap {
+      padding-top: 1px;
+    }
+    .custom-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #94a3b8;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      transition: all 0.2s;
+      background: #fff;
+    }
+    .custom-checkbox:checked {
+      background-color: #16a34a;
+      border-color: #16a34a;
+    }
+    .custom-checkbox:checked::before {
+      content: "";
+      width: 9px;
+      height: 5px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+    .item-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .item-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #0f172a;
+      word-break: break-word;
+    }
+    .item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 0.725rem;
+      color: #64748b;
+    }
+    .status-badge {
+      font-size: 0.65rem;
+      padding: 1.5px 6.5px;
+      border-radius: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge-running { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+    .badge-upcoming { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+    .badge-passed { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+    .badge-done { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-today-done { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-once { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+    .progress-container {
+      margin-top: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 5px;
+      width: 100%;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #2563eb;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+    .progress-bar.done { background: #16a34a; }
+    .progress-bar.passed { background: #dc2626; }
+    .progress-bar.today-done { background: #16a34a; }
+
+    .time-remaining {
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+    }
+    .drag-handle {
+      color: #94a3b8;
+      cursor: grab;
+      padding: 2px;
+      display: flex;
+      align-items: center;
+      user-select: none;
+    }
+    .drag-handle:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen pb-16">
@@ -217,9 +435,11 @@
         </div>
       </section>
 
-      <!-- Kolom Kanan: Detail Agenda Tanggal & Tombol Tambah Agenda -->
-      <section class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-5 flex flex-col justify-between space-y-4">
-        <div>
+      <!-- Kolom Kanan: Detail Agenda Tanggal & Checklist Agenda -->
+      <section id="rightSection" class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-5 flex flex-col justify-between space-y-4 min-h-[420px]">
+        
+        <!-- VIEW 1: Detail Agenda Tanggal (Default) -->
+        <div id="viewAgendaList" class="space-y-4">
           <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
             <div>
               <div class="flex items-center gap-2">
@@ -236,10 +456,74 @@
             </button>
           </div>
 
-          <div id="dayAgendaList" class="space-y-3 pt-3 max-h-[420px] overflow-y-auto pr-1">
+          <div id="dayAgendaList" class="space-y-3 pt-1 max-h-[420px] overflow-y-auto pr-1">
             <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender untuk melihat jam dan detail agenda.</p>
           </div>
         </div>
+
+        <!-- VIEW 2: Checklist Agenda (Menggantikan tampilan saat tombol checklist diklik) -->
+        <div id="viewChecklist" class="hidden space-y-3">
+          <!-- Checklist Header: Back button, Agenda Info, Action buttons -->
+          <div class="border-b border-slate-200 pb-3 space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <button id="btnBackToAgendas" type="button" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-sm">
+                <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i>
+                <span>Kembali ke Jadwal</span>
+              </button>
+              <div class="flex items-center gap-1.5">
+                <button id="btnAddCategoryBtn" type="button" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition shadow-sm">
+                  <i data-lucide="folder-plus" class="h-3.5 w-3.5 text-indigo-600"></i>
+                  <span>+ Kategori</span>
+                </button>
+                <button id="btnAddChecklistItemBtn" type="button" class="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
+                  <i data-lucide="plus" class="h-3.5 w-3.5"></i>
+                  <span>+ Checklist</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Agenda Title & Overall Progress -->
+            <div class="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk Agenda</span>
+                  <h4 id="checklistAgendaTitle" class="text-sm font-bold text-slate-900 truncate">Judul Agenda</h4>
+                </div>
+                <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0 Selesai</span>
+              </div>
+              
+              <!-- Mini Overall Progress Bar -->
+              <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs Navigasi Kategori Checklist -->
+          <nav class="tabs-container" id="checklistTabsContainer"></nav>
+
+          <!-- Banner Kategori Aktif & Aksi -->
+          <div id="checklistCategoryBanner" class="category-banner flex items-center justify-between">
+            <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer" id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
+              <span id="currentCategoryTitle">Kategori</span>
+              <span class="hint text-[10px] text-slate-400 font-normal">(Ketuk untuk edit)</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button id="btnQuickEditCategory" type="button" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Edit Kategori">
+                <i data-lucide="edit-2" class="h-3.5 w-3.5"></i>
+              </button>
+              <button id="btnQuickDeleteCategory" type="button" class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
+                <i data-lucide="trash" class="h-3.5 w-3.5"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Daftar Kartu Item Checklist -->
+          <div id="checklistItemsContainer" class="item-cards-grid max-h-[350px] overflow-y-auto pr-1">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
       </section>
 
     </div>
@@ -329,6 +613,83 @@
     </div>
   </div>
 
+  <!-- MODAL FORM KATEGORI CHECKLIST -->
+  <div id="checklistCategoryModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+        <h4 id="checklistCategoryModalTitle" class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <i data-lucide="folder" class="h-4 w-4 text-indigo-600"></i>
+          <span>Kategori Checklist</span>
+        </h4>
+        <button id="btnCloseCategoryModal" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form id="checklistCategoryForm" class="space-y-3.5">
+        <input type="hidden" id="checklistCategoryId" value="" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Kategori</label>
+          <input type="text" id="checklistCategoryName" required placeholder="Contoh: Pra-Operasi, Pemulihan, Diet" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+          <button type="button" id="btnDeleteCategoryModal" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
+            Hapus Kategori
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="btnCancelCategoryModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
+            <button type="submit" class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL FORM ITEM CHECKLIST -->
+  <div id="checklistItemModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+        <h4 id="checklistItemModalTitle" class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+          <i data-lucide="check-square" class="h-4 w-4 text-indigo-600"></i>
+          <span>Checklist Aktivitas</span>
+        </h4>
+        <button id="btnCloseItemModal" type="button" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+      <form id="checklistItemForm" class="space-y-3.5">
+        <input type="hidden" id="checklistItemId" value="" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori</label>
+          <select id="checklistItemCategory" required class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none bg-white"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Checklist / Aktivitas</label>
+          <input type="text" id="checklistItemTitle" required placeholder="Deskripsi aktivitas atau perlengkapan..." class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Mulai (Tgl & Jam)</label>
+            <input type="datetime-local" id="checklistItemStart" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Selesai (Tgl & Jam)</label>
+            <input type="datetime-local" id="checklistItemEnd" class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:border-slate-800 focus:outline-none" />
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-tight">Kosongkan tanggal jika checklist tidak memerlukan hitungan linimasa.</p>
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+          <button type="button" id="btnDeleteItemModal" class="hidden text-xs font-semibold text-rose-600 hover:text-rose-800 hover:bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
+            Hapus Item
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="btnCancelItemModal" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition">Batal</button>
+            <button type="submit" class="rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition">Simpan</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- FIREBASE MODULAR SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -373,6 +734,11 @@
     let chatUnsubscribe = null;
     let map = null;
     let markers = {};
+
+    // State Checklist Terintegrasi dengan Agenda
+    let currentActiveChecklistAgendaId = null;
+    let activeChecklistTabId = null;
+    let draggedItemId = null;
 
     function getOrCreateDeviceId() {
       let devId = localStorage.getItem("group_device_id");
@@ -752,6 +1118,7 @@
     document.getElementById("btnTodayMonth").addEventListener("click", () => {
       currentViewingDate = new Date();
       selectedDateStr = new Date().toISOString().split('T')[0];
+      closeChecklistView();
       renderCalendar();
       renderSelectedDayAgendas();
     });
@@ -861,6 +1228,7 @@
 
         cell.addEventListener("click", () => {
           selectedDateStr = dateStr;
+          closeChecklistView();
           renderCalendar();
           renderSelectedDayAgendas();
         });
@@ -961,6 +1329,12 @@
           </div>
         ` : '';
 
+        const categories = item.checklistCategories || [];
+        const chkItems = item.checklistItems || [];
+        const totalChk = chkItems.length;
+        const doneChk = chkItems.filter(i => i.completed).length;
+        const hasChk = totalChk > 0;
+
         const card = document.createElement("div");
         card.className = `rounded-xl border p-4 transition shadow-sm ${cardBgClass} ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/50' : ''}`;
 
@@ -978,6 +1352,11 @@
             
             <div class="flex items-center gap-1.5">
               ${creatorActionsHtml}
+              <button data-checklist-id="${item.id}" type="button" class="btn-open-checklist rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5 shadow-sm" title="Lihat & kelola checklist agenda ini">
+                <i data-lucide="check-square" class="h-3.5 w-3.5 text-indigo-600"></i>
+                <span>Checklist</span>
+                ${hasChk ? `<span class="text-[10px] px-1.5 py-0.5 rounded-full font-bold ${doneChk === totalChk ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}">${doneChk}/${totalChk}</span>` : '<span class="text-[10px] text-slate-400 font-bold">+</span>'}
+              </button>
               <button data-chat-id="${item.id}" data-chat-title="${item.title}" data-chat-start="${item.start}" type="button" class="btn-open-chat relative rounded-lg ${
                 hasUnread ? 'bg-rose-600 text-white hover:bg-rose-700 font-bold' : 'bg-slate-900 text-white hover:bg-slate-800'
               } px-3 py-1.5 text-xs font-semibold flex items-center gap-1.5 transition">
@@ -1002,6 +1381,13 @@
       });
 
       lucide.createIcons();
+
+      document.querySelectorAll(".btn-open-checklist").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const agendaId = btn.dataset.checklistId;
+          openChecklistView(agendaId);
+        });
+      });
 
       document.querySelectorAll(".btn-open-chat").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -1040,6 +1426,9 @@
           const title = btn.dataset.deleteTitle;
           if (confirm(`Yakin ingin menghapus agenda "${title}"?`)) {
             try {
+              if (currentActiveChecklistAgendaId === agendaId) {
+                closeChecklistView();
+              }
               await deleteDoc(doc(db, "agendas", agendaId));
             } catch (err) {
               alert("Gagal menghapus: " + err.message);
@@ -1048,6 +1437,705 @@
         });
       });
     }
+
+    // ====================================================
+    // MODUL CHECKLIST BERBASIS INDUK AGENDA
+    // ====================================================
+
+    function escapeHtml(string) {
+      if (!string) return "";
+      return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    const defaultChecklistSeed = {
+      categories: [
+        { id: "cat_pra", name: "Pra-Operasi" },
+        { id: "cat_pasca", name: "Pemulihan Awal" },
+        { id: "cat_aktivitas", name: "Aktivitas" },
+        { id: "cat_diet", name: "Diet & Nutrisi" }
+      ],
+      items: [
+        { id: "itm_1", categoryId: "cat_pra", title: "Tes Laboratorium (Darah, EKG, Rontgen Hati/Ginjal)", start: "", end: "", completed: false, lastResetDate: "" },
+        { id: "itm_2", categoryId: "cat_pra", title: "Puasa Total 6 - 8 Jam Jelang Tindakan", start: "", end: "", completed: false, lastResetDate: "" },
+        { id: "itm_3", categoryId: "cat_pasca", title: "Ganti Perban & Kontrol Jahitan (Klinik Bedah)", start: "", end: "", completed: false, lastResetDate: "" },
+        { id: "itm_4", categoryId: "cat_aktivitas", title: "Fase Istirahat Total (Hindari berkendara & beban berat)", start: "", end: "", completed: false, lastResetDate: "" },
+        { id: "itm_5", categoryId: "cat_diet", title: "Diet Rendah Lemak & Makanan Lunak Halus", start: "", end: "", completed: false, lastResetDate: "" }
+      ]
+    };
+
+    function formatDateTimeShort(dateTimeStr) {
+      if (!dateTimeStr) return "";
+      const d = new Date(dateTimeStr);
+      return d.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
+
+    function calculateTimelineProgress(item) {
+      if (!item.start) {
+        return {
+          label: item.completed ? "Selesai" : "",
+          class: item.completed ? "badge-done" : "",
+          borderClass: item.completed ? "badge-done-border" : "",
+          progress: item.completed ? 100 : 0,
+          barClass: item.completed ? "done" : "",
+          text: ""
+        };
+      }
+
+      // Cek apakah kategori checklist sekali (start sama dengan end)
+      if (item.start === item.end) {
+        if (item.completed) {
+          return { label: "Selesai", class: "badge-done", borderClass: "badge-done-border", progress: 100, barClass: "done", text: "Aktivitas selesai" };
+        }
+        return { label: "Sekali Eksekusi", class: "badge-once", borderClass: "badge-once-border", progress: 0, barClass: "", text: `Jadwal: ${formatDateTimeShort(item.start)}` };
+      }
+
+      const now = new Date();
+      const start = new Date(item.start);
+      const end = item.end ? new Date(item.end) : start;
+
+      const totalDuration = end - start;
+      const elapsed = now - start;
+
+      if (now > end) {
+        if (item.completed) {
+          return { label: "Selesai", class: "badge-done", borderClass: "badge-done-border", progress: 100, barClass: "done", text: "Aktivitas selesai" };
+        }
+        const overMs = now - end;
+        const overHours = Math.floor(overMs / (1000 * 60 * 60));
+        const overDays = Math.floor(overHours / 24);
+        let timeStr = overDays > 0 ? `Terlewat ${overDays} hari` : `Terlewat ${overHours} jam`;
+        return { label: "Lewat Jadwal", class: "badge-passed", borderClass: "badge-passed-border", progress: 100, barClass: "passed", text: timeStr };
+      }
+
+      let progress = totalDuration > 0 ? Math.min(100, Math.max(0, (elapsed / totalDuration) * 100)) : 0;
+      const remMs = end - now;
+      const remHours = Math.floor(remMs / (1000 * 60 * 60));
+      const remDays = Math.floor(remHours / 24);
+      const remHoursOnly = remHours % 24;
+      let timeStr = remDays > 0 ? `${remDays}h ${remHoursOnly}j lagi` : `${remHours} jam lagi`;
+
+      if (now < start) {
+        const diffMs = start - now;
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffHours / 24);
+        const remH = diffHours % 24;
+        let startWaitStr = diffDays > 0 ? `${diffDays} hari ${remH} jam lagi` : `${diffHours} jam lagi`;
+        
+        if (item.completed) {
+          return { label: "Hari Ini Selesai", class: "badge-today-done", borderClass: "badge-done-border", progress: 0, barClass: "today-done", text: `Aktivitas hari ini selesai (Mulai ${startWaitStr})` };
+        }
+        return { label: "Mendatang", class: "badge-upcoming", borderClass: "badge-upcoming-border", progress: 0, barClass: "", text: `Mulai dalam ${startWaitStr}` };
+      }
+
+      if (item.completed) {
+        return { label: "Hari Ini Selesai", class: "badge-today-done", borderClass: "badge-done-border", progress: progress, barClass: "today-done", text: `Aktivitas hari ini selesai | Sisa: ${timeStr}` };
+      }
+
+      return { label: "Berjalan", class: "badge-running", borderClass: "", progress: progress, barClass: "", text: `Sisa waktu: ${timeStr}` };
+    }
+
+    function checkDailyReset(items) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const now = new Date();
+      let updated = false;
+
+      items.forEach(item => {
+        if (item.start && item.end && item.start === item.end) {
+          if (item.lastResetDate !== todayStr) {
+            item.completed = false;
+            item.lastResetDate = todayStr;
+            updated = true;
+          }
+          return;
+        }
+
+        if (item.end) {
+          const endDate = new Date(item.end);
+          if (now > endDate) return;
+        }
+
+        if (item.lastResetDate !== todayStr) {
+          item.completed = false;
+          item.lastResetDate = todayStr;
+          updated = true;
+        }
+      });
+
+      return updated;
+    }
+
+    async function saveAgendaChecklist(agendaId, categories, items) {
+      try {
+        const agenda = allAgendas.find(a => a.id === agendaId);
+        if (agenda) {
+          agenda.checklistCategories = categories;
+          agenda.checklistItems = items;
+        }
+        await updateDoc(doc(db, "agendas", agendaId), {
+          checklistCategories: categories,
+          checklistItems: items,
+          updatedAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Gagal menyimpan checklist agenda ke Firestore:", err);
+      }
+    }
+
+    function openChecklistView(agendaId) {
+      currentActiveChecklistAgendaId = agendaId;
+      const agenda = allAgendas.find(a => a.id === agendaId);
+      if (!agenda) return;
+
+      const items = agenda.checklistItems || [];
+      const updated = checkDailyReset(items);
+      if (updated) {
+        saveAgendaChecklist(agendaId, agenda.checklistCategories || [], items);
+      }
+
+      const categories = agenda.checklistCategories || [];
+      if (categories.length > 0) {
+        if (!activeChecklistTabId || !categories.some(c => c.id === activeChecklistTabId)) {
+          activeChecklistTabId = categories[0].id;
+        }
+      } else {
+        activeChecklistTabId = null;
+      }
+
+      document.getElementById("viewAgendaList").classList.add("hidden");
+      document.getElementById("viewChecklist").classList.remove("hidden");
+
+      renderChecklistForActiveAgenda();
+    }
+
+    function closeChecklistView() {
+      currentActiveChecklistAgendaId = null;
+      document.getElementById("viewChecklist").classList.add("hidden");
+      document.getElementById("viewAgendaList").classList.remove("hidden");
+      renderSelectedDayAgendas();
+    }
+
+    document.getElementById("btnBackToAgendas").addEventListener("click", closeChecklistView);
+
+    function renderChecklistForActiveAgenda() {
+      if (!currentActiveChecklistAgendaId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) {
+        closeChecklistView();
+        return;
+      }
+
+      const categories = agenda.checklistCategories || [];
+      const items = agenda.checklistItems || [];
+
+      // Render Header Info & Overall Progress
+      document.getElementById("checklistAgendaTitle").textContent = agenda.title;
+      const totalItems = items.length;
+      const completedItems = items.filter(i => i.completed).length;
+      const percent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+      
+      document.getElementById("checklistOverallBadge").textContent = `${completedItems}/${totalItems} Selesai (${percent}%)`;
+      document.getElementById("checklistOverallBar").style.width = `${percent}%`;
+
+      // Render Tabs
+      renderChecklistTabs(agenda);
+
+      // Render Active Category Banner & Items
+      renderActiveChecklistCategory(agenda);
+
+      lucide.createIcons();
+    }
+
+    function renderChecklistTabs(agenda) {
+      const tabsContainer = document.getElementById("checklistTabsContainer");
+      tabsContainer.innerHTML = "";
+
+      const categories = agenda.checklistCategories || [];
+      const items = agenda.checklistItems || [];
+
+      if (categories.length === 0) {
+        tabsContainer.classList.add("hidden");
+        return;
+      }
+      tabsContainer.classList.remove("hidden");
+
+      categories.forEach(cat => {
+        const catItems = items.filter(i => i.categoryId === cat.id);
+        const completedCount = catItems.filter(i => i.completed).length;
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `tab-btn ${cat.id === activeChecklistTabId ? "active" : ""}`;
+        btn.onclick = () => {
+          activeChecklistTabId = cat.id;
+          renderChecklistForActiveAgenda();
+        };
+        btn.innerHTML = `
+          <span>${escapeHtml(cat.name)}</span>
+          <span class="tab-badge">${completedCount}/${catItems.length}</span>
+        `;
+        tabsContainer.appendChild(btn);
+      });
+    }
+
+    function renderActiveChecklistCategory(agenda) {
+      const banner = document.getElementById("checklistCategoryBanner");
+      const itemsContainer = document.getElementById("checklistItemsContainer");
+      const currentTitleEl = document.getElementById("currentCategoryTitle");
+      itemsContainer.innerHTML = "";
+
+      const categories = agenda.checklistCategories || [];
+      const items = agenda.checklistItems || [];
+
+      if (categories.length === 0) {
+        banner.classList.add("hidden");
+        itemsContainer.innerHTML = `
+          <div class="text-center py-8 px-4 bg-slate-50/70 border border-dashed border-slate-200 rounded-xl space-y-3">
+            <div class="h-10 w-10 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <i data-lucide="list-checks" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-slate-800">Belum Ada Kategori Checklist</h5>
+              <p class="text-[11px] text-slate-500 mt-0.5">Mulai dengan membuat kategori baru atau pasang template rekomendasi.</p>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+              <button id="btnInitDefaultSeed" type="button" class="rounded-lg bg-indigo-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
+                <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
+                <span>Gunakan Kategori Rekomendasi</span>
+              </button>
+              <button id="btnInitNewCategory" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm">
+                + Kategori Baru
+              </button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("btnInitDefaultSeed")?.addEventListener("click", () => {
+          applySeedChecklistToAgenda(agenda.id);
+        });
+        document.getElementById("btnInitNewCategory")?.addEventListener("click", () => {
+          openCategoryModal();
+        });
+        return;
+      }
+
+      banner.classList.remove("hidden");
+      const currentCat = categories.find(c => c.id === activeChecklistTabId) || categories[0];
+      activeChecklistTabId = currentCat.id;
+      currentTitleEl.textContent = currentCat.name;
+
+      const catItems = items.filter(i => i.categoryId === currentCat.id);
+
+      if (catItems.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="text-center py-8 px-4 bg-slate-50/50 border border-dashed border-slate-200 rounded-xl space-y-2">
+            <p class="text-xs text-slate-400">Belum ada item checklist dalam kategori "${escapeHtml(currentCat.name)}".</p>
+            <button id="btnQuickAddChecklistItem" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-sm">
+              + Tambah Checklist Baru
+            </button>
+          </div>
+        `;
+        document.getElementById("btnQuickAddChecklistItem")?.addEventListener("click", () => {
+          openChecklistItemModal();
+        });
+        return;
+      }
+
+      catItems.forEach(item => {
+        const timeline = calculateTimelineProgress(item);
+        const card = document.createElement("div");
+        card.className = `item-card ${item.completed ? "completed" : timeline.borderClass}`;
+        card.setAttribute("draggable", "true");
+        card.dataset.id = item.id;
+
+        card.onclick = (e) => {
+          if (e.target.closest('.checkbox-wrap') || e.target.closest('.drag-handle')) return;
+          openChecklistItemModal(item.id);
+        };
+
+        card.addEventListener("dragstart", handleItemDragStart);
+        card.addEventListener("dragover", handleItemDragOver);
+        card.addEventListener("drop", handleItemDrop);
+        card.addEventListener("dragend", handleItemDragEnd);
+
+        let timeBadge = timeline.label ? `<span class="status-badge ${timeline.class}">${timeline.label}</span>` : "";
+        let durationInfo = "";
+        let progressHtml = "";
+
+        if (item.start || item.end) {
+          if (item.start === item.end) {
+            durationInfo = `<span>⏱ ${formatDateTimeShort(item.start)}</span>`;
+          } else {
+            const startStr = item.start ? formatDateTimeShort(item.start) : "-";
+            const endStr = item.end ? formatDateTimeShort(item.end) : "-";
+            durationInfo = `<span>⏱ ${startStr} &rarr; ${endStr}</span>`;
+
+            progressHtml = `
+              <div class="progress-container">
+                <div class="progress-bar ${timeline.barClass}" style="width: ${timeline.progress}%"></div>
+              </div>
+              <div class="time-remaining">
+                <span>${timeline.text}</span>
+                <span>${Math.round(timeline.progress)}%</span>
+              </div>
+            `;
+          }
+        }
+
+        card.innerHTML = `
+          <div class="item-header-row">
+            <div class="checkbox-wrap">
+              <input type="checkbox" class="custom-checkbox" ${item.completed ? "checked" : ""} data-item-id="${item.id}">
+            </div>
+            <div class="item-content">
+              <div class="item-title">${escapeHtml(item.title)}</div>
+              ${(durationInfo || timeBadge) ? `
+                <div class="item-meta">
+                  ${timeBadge}
+                  ${durationInfo}
+                </div>` : ""}
+              ${progressHtml}
+            </div>
+            <div class="drag-handle" title="Geser urutan posisi">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h8M8 12h8M8 18h8"></path></svg>
+            </div>
+          </div>
+        `;
+
+        const checkbox = card.querySelector(".custom-checkbox");
+        checkbox.addEventListener("change", (e) => {
+          e.stopPropagation();
+          toggleChecklistItem(item.id);
+        });
+
+        itemsContainer.appendChild(card);
+      });
+    }
+
+    function handleItemDragStart(e) {
+      draggedItemId = this.dataset.id;
+      this.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    }
+
+    function handleItemDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "move";
+    }
+
+    function handleItemDrop(e) {
+      e.preventDefault();
+      const targetId = this.dataset.id;
+      if (!draggedItemId || draggedItemId === targetId) return;
+
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const items = agenda.checklistItems || [];
+      const draggedIdx = items.findIndex(i => i.id === draggedItemId);
+      const targetIdx = items.findIndex(i => i.id === targetId);
+
+      if (draggedIdx !== -1 && targetIdx !== -1) {
+        const [moved] = items.splice(draggedIdx, 1);
+        items.splice(targetIdx, 0, moved);
+        agenda.checklistItems = items;
+        saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], items);
+        renderChecklistForActiveAgenda();
+      }
+    }
+
+    function handleItemDragEnd() {
+      this.classList.remove("dragging");
+      draggedItemId = null;
+    }
+
+    function toggleChecklistItem(itemId) {
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const items = agenda.checklistItems || [];
+      const itm = items.find(i => i.id === itemId);
+      if (itm) {
+        itm.completed = !itm.completed;
+        saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], items);
+        renderChecklistForActiveAgenda();
+      }
+    }
+
+    function applySeedChecklistToAgenda(agendaId) {
+      const agenda = allAgendas.find(a => a.id === agendaId);
+      if (!agenda) return;
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const seedCategories = JSON.parse(JSON.stringify(defaultChecklistSeed.categories));
+      const seedItems = JSON.parse(JSON.stringify(defaultChecklistSeed.items));
+
+      const agendaDate = agenda.start ? agenda.start.split('T')[0] : todayStr;
+      seedItems.forEach(item => {
+        item.start = `${agendaDate}T08:00`;
+        item.end = `${agendaDate}T12:00`;
+        item.lastResetDate = todayStr;
+      });
+
+      agenda.checklistCategories = seedCategories;
+      agenda.checklistItems = seedItems;
+      activeChecklistTabId = seedCategories[0].id;
+
+      saveAgendaChecklist(agenda.id, seedCategories, seedItems);
+      renderChecklistForActiveAgenda();
+    }
+
+    // Modal Kategori Checklist
+    const checklistCategoryModal = document.getElementById("checklistCategoryModal");
+    const checklistItemModal = document.getElementById("checklistItemModal");
+
+    function openCategoryModal(catId = null) {
+      if (!currentActiveChecklistAgendaId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const titleEl = document.getElementById("checklistCategoryModalTitle");
+      const idInput = document.getElementById("checklistCategoryId");
+      const nameInput = document.getElementById("checklistCategoryName");
+      const delBtn = document.getElementById("btnDeleteCategoryModal");
+
+      if (catId) {
+        const cat = (agenda.checklistCategories || []).find(c => c.id === catId);
+        titleEl.innerHTML = `<i data-lucide="edit-2" class="h-4 w-4 text-indigo-600"></i><span>Edit Kategori</span>`;
+        idInput.value = cat ? cat.id : "";
+        nameInput.value = cat ? cat.name : "";
+        delBtn.classList.remove("hidden");
+      } else {
+        titleEl.innerHTML = `<i data-lucide="folder-plus" class="h-4 w-4 text-indigo-600"></i><span>Tambah Kategori Baru</span>`;
+        idInput.value = "";
+        nameInput.value = "";
+        delBtn.classList.add("hidden");
+      }
+
+      checklistCategoryModal.classList.remove("hidden");
+      lucide.createIcons();
+      nameInput.focus();
+    }
+
+    function closeCategoryModal() {
+      checklistCategoryModal.classList.add("hidden");
+      document.getElementById("checklistCategoryForm").reset();
+      document.getElementById("checklistCategoryId").value = "";
+    }
+
+    document.getElementById("btnCloseCategoryModal").addEventListener("click", closeCategoryModal);
+    document.getElementById("btnCancelCategoryModal").addEventListener("click", closeCategoryModal);
+    document.getElementById("btnAddCategoryBtn").addEventListener("click", () => openCategoryModal());
+    document.getElementById("btnQuickEditCategory").addEventListener("click", () => openCategoryModal(activeChecklistTabId));
+    document.getElementById("btnEditCurrentCategory").addEventListener("click", () => openCategoryModal(activeChecklistTabId));
+
+    document.getElementById("checklistCategoryForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const catId = document.getElementById("checklistCategoryId").value.trim();
+      const name = document.getElementById("checklistCategoryName").value.trim();
+      if (!name) return;
+
+      const categories = agenda.checklistCategories || [];
+
+      if (catId) {
+        const cat = categories.find(c => c.id === catId);
+        if (cat) cat.name = name;
+      } else {
+        const newCatId = "cat_" + Date.now();
+        categories.push({ id: newCatId, name: name });
+        activeChecklistTabId = newCatId;
+      }
+
+      agenda.checklistCategories = categories;
+      saveAgendaChecklist(agenda.id, categories, agenda.checklistItems || []);
+      closeCategoryModal();
+      renderChecklistForActiveAgenda();
+    });
+
+    document.getElementById("btnDeleteCategoryModal").addEventListener("click", () => {
+      const catId = document.getElementById("checklistCategoryId").value;
+      deleteCategoryConfirmed(catId);
+    });
+
+    document.getElementById("btnQuickDeleteCategory").addEventListener("click", () => {
+      deleteCategoryConfirmed(activeChecklistTabId);
+    });
+
+    function deleteCategoryConfirmed(catId) {
+      if (!catId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const cat = (agenda.checklistCategories || []).find(c => c.id === catId);
+      const catName = cat ? cat.name : "kategori ini";
+
+      if (!confirm(`Hapus kategori "${catName}" beserta seluruh checklist di dalamnya?`)) return;
+
+      let categories = agenda.checklistCategories || [];
+      let items = agenda.checklistItems || [];
+
+      categories = categories.filter(c => c.id !== catId);
+      items = items.filter(i => i.categoryId !== catId);
+
+      agenda.checklistCategories = categories;
+      agenda.checklistItems = items;
+
+      if (categories.length > 0) {
+        activeChecklistTabId = categories[0].id;
+      } else {
+        activeChecklistTabId = null;
+      }
+
+      saveAgendaChecklist(agenda.id, categories, items);
+      closeCategoryModal();
+      renderChecklistForActiveAgenda();
+    }
+
+    // Modal Item Checklist
+    function openChecklistItemModal(itemId = null) {
+      if (!currentActiveChecklistAgendaId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const categories = agenda.checklistCategories || [];
+      if (categories.length === 0) {
+        alert("Buat minimal satu kategori terlebih dahulu.");
+        openCategoryModal();
+        return;
+      }
+
+      const modal = checklistItemModal;
+      const titleEl = document.getElementById("checklistItemModalTitle");
+      const catSelect = document.getElementById("checklistItemCategory");
+      const idInput = document.getElementById("checklistItemId");
+      const titleInput = document.getElementById("checklistItemTitle");
+      const startInput = document.getElementById("checklistItemStart");
+      const endInput = document.getElementById("checklistItemEnd");
+      const delBtn = document.getElementById("btnDeleteItemModal");
+
+      catSelect.innerHTML = "";
+      categories.forEach(cat => {
+        const opt = document.createElement("option");
+        opt.value = cat.id;
+        opt.textContent = cat.name;
+        catSelect.appendChild(opt);
+      });
+
+      if (itemId) {
+        const item = (agenda.checklistItems || []).find(i => i.id === itemId);
+        if (!item) return;
+        titleEl.innerHTML = `<i data-lucide="edit-2" class="h-4 w-4 text-indigo-600"></i><span>Edit Checklist</span>`;
+        idInput.value = item.id;
+        catSelect.value = item.categoryId;
+        titleInput.value = item.title;
+        startInput.value = item.start || "";
+        endInput.value = item.end || "";
+        delBtn.classList.remove("hidden");
+      } else {
+        titleEl.innerHTML = `<i data-lucide="check-square" class="h-4 w-4 text-indigo-600"></i><span>Tambah Checklist Baru</span>`;
+        idInput.value = "";
+        if (activeChecklistTabId) catSelect.value = activeChecklistTabId;
+        titleInput.value = "";
+        
+        const defaultTime = agenda.start ? agenda.start : `${selectedDateStr}T09:00`;
+        startInput.value = defaultTime;
+        endInput.value = defaultTime;
+        delBtn.classList.add("hidden");
+      }
+
+      modal.classList.remove("hidden");
+      lucide.createIcons();
+      titleInput.focus();
+    }
+
+    function closeChecklistItemModal() {
+      checklistItemModal.classList.add("hidden");
+      document.getElementById("checklistItemForm").reset();
+      document.getElementById("checklistItemId").value = "";
+    }
+
+    document.getElementById("btnCloseItemModal").addEventListener("click", closeChecklistItemModal);
+    document.getElementById("btnCancelItemModal").addEventListener("click", closeChecklistItemModal);
+    document.getElementById("btnAddChecklistItemBtn").addEventListener("click", () => openChecklistItemModal());
+
+    document.getElementById("checklistItemStart").addEventListener("change", function() {
+      const endEl = document.getElementById("checklistItemEnd");
+      if (this.value && !endEl.value) {
+        endEl.value = this.value;
+      }
+    });
+
+    document.getElementById("checklistItemForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      const itemId = document.getElementById("checklistItemId").value.trim();
+      const categoryId = document.getElementById("checklistItemCategory").value;
+      const title = document.getElementById("checklistItemTitle").value.trim();
+      let start = document.getElementById("checklistItemStart").value;
+      let end = document.getElementById("checklistItemEnd").value;
+
+      if (!title || !categoryId) return;
+
+      if (start && !end) end = start;
+      if (!start && end) start = end;
+
+      if (start && end && new Date(start) > new Date(end)) {
+        alert("Waktu selesai tidak boleh lebih awal dari waktu mulai.");
+        return;
+      }
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const items = agenda.checklistItems || [];
+
+      if (itemId) {
+        const item = items.find(i => i.id === itemId);
+        if (item) {
+          item.categoryId = categoryId;
+          item.title = title;
+          item.start = start;
+          item.end = end;
+        }
+      } else {
+        items.push({
+          id: "itm_" + Date.now(),
+          categoryId,
+          title,
+          start,
+          end,
+          completed: false,
+          lastResetDate: todayStr
+        });
+      }
+
+      agenda.checklistItems = items;
+      activeChecklistTabId = categoryId;
+      saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], items);
+      closeChecklistItemModal();
+      renderChecklistForActiveAgenda();
+    });
+
+    document.getElementById("btnDeleteItemModal").addEventListener("click", () => {
+      const itemId = document.getElementById("checklistItemId").value;
+      if (!itemId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      if (!confirm("Hapus checklist ini?")) return;
+
+      agenda.checklistItems = (agenda.checklistItems || []).filter(i => i.id !== itemId);
+      saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], agenda.checklistItems);
+      closeChecklistItemModal();
+      renderChecklistForActiveAgenda();
+    });
 
     // ----------------------------------------------------
     // FIRESTORE AGENDA LISTENER
@@ -1088,6 +2176,9 @@
         renderCalendar();
         renderSelectedDayAgendas();
         renderNotificationTray();
+        if (currentActiveChecklistAgendaId) {
+          renderChecklistForActiveAgenda();
+        }
       }, (err) => {
         console.error("Firestore Agenda Error:", err);
       });
