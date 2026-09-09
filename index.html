@@ -1447,22 +1447,6 @@
       return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    const defaultChecklistSeed = {
-      categories: [
-        { id: "cat_pra", name: "Pra-Operasi" },
-        { id: "cat_pasca", name: "Pemulihan Awal" },
-        { id: "cat_aktivitas", name: "Aktivitas" },
-        { id: "cat_diet", name: "Diet & Nutrisi" }
-      ],
-      items: [
-        { id: "itm_1", categoryId: "cat_pra", title: "Tes Laboratorium (Darah, EKG, Rontgen Hati/Ginjal)", start: "", end: "", completed: false, lastResetDate: "" },
-        { id: "itm_2", categoryId: "cat_pra", title: "Puasa Total 6 - 8 Jam Jelang Tindakan", start: "", end: "", completed: false, lastResetDate: "" },
-        { id: "itm_3", categoryId: "cat_pasca", title: "Ganti Perban & Kontrol Jahitan (Klinik Bedah)", start: "", end: "", completed: false, lastResetDate: "" },
-        { id: "itm_4", categoryId: "cat_aktivitas", title: "Fase Istirahat Total (Hindari berkendara & beban berat)", start: "", end: "", completed: false, lastResetDate: "" },
-        { id: "itm_5", categoryId: "cat_diet", title: "Diet Rendah Lemak & Makanan Lunak Halus", start: "", end: "", completed: false, lastResetDate: "" }
-      ]
-    };
-
     function formatDateTimeShort(dateTimeStr) {
       if (!dateTimeStr) return "";
       const d = new Date(dateTimeStr);
@@ -1700,23 +1684,17 @@
             </div>
             <div>
               <h5 class="text-xs font-bold text-slate-800">Belum Ada Kategori Checklist</h5>
-              <p class="text-[11px] text-slate-500 mt-0.5">Mulai dengan membuat kategori baru atau pasang template rekomendasi.</p>
+              <p class="text-[11px] text-slate-500 mt-0.5">Tambahkan kategori untuk mulai membuat checklist pada agenda ini.</p>
             </div>
-            <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-              <button id="btnInitDefaultSeed" type="button" class="rounded-lg bg-indigo-600 text-white px-3 py-1.5 text-xs font-semibold hover:bg-indigo-700 transition shadow-sm flex items-center gap-1">
-                <i data-lucide="sparkles" class="h-3.5 w-3.5"></i>
-                <span>Gunakan Kategori Rekomendasi</span>
-              </button>
-              <button id="btnInitNewCategory" type="button" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 transition shadow-sm">
-                + Kategori Baru
+            <div class="pt-1">
+              <button id="btnInitNewCategory" type="button" class="rounded-lg bg-slate-900 text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-slate-800 transition shadow-sm inline-flex items-center gap-1.5">
+                <i data-lucide="folder-plus" class="h-3.5 w-3.5"></i>
+                <span>+ Buat Kategori Baru</span>
               </button>
             </div>
           </div>
         `;
 
-        document.getElementById("btnInitDefaultSeed")?.addEventListener("click", () => {
-          applySeedChecklistToAgenda(agenda.id);
-        });
         document.getElementById("btnInitNewCategory")?.addEventListener("click", () => {
           openCategoryModal();
         });
@@ -1864,29 +1842,6 @@
         saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], items);
         renderChecklistForActiveAgenda();
       }
-    }
-
-    function applySeedChecklistToAgenda(agendaId) {
-      const agenda = allAgendas.find(a => a.id === agendaId);
-      if (!agenda) return;
-
-      const todayStr = new Date().toISOString().slice(0, 10);
-      const seedCategories = JSON.parse(JSON.stringify(defaultChecklistSeed.categories));
-      const seedItems = JSON.parse(JSON.stringify(defaultChecklistSeed.items));
-
-      const agendaDate = agenda.start ? agenda.start.split('T')[0] : todayStr;
-      seedItems.forEach(item => {
-        item.start = `${agendaDate}T08:00`;
-        item.end = `${agendaDate}T12:00`;
-        item.lastResetDate = todayStr;
-      });
-
-      agenda.checklistCategories = seedCategories;
-      agenda.checklistItems = seedItems;
-      activeChecklistTabId = seedCategories[0].id;
-
-      saveAgendaChecklist(agenda.id, seedCategories, seedItems);
-      renderChecklistForActiveAgenda();
     }
 
     // Modal Kategori Checklist
