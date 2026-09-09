@@ -555,6 +555,11 @@
         </div>
       </div>
 
+      <!-- Area Kosong Rahasia: Ketuk 6 kali untuk membuka fitur hapus grup -->
+      <div id="secretHeaderTrigger" class="flex-1 self-stretch mx-2 cursor-default select-none min-h-[42px]"
+        style="-webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;"
+        title=""></div>
+
       <!-- Header Right: Live Clock & Notification Tray -->
       <div class="flex items-center gap-2 sm:gap-3">
         <div class="relative">
@@ -1231,6 +1236,65 @@
     </div>
   </div>
 
+  <!-- MODAL RAHASIA: HAPUS GRUP & SELURUH DATA -->
+  <div id="deleteGroupModal"
+    class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl border border-rose-200 bg-white p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-rose-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="h-9 w-9 rounded-xl bg-rose-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <i data-lucide="trash-2" class="h-5 w-5"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-slate-900">Hapus Permanen Grup</h4>
+            <p class="text-[11px] text-rose-600 font-medium">Fitur Rahasia Administrator</p>
+          </div>
+        </div>
+        <button id="btnCloseDeleteGroupModal" type="button"
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
+          <i data-lucide="x" class="h-5 w-5"></i>
+        </button>
+      </div>
+
+      <!-- Warning Box -->
+      <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 space-y-2 text-xs">
+        <div class="flex items-center gap-2 font-bold text-rose-900">
+          <i data-lucide="alert-triangle" class="h-4 w-4 text-rose-600 shrink-0"></i>
+          <span>Peringatan Bahaya! Tindakan Tidak Dapat Dibatalkan</span>
+        </div>
+        <p class="leading-relaxed">
+          Menghapus grup <span class="font-mono font-bold text-rose-950 px-1.5 py-0.5 bg-rose-200/70 rounded" id="deleteModalGroupBadge">-</span> akan menghapus seluruh data secara permanen dari <strong>Database (Cloud Firestore)</strong> dan <strong>LocalStorage perangkat</strong>:
+        </p>
+        <ul class="list-disc list-inside space-y-1 text-[11px] text-rose-700 pl-1 font-medium">
+          <li>Seluruh agenda &amp; jadwal kegiatan di <strong>Database</strong></li>
+          <li>Seluruh riwayat chat &amp; obrolan di tiap agenda di <strong>Database</strong></li>
+          <li>Seluruh data koordinat &amp; lokasi anggota di <strong>Database</strong></li>
+          <li>Profil pengguna &amp; sesi grup di <strong>LocalStorage</strong></li>
+        </ul>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-semibold text-slate-600">
+          Ketik kode grup <span id="deleteModalRequiredCode" class="font-mono font-bold text-rose-600 uppercase"></span> untuk konfirmasi:
+        </label>
+        <input id="deleteGroupConfirmInput" type="text" autocomplete="off" placeholder="Ketik kode grup di sini..."
+          class="w-full text-center font-mono uppercase tracking-widest text-sm font-bold rounded-xl border border-slate-300 focus:border-rose-600 focus:ring-2 focus:ring-rose-200 py-2.5 px-3 outline-none transition" />
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button id="btnCancelDeleteGroup" type="button"
+          class="flex-1 rounded-xl border border-slate-200 bg-white py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition text-center">
+          Batal
+        </button>
+        <button id="btnConfirmDeleteGroup" type="button" disabled
+          class="flex-[2] rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-40 disabled:cursor-not-allowed py-2.5 text-xs font-bold text-white transition shadow-sm shadow-rose-600/30 flex items-center justify-center gap-2 text-center">
+          <i data-lucide="trash-2" class="h-4 w-4"></i>
+          <span id="btnConfirmDeleteGroupText">Hapus Seluruh Data Grup</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- FIREBASE MODULAR SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -1242,6 +1306,7 @@
       addDoc,
       updateDoc,
       deleteDoc,
+      getDocs,
       query,
       where,
       onSnapshot,
@@ -3795,6 +3860,170 @@
         console.error("Gagal mengirim pesan chat:", err);
       }
     });
+
+    // ====================================================
+    // HIDDEN FEATURE: HAPUS GRUP (6 KETUKAN DI AREA KOSONG HEADER)
+    // ====================================================
+    let secretHeaderClickCount = 0;
+    let secretHeaderClickTimer = null;
+
+    const secretHeaderTrigger = document.getElementById("secretHeaderTrigger");
+    const deleteGroupModal = document.getElementById("deleteGroupModal");
+    const deleteModalGroupBadge = document.getElementById("deleteModalGroupBadge");
+    const deleteModalRequiredCode = document.getElementById("deleteModalRequiredCode");
+    const deleteGroupConfirmInput = document.getElementById("deleteGroupConfirmInput");
+    const btnCloseDeleteGroupModal = document.getElementById("btnCloseDeleteGroupModal");
+    const btnCancelDeleteGroup = document.getElementById("btnCancelDeleteGroup");
+    const btnConfirmDeleteGroup = document.getElementById("btnConfirmDeleteGroup");
+    const btnConfirmDeleteGroupText = document.getElementById("btnConfirmDeleteGroupText");
+
+    function openDeleteGroupModal() {
+      if (!userProfile || !userProfile.pairCode) return;
+      const targetCode = userProfile.pairCode.trim().toUpperCase();
+      deleteModalGroupBadge.textContent = targetCode;
+      deleteModalRequiredCode.textContent = targetCode;
+      deleteGroupConfirmInput.value = "";
+      btnConfirmDeleteGroup.disabled = true;
+      btnConfirmDeleteGroupText.textContent = "Hapus Seluruh Data Grup";
+      deleteGroupModal.classList.remove("hidden");
+      lucide.createIcons();
+      setTimeout(() => {
+        deleteGroupConfirmInput.focus();
+      }, 150);
+    }
+
+    function closeDeleteGroupModal() {
+      deleteGroupModal.classList.add("hidden");
+      deleteGroupConfirmInput.value = "";
+      deleteGroupConfirmInput.disabled = false;
+      btnConfirmDeleteGroup.disabled = true;
+      btnCancelDeleteGroup.disabled = false;
+      btnCloseDeleteGroupModal.disabled = false;
+      btnConfirmDeleteGroupText.textContent = "Hapus Seluruh Data Grup";
+    }
+
+    if (secretHeaderTrigger) {
+      secretHeaderTrigger.addEventListener("click", () => {
+        if (!userProfile || !userProfile.pairCode) return;
+
+        secretHeaderClickCount++;
+        if (secretHeaderClickTimer) {
+          clearTimeout(secretHeaderClickTimer);
+        }
+
+        // Reset hitungan jika jeda lebih dari 3.5 detik
+        secretHeaderClickTimer = setTimeout(() => {
+          secretHeaderClickCount = 0;
+        }, 3500);
+
+        if (secretHeaderClickCount >= 6) {
+          secretHeaderClickCount = 0;
+          clearTimeout(secretHeaderClickTimer);
+
+          if (navigator.vibrate) {
+            try { navigator.vibrate([40, 50, 60]); } catch (e) {}
+          }
+          openDeleteGroupModal();
+        }
+      });
+    }
+
+    if (btnCloseDeleteGroupModal) {
+      btnCloseDeleteGroupModal.addEventListener("click", closeDeleteGroupModal);
+    }
+
+    if (btnCancelDeleteGroup) {
+      btnCancelDeleteGroup.addEventListener("click", closeDeleteGroupModal);
+    }
+
+    if (deleteGroupConfirmInput) {
+      deleteGroupConfirmInput.addEventListener("input", () => {
+        const entered = deleteGroupConfirmInput.value.trim().toUpperCase();
+        const target = (userProfile?.pairCode || "").trim().toUpperCase();
+        btnConfirmDeleteGroup.disabled = (entered !== target);
+      });
+    }
+
+    if (btnConfirmDeleteGroup) {
+      btnConfirmDeleteGroup.addEventListener("click", async () => {
+        if (!userProfile || !userProfile.pairCode) return;
+        const targetPairCode = userProfile.pairCode.trim();
+        const entered = deleteGroupConfirmInput.value.trim().toUpperCase();
+
+        if (entered !== targetPairCode.toUpperCase()) {
+          alert("Kode grup yang dimasukkan tidak sesuai.");
+          return;
+        }
+
+        // UI Loading state
+        btnConfirmDeleteGroup.disabled = true;
+        btnCancelDeleteGroup.disabled = true;
+        btnCloseDeleteGroupModal.disabled = true;
+        deleteGroupConfirmInput.disabled = true;
+        btnConfirmDeleteGroupText.textContent = "Menghapus Data...";
+
+        try {
+          // 1. Kumpulkan variasi kode grup (case-insensitive) untuk memastikan seluruh data terhapus tuntas dari database
+          const targetCodes = Array.from(new Set([
+            targetPairCode,
+            targetPairCode.toUpperCase(),
+            targetPairCode.toLowerCase()
+          ]));
+
+          // 2. Hapus seluruh data agenda dan sub-koleksi chat dari Database (Firestore)
+          for (const code of targetCodes) {
+            const agendasQuery = query(
+              collection(db, "agendas"),
+              where("pairCode", "==", code)
+            );
+            const agendasSnap = await getDocs(agendasQuery);
+
+            for (const agendaDoc of agendasSnap.docs) {
+              const chatsQuery = collection(db, "agendas", agendaDoc.id, "chats");
+              const chatsSnap = await getDocs(chatsQuery);
+              if (!chatsSnap.empty) {
+                const chatDeletions = chatsSnap.docs.map((cDoc) => deleteDoc(cDoc.ref));
+                await Promise.all(chatDeletions);
+              }
+              await deleteDoc(agendaDoc.ref);
+            }
+
+            // 3. Hapus seluruh data koordinat / lokasi grup dari Database (Firestore)
+            const locQuery = query(
+              collection(db, "locations"),
+              where("pairCode", "==", code)
+            );
+            const locSnap = await getDocs(locQuery);
+            if (!locSnap.empty) {
+              const locDeletions = locSnap.docs.map((lDoc) => deleteDoc(lDoc.ref));
+              await Promise.all(locDeletions);
+            }
+
+            if (userProfile?.uid) {
+              try {
+                await deleteDoc(doc(db, "locations", `${code}_${userProfile.uid}`));
+              } catch (e) {}
+            }
+          }
+
+          // 4. Hapus seluruh data sesi dan profil grup dari LocalStorage & SessionStorage
+          localStorage.removeItem("group_user_profile");
+          localStorage.removeItem("group_chat_read_receipts");
+          sessionStorage.clear();
+
+          alert(`Grup "${targetPairCode}" beserta seluruh agenda, chat, dan lokasi berhasil dihapus permanen dari Database dan LocalStorage.`);
+          window.location.href = window.location.origin + window.location.pathname;
+        } catch (err) {
+          console.error("Gagal menghapus grup:", err);
+          alert("Terjadi kesalahan saat menghapus grup: " + err.message);
+          btnConfirmDeleteGroup.disabled = false;
+          btnCancelDeleteGroup.disabled = false;
+          btnCloseDeleteGroupModal.disabled = false;
+          deleteGroupConfirmInput.disabled = false;
+          btnConfirmDeleteGroupText.textContent = "Hapus Seluruh Data Grup";
+        }
+      });
+    }
 
   </script>
 </body>
