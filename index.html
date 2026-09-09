@@ -1655,10 +1655,16 @@
           }
         });
 
-        // Sertakan juga titik agenda dalam perhitungan zoom
+        // Sertakan juga titik agenda dalam perhitungan zoom (kecuali yang tanggal akhirnya sudah terlewat)
+        const todayStrForBounds = IndonesianTime.getLocalDateString();
         allAgendas.forEach(a => {
-          if (typeof a.locationLat === 'number' && typeof a.locationLng === 'number' && !isNaN(a.locationLat) && !isNaN(a.locationLng)) {
-            bounds.push([a.locationLat, a.locationLng]);
+          const lat = parseFloat(a.locationLat);
+          const lng = parseFloat(a.locationLng);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
+            if (!aEnd || aEnd >= todayStrForBounds) {
+              bounds.push([lat, lng]);
+            }
           }
         });
 
@@ -1674,16 +1680,23 @@
     function renderAgendaLocationsOnMap() {
       if (!map) return;
 
-      const locatedAgendas = allAgendas.filter(a => 
-        a.locationLat !== null && 
-        a.locationLng !== null && 
-        typeof a.locationLat === 'number' && 
-        typeof a.locationLng === 'number' && 
-        !isNaN(a.locationLat) && 
-        !isNaN(a.locationLng)
-      );
+      const todayStr = IndonesianTime.getLocalDateString();
 
-      // Bersihkan marker agenda yang sudah dihapus
+      const locatedAgendas = allAgendas.filter(a => {
+        const lat = parseFloat(a.locationLat);
+        const lng = parseFloat(a.locationLng);
+        if (isNaN(lat) || isNaN(lng)) return false;
+
+        // Jangan tampilkan pada map jika tanggal akhirnya sudah terlewat (< todayStr)
+        const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
+        if (aEnd && aEnd < todayStr) {
+          return false;
+        }
+
+        return true;
+      });
+
+      // Bersihkan marker agenda yang sudah dihapus atau tanggal akhirnya sudah terlewat
       const currentIds = new Set(locatedAgendas.map(a => a.id));
       Object.keys(agendaMarkers).forEach(id => {
         if (!currentIds.has(id)) {
@@ -1694,7 +1707,7 @@
 
       locatedAgendas.forEach(a => {
         const isSelectedDay = selectedDateStr && a.start && a.start.startsWith(selectedDateStr);
-        const latlng = [a.locationLat, a.locationLng];
+        const latlng = [parseFloat(a.locationLat), parseFloat(a.locationLng)];
 
         const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
         const bubbleClass = isSelectedDay ? 'agenda-bubble-tooltip active' : 'agenda-bubble-tooltip';
