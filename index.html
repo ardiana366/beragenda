@@ -547,6 +547,11 @@
             <i data-lucide="share-2" class="h-4 w-4"></i>
             <span>Bagikan Link Grup</span>
           </button>
+          <button id="btnDropdownPublishRoom" type="button"
+            class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-emerald-600 hover:bg-emerald-50 font-medium transition text-left">
+            <i data-lucide="globe" class="h-4 w-4"></i>
+            <span>Publish Room</span>
+          </button>
           <button id="btnDropdownSwitchAccount"
             class="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 hover:bg-rose-50 font-medium transition text-left">
             <i data-lucide="log-out" class="h-4 w-4"></i>
@@ -2016,6 +2021,31 @@
     document.getElementById("btnDropdownShareGroup")?.addEventListener("click", () => {
       userDropdownMenu.classList.add("hidden");
       openShareGroupModal();
+    });
+
+    // Publish Room: Generate link ke halaman publish.html
+    function getPublishRoomUrl(pairCode) {
+      const code = pairCode || (userProfile ? userProfile.pairCode : "");
+      const basePath = window.location.pathname.replace(/\/[^\/]*$/, '/');
+      if (window.location.protocol === "file:") {
+        const dir = window.location.href.split('/').slice(0, -1).join('/');
+        return `${dir}/publish.html?group=${encodeURIComponent(code)}`;
+      }
+      return `${window.location.origin}${basePath}publish.html?group=${encodeURIComponent(code)}`;
+    }
+
+    document.getElementById("btnDropdownPublishRoom")?.addEventListener("click", async () => {
+      if (!userProfile || !userProfile.pairCode) return;
+      userDropdownMenu.classList.add("hidden");
+      const publishUrl = getPublishRoomUrl(userProfile.pairCode);
+
+      try {
+        await navigator.clipboard.writeText(publishUrl);
+        alert(`Link Publish Room berhasil disalin!\n\n${publishUrl}`);
+      } catch (err) {
+        // Fallback: prompt user to copy
+        prompt("Salin link Publish Room berikut:", publishUrl);
+      }
     });
 
     let isGuestMode = false;
@@ -3734,16 +3764,40 @@
         time = IndonesianTime.formatTime(new Date(msg.localCreatedAt));
       }
 
+      const isAnon = msg.isAnonymous === true;
+
       const bubble = document.createElement("div");
-      bubble.className = `flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
-      bubble.innerHTML = `
-        <span class="text-[10px] text-slate-400 mb-0.5 px-1">${msg.senderName || 'User'} (${msg.senderGender === 'female' ? '👩' : '👨'})</span>
-        <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words ${isMine ? 'bg-slate-900 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'
-        }">
-          ${formattedText}
-        </div>
-        <span class="text-[9px] text-slate-400 mt-0.5 px-1">${time}</span>
-      `;
+
+      if (isAnon) {
+        // Pesan anonim dari Publish Room — tampilkan dengan gaya khusus
+        bubble.className = 'flex flex-col items-start';
+        bubble.innerHTML = `
+          <div class="flex items-center justify-between gap-2 max-w-[85%] w-full mb-0.5 px-1">
+            <span class="text-[10px] text-amber-600 font-semibold flex items-center gap-1">
+              👤 Anonim <span class="text-[8px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">PUBLISH</span>
+            </span>
+            <button type="button" class="btn-delete-anon-chat text-rose-500 hover:text-rose-700 p-0.5 flex items-center gap-1 text-[10px] font-medium transition" data-chat-doc-id="${msg.id}" title="Hapus komentar anonim ini dari database">
+              <i data-lucide="trash-2" class="h-3 w-3"></i>
+              <span class="text-[9px]">Hapus</span>
+            </button>
+          </div>
+          <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words bg-amber-50 text-amber-950 border border-amber-200 rounded-bl-none">
+            ${formattedText}
+          </div>
+          <span class="text-[9px] text-slate-400 mt-0.5 px-1">${time}</span>
+        `;
+      } else {
+        bubble.className = `flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
+        bubble.innerHTML = `
+          <span class="text-[10px] text-slate-400 mb-0.5 px-1">${msg.senderName || 'User'} (${msg.senderGender === 'female' ? '👩' : '👨'})</span>
+          <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words ${isMine ? 'bg-slate-900 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'
+          }">
+            ${formattedText}
+          </div>
+          <span class="text-[9px] text-slate-400 mt-0.5 px-1">${time}</span>
+        `;
+      }
+
       return bubble;
     }
 
@@ -3805,6 +3859,26 @@
         msgs.forEach((msg) => {
           const isMine = msg.senderId === userProfile.uid;
           chatMessages.appendChild(renderChatMessageBubble(msg, isMine));
+        });
+
+        // Re-create lucide icons untuk tombol hapus anonim
+        lucide.createIcons();
+
+        // Attach delete handlers untuk pesan anonim
+        chatMessages.querySelectorAll(".btn-delete-anon-chat").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            const chatDocId = btn.dataset.chatDocId;
+            if (!chatDocId || !currentActiveChatAgendaId) return;
+            if (!confirm("Hapus komentar anonim ini dari database?")) return;
+
+            try {
+              await deleteDoc(doc(db, "agendas", currentActiveChatAgendaId, "chats", chatDocId));
+            } catch (err) {
+              console.error("Gagal menghapus komentar anonim:", err);
+              alert("Gagal menghapus: " + err.message);
+            }
+          });
         });
 
         // Scroll ke bawah
