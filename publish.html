@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publish Room — GroupSync</title>
+  <meta name="description" content="Lihat rundown agenda dan peta lokasi kegiatan grup secara publik." />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* ==================== MAP ==================== */
+    #publishMap {
+      height: 420px;
+      width: 100%;
+      border-radius: 1rem;
+    }
+
+    @media (min-width: 1024px) {
+      #publishMap {
+        height: 100%;
+        min-height: 500px;
+        border-radius: 1rem;
+      }
+    }
+
+    /* ==================== GLASS CARD ==================== */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* ==================== AGENDA TOOLTIP ==================== */
+    .agenda-bubble-tooltip {
+      background: rgba(15, 23, 42, 0.94) !important;
+      backdrop-filter: blur(8px) !important;
+      -webkit-backdrop-filter: blur(8px) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      border-radius: 0.75rem !important;
+      padding: 4px 10px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+      white-space: nowrap !important;
+      pointer-events: auto !important;
+    }
+
+    .agenda-bubble-tooltip::before {
+      border-top-color: rgba(15, 23, 42, 0.94) !important;
+    }
+
+    .agenda-bubble-tooltip.highlight {
+      background: rgba(49, 46, 129, 0.96) !important;
+      border: 1.5px solid #818cf8 !important;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.45) !important;
+    }
+
+    .agenda-bubble-tooltip.highlight::before {
+      border-top-color: #818cf8 !important;
+    }
+
+    /* ==================== RUNDOWN CARD ==================== */
+    .rundown-card {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .rundown-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .rundown-card.active-highlight {
+      border-color: #818cf8 !important;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25), 0 4px 16px rgba(99, 102, 241, 0.15);
+    }
+
+    /* ==================== DATE DIVIDER ==================== */
+    .date-divider {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .date-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, #e2e8f0, transparent);
+    }
+
+    /* ==================== SCROLLBAR ==================== */
+    .rundown-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .rundown-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .rundown-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 100px;
+    }
+
+    /* ==================== PULSE ANIMATION ==================== */
+    @keyframes soft-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .pulse-soft {
+      animation: soft-pulse 2s ease-in-out infinite;
+    }
+
+    /* ==================== LOADING SKELETON ==================== */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 0.5rem;
+    }
+
+    /* ==================== COMMENT SECTION ==================== */
+    .comment-section {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.25s ease;
+      opacity: 0;
+    }
+
+    .comment-section.open {
+      max-height: 600px;
+      opacity: 1;
+    }
+
+    .comment-bubble {
+      transition: all 0.15s ease;
+    }
+
+    .comment-bubble:hover {
+      background-color: #f1f5f9;
+    }
+
+    .comment-scroll::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .comment-scroll::-webkit-scrollbar-thumb {
+      background: #e2e8f0;
+      border-radius: 100px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-sm">
+          <i data-lucide="calendar-range" class="h-4.5 w-4.5"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            Publish Room
+            <span id="publishGroupBadge"
+              class="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md bg-indigo-600 text-white uppercase tracking-wider shadow-xs"></span>
+          </h1>
+          <p class="text-[11px] text-slate-500">Rundown Agenda & Peta Lokasi Kegiatan</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="publishAgendaCount"
+          class="text-[10px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 shadow-xs">
+          0 Agenda
+        </span>
+        <a id="btnBackToMain" href="index.html"
+          class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-xs flex items-center gap-1.5">
+          <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i>
+          <span class="hidden sm:inline">Kembali</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="max-w-7xl mx-auto px-4 py-5 space-y-5 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-5">
+
+    <!-- PETA (Left/Top) -->
+    <section class="lg:col-span-7 lg:sticky lg:top-[72px] lg:self-start">
+      <div class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+            <i data-lucide="map" class="h-4 w-4 text-indigo-600"></i>
+            Peta Lokasi Agenda
+          </h3>
+          <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+            <span class="flex items-center gap-1">
+              <span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white shadow-2xs"></span>
+              Titik Agenda
+            </span>
+          </div>
+        </div>
+        <div id="publishMap"></div>
+      </div>
+    </section>
+
+    <!-- RUNDOWN (Right/Bottom) -->
+    <section class="lg:col-span-5">
+      <div class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rundown Agenda</h3>
+            <p class="text-base font-bold text-slate-900 mt-0.5">Jadwal Mendatang</p>
+          </div>
+          <span id="rundownCount"
+            class="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200">0
+            Kegiatan</span>
+        </div>
+
+        <!-- Rundown List Container -->
+        <div id="rundownList" class="rundown-scroll space-y-3 max-h-[65vh] lg:max-h-[calc(100vh-200px)] overflow-y-auto pr-1">
+          <!-- Loading skeleton -->
+          <div class="space-y-3">
+            <div class="skeleton h-5 w-36"></div>
+            <div class="skeleton h-24 w-full"></div>
+            <div class="skeleton h-24 w-full"></div>
+            <div class="skeleton h-5 w-28 mt-4"></div>
+            <div class="skeleton h-24 w-full"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== NO GROUP OVERLAY ==================== -->
+  <div id="noGroupOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-100 p-6">
+    <div class="glass-card w-full max-w-sm rounded-2xl border border-slate-200 p-8 shadow-lg text-center space-y-4">
+      <div class="h-14 w-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+        <i data-lucide="alert-triangle" class="h-7 w-7"></i>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900">Kode Grup Tidak Ditemukan</h2>
+      <p class="text-sm text-slate-500 leading-relaxed">Halaman ini membutuhkan parameter kode grup di URL.<br />Pastikan
+        Anda membuka link yang benar.</p>
+      <a href="index.html"
+        class="inline-flex items-center gap-2 rounded-xl bg-slate-900 text-white px-5 py-2.5 text-sm font-semibold hover:bg-slate-800 transition shadow-sm">
+        <i data-lucide="home" class="h-4 w-4"></i>
+        Kembali ke Halaman Utama
+      </a>
+    </div>
+  </div>
+
+  <!-- ==================== FIREBASE & LOGIC ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      addDoc,
+      deleteDoc,
+      query,
+      where,
+      onSnapshot,
+      serverTimestamp,
+      getCountFromServer
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    // ---- Firebase Config ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyC5qI-YCwJK9Xj5Fci7vIArFMetj1ZP2_w",
+      authDomain: "ceritaberdua-9f71d.firebaseapp.com",
+      projectId: "ceritaberdua-9f71d",
+      storageBucket: "ceritaberdua-9f71d.firebasestorage.app",
+      messagingSenderId: "1044481677281",
+      appId: "1:1044481677281:web:9f420eb6da603e99fa24a0",
+      measurementId: "G-NR86918PVB"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ---- Indonesian Time Helpers ----
+    const IndonesianTime = {
+      days: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+      months: [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ],
+      monthsShort: [
+        "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+        "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+      ],
+      getDateParts(date = new Date()) {
+        const d = date instanceof Date ? date : new Date(date);
+        const validDate = isNaN(d.getTime()) ? new Date() : d;
+        const year = String(validDate.getFullYear());
+        const month = String(validDate.getMonth() + 1).padStart(2, "0");
+        const day = String(validDate.getDate()).padStart(2, "0");
+        const hour = String(validDate.getHours()).padStart(2, "0");
+        const minute = String(validDate.getMinutes()).padStart(2, "0");
+        const dayOfWeek = validDate.getDay();
+        return {
+          year, month, day, hour, minute,
+          dayName: this.days[dayOfWeek],
+          dayShort: this.days[dayOfWeek].substring(0, 3),
+          monthName: this.months[validDate.getMonth()],
+          monthShort: this.monthsShort[validDate.getMonth()]
+        };
+      },
+      formatTime(date) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${p.hour}:${p.minute}`;
+      },
+      formatDateFull(date) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${p.dayName}, ${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+      },
+      formatDateShort(date) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${parseInt(p.day, 10)} ${p.monthShort} ${p.year}`;
+      },
+      getLocalDateString(date = new Date()) {
+        const p = this.getDateParts(date);
+        return `${p.year}-${p.month}-${p.day}`;
+      }
+    };
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function calculateDuration(startStr, endStr) {
+      if (!startStr || !endStr) return "-";
+      const s = new Date(startStr);
+      const e = new Date(endStr);
+      let diff = e - s;
+      if (diff <= 0) return "-";
+      const days = Math.floor(diff / 86400000);
+      diff %= 86400000;
+      const hours = Math.floor(diff / 3600000);
+      diff %= 3600000;
+      const mins = Math.floor(diff / 60000);
+      const parts = [];
+      if (days > 0) parts.push(`${days} hari`);
+      if (hours > 0) parts.push(`${hours} jam`);
+      if (mins > 0) parts.push(`${mins} menit`);
+      return parts.join(" ") || "-";
+    }
+
+    // ---- Extract Group Code from URL ----
+    function getGroupCodeFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let code = urlParams.get("group") || urlParams.get("code") || urlParams.get("pairCode");
+      if (!code && window.location.hash) {
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, "?"));
+        code = hashParams.get("group") || hashParams.get("code") || hashParams.get("pairCode");
+      }
+      return code ? code.trim().toUpperCase() : null;
+    }
+
+    const groupCode = getGroupCodeFromUrl();
+
+    if (!groupCode) {
+      document.getElementById("noGroupOverlay").classList.remove("hidden");
+    } else {
+      document.getElementById("publishGroupBadge").textContent = groupCode;
+
+      // Set back link to main app with group code
+      const backBtn = document.getElementById("btnBackToMain");
+      backBtn.href = `index.html?group=${encodeURIComponent(groupCode)}`;
+
+      initPublishRoom(groupCode);
+    }
+
+    lucide.createIcons();
+
+    // ---- Initialize Map ----
+    let publishMap = null;
+    let agendaMarkers = {};
+    let highlightedAgendaId = null;
+
+    function initMap() {
+      publishMap = L.map("publishMap", {
+        zoomControl: true,
+        scrollWheelZoom: true,
+        attributionControl: false
+      }).setView([-2.5, 118], 5);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+      }).addTo(publishMap);
+    }
+
+    initMap();
+
+    // ---- Main Publish Room Logic ----
+    function initPublishRoom(pairCode) {
+      const q = query(
+        collection(db, "agendas"),
+        where("pairCode", "==", pairCode)
+      );
+
+      onSnapshot(q, (snapshot) => {
+        const todayStr = IndonesianTime.getLocalDateString();
+        let allAgendas = [];
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          allAgendas.push({ id: docSnap.id, ...data });
+        });
+
+        // Filter: hanya agenda yang akan datang (tanggal akhir >= hari ini)
+        const upcomingAgendas = allAgendas.filter(a => {
+          const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
+          return !aEnd || aEnd >= todayStr;
+        });
+
+        // Urutkan berdasarkan tanggal & waktu mulai
+        upcomingAgendas.sort((a, b) => {
+          const aTime = a.start ? new Date(a.start).getTime() : 0;
+          const bTime = b.start ? new Date(b.start).getTime() : 0;
+          return aTime - bTime;
+        });
+
+        // Update count badges
+        document.getElementById("publishAgendaCount").textContent = `${upcomingAgendas.length} Agenda`;
+        document.getElementById("rundownCount").textContent = `${upcomingAgendas.length} Kegiatan`;
+
+        renderAgendaPins(upcomingAgendas, todayStr);
+        renderRundown(upcomingAgendas, todayStr);
+      }, (error) => {
+        console.error("Gagal memuat agenda:", error);
+        document.getElementById("rundownList").innerHTML = `
+          <div class="text-center py-10 space-y-2">
+            <i data-lucide="alert-circle" class="h-8 w-8 text-rose-400 mx-auto"></i>
+            <p class="text-sm text-rose-600 font-semibold">Gagal memuat data agenda</p>
+            <p class="text-xs text-slate-500">${error.message}</p>
+          </div>
+        `;
+        lucide.createIcons();
+      });
+    }
+
+    // ---- Render Agenda Pins on Map ----
+    function renderAgendaPins(agendas, todayStr) {
+      if (!publishMap) return;
+
+      const locatedAgendas = agendas.filter(a => {
+        const lat = parseFloat(a.locationLat);
+        const lng = parseFloat(a.locationLng);
+        return !isNaN(lat) && !isNaN(lng);
+      });
+
+      // Bersihkan marker yang sudah tidak ada
+      const currentIds = new Set(locatedAgendas.map(a => a.id));
+      Object.keys(agendaMarkers).forEach(id => {
+        if (!currentIds.has(id)) {
+          if (agendaMarkers[id]) publishMap.removeLayer(agendaMarkers[id]);
+          delete agendaMarkers[id];
+        }
+      });
+
+      const bounds = [];
+
+      locatedAgendas.forEach(a => {
+        const latlng = [parseFloat(a.locationLat), parseFloat(a.locationLng)];
+        bounds.push(latlng);
+
+        const isHighlighted = highlightedAgendaId === a.id;
+        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
+        const bubbleClass = isHighlighted ? 'agenda-bubble-tooltip highlight' : 'agenda-bubble-tooltip';
+
+        const pinIcon = L.divIcon({
+          className: 'agenda-custom-pin',
+          html: `
+            <div class="relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
+              <div class="h-8 w-8 rounded-full ${isHighlighted ? 'bg-indigo-600 ring-4 ring-indigo-200' : 'bg-slate-900 ring-2 ring-white'} text-white flex items-center justify-center shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+              </div>
+              <div class="absolute -bottom-1 h-2 w-2 rotate-45 ${isHighlighted ? 'bg-indigo-600' : 'bg-slate-900'}"></div>
+            </div>
+          `,
+          iconSize: [32, 36],
+          iconAnchor: [16, 36],
+          tooltipAnchor: [0, -38]
+        });
+
+        const tooltipHtml = `
+          <div class="flex flex-col items-center text-center leading-tight">
+            <div class="flex items-center gap-1 font-bold">
+              <span class="truncate max-w-[130px] sm:max-w-[170px]">${escapeHtml(a.title)}</span>
+              ${timeStr ? `<span class="text-[9px] text-indigo-300 font-mono">(${timeStr})</span>` : ''}
+            </div>
+            <span class="text-[9px] text-slate-300 truncate max-w-[140px] sm:max-w-[180px] mt-0.5 font-normal">📍 ${escapeHtml(a.locationName || 'Lokasi')}</span>
+          </div>
+        `;
+
+        const popupHtml = `
+          <div class="text-xs p-1 space-y-1.5 min-w-[190px]">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-800">Agenda</span>
+              <h4 class="font-bold text-slate-900 text-sm truncate">${escapeHtml(a.title)}</h4>
+            </div>
+            <div class="text-slate-700 flex items-start gap-1">
+              <span class="text-indigo-600 font-bold shrink-0">📍</span>
+              <span class="font-medium">${escapeHtml(a.locationName)}</span>
+            </div>
+            ${a.locationAddress && a.locationAddress !== a.locationName ? `<div class="text-[10px] text-slate-400">${escapeHtml(a.locationAddress)}</div>` : ''}
+            <div class="text-[11px] text-slate-500 font-medium">🕒 ${IndonesianTime.formatDateShort(new Date(a.start))}${timeStr ? `, ${timeStr}` : ''}</div>
+            ${a.end ? `<div class="text-[10px] text-slate-400">Sampai: ${IndonesianTime.formatDateShort(new Date(a.end))}, ${IndonesianTime.formatTime(new Date(a.end))}</div>` : ''}
+            ${a.desc ? `<div class="text-[10px] text-slate-500 pt-1 border-t border-slate-100 mt-1">${escapeHtml(a.desc)}</div>` : ''}
+            <div class="pt-1.5 border-t border-slate-100">
+              <a href="https://www.google.com/maps/search/?api=1&query=${a.locationLat},${a.locationLng}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-0.5">Buka di Google Maps ↗</a>
+            </div>
+          </div>
+        `;
+
+        if (!agendaMarkers[a.id]) {
+          agendaMarkers[a.id] = L.marker(latlng, { icon: pinIcon }).addTo(publishMap);
+          agendaMarkers[a.id].bindTooltip(tooltipHtml, {
+            permanent: true,
+            direction: 'top',
+            offset: [0, -10],
+            className: bubbleClass
+          });
+          agendaMarkers[a.id].bindPopup(popupHtml);
+        } else {
+          agendaMarkers[a.id].setLatLng(latlng);
+          agendaMarkers[a.id].setIcon(pinIcon);
+          agendaMarkers[a.id].setTooltipContent(tooltipHtml);
+          const tt = agendaMarkers[a.id].getTooltip();
+          if (tt) {
+            tt.options.className = bubbleClass;
+            const el = tt.getElement();
+            if (el) {
+              el.className = 'leaflet-tooltip leaflet-zoom-animated ' + bubbleClass;
+            }
+          }
+          agendaMarkers[a.id].setPopupContent(popupHtml);
+        }
+      });
+
+      if (bounds.length > 0) {
+        publishMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+      }
+    }
+
+    // ---- Render Rundown List (Grouped by Date) ----
+    function renderRundown(agendas, todayStr) {
+      const listEl = document.getElementById("rundownList");
+
+      if (agendas.length === 0) {
+        listEl.innerHTML = `
+          <div class="text-center py-14 space-y-3">
+            <div class="h-14 w-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <i data-lucide="calendar-x" class="h-7 w-7"></i>
+            </div>
+            <p class="text-sm font-semibold text-slate-600">Belum Ada Agenda Mendatang</p>
+            <p class="text-xs text-slate-400">Tidak ada jadwal yang aktif atau akan datang saat ini.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      // Group by date
+      const grouped = {};
+      agendas.forEach(a => {
+        const dateKey = a.start ? a.start.split('T')[0] : 'no-date';
+        if (!grouped[dateKey]) grouped[dateKey] = [];
+        grouped[dateKey].push(a);
+      });
+
+      let html = '';
+
+      Object.keys(grouped).sort().forEach(dateKey => {
+        const items = grouped[dateKey];
+        const dateObj = dateKey !== 'no-date' ? new Date(dateKey + 'T00:00:00') : null;
+
+        const isToday = dateKey === todayStr;
+        const dateLabel = dateObj
+          ? IndonesianTime.formatDateFull(dateObj)
+          : 'Tanggal Tidak Diketahui';
+
+        html += `
+          <div class="date-divider mt-1">
+            <div class="flex items-center gap-2">
+              ${isToday ? '<span class="h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-soft shrink-0"></span>' : '<span class="h-2 w-2 rounded-full bg-slate-300 shrink-0"></span>'}
+              <span class="text-xs font-bold ${isToday ? 'text-emerald-700' : 'text-slate-600'} whitespace-nowrap">
+                ${dateLabel}
+                ${isToday ? '<span class="text-[9px] ml-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">HARI INI</span>' : ''}
+              </span>
+            </div>
+          </div>
+        `;
+
+        items.forEach(item => {
+          const startTime = item.start ? IndonesianTime.formatTime(new Date(item.start)) : '-';
+          const endTime = item.end ? IndonesianTime.formatTime(new Date(item.end)) : '-';
+          const duration = calculateDuration(item.start, item.end);
+          const hasLocation = item.locationLat && item.locationLng;
+
+          const isPersonal = item.type === "private";
+          let badgeLabel = '';
+          let badgeClass = '';
+          let borderAccent = '';
+
+          if (!isPersonal) {
+            badgeLabel = 'Grup';
+            badgeClass = 'bg-indigo-100 text-indigo-800 border border-indigo-200';
+            borderAccent = 'border-l-indigo-500';
+          } else {
+            badgeLabel = `Personal${item.createdByName ? ` — ${escapeHtml(item.createdByName)}` : ''}`;
+            badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
+            borderAccent = 'border-l-emerald-500';
+          }
+
+          html += `
+            <div class="rundown-card rounded-xl border border-slate-200 bg-white p-3.5 border-l-4 ${borderAccent} ${hasLocation ? '' : 'opacity-80'}"
+                 data-agenda-id="${item.id}"
+                 ${hasLocation ? `data-lat="${item.locationLat}" data-lng="${item.locationLng}"` : ''}>
+              <div class="rundown-card-header flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold ${badgeClass}">${badgeLabel}</span>
+                    <h4 class="font-bold text-slate-900 text-sm break-words">${escapeHtml(item.title)}</h4>
+                  </div>
+                  ${item.desc ? `<p class="text-xs text-slate-500 mt-1 break-words line-clamp-2">${escapeHtml(item.desc)}</p>` : ''}
+                </div>
+                ${hasLocation ? `
+                  <div class="shrink-0 h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center" title="Lihat di peta">
+                    <i data-lucide="map-pin" class="h-3.5 w-3.5"></i>
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Time & Duration -->
+              <div class="mt-2.5 py-1.5 px-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                <div class="flex items-center gap-1.5 font-medium">
+                  <i data-lucide="clock" class="h-3.5 w-3.5 text-slate-400 shrink-0"></i>
+                  <span>${startTime} — ${endTime}</span>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-700">${duration}</span>
+              </div>
+
+              ${item.locationName ? `
+                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-600">
+                  <i data-lucide="map-pin" class="h-3 w-3 text-indigo-500 shrink-0"></i>
+                  <span class="font-medium truncate">${escapeHtml(item.locationName)}</span>
+                  ${item.locationAddress && item.locationAddress !== item.locationName ? `<span class="text-[10px] text-slate-400 truncate hidden sm:inline">• ${escapeHtml(item.locationAddress)}</span>` : ''}
+                </div>
+              ` : ''}
+
+              <!-- Comment Toggle Button -->
+              <div class="mt-2.5 pt-2 border-t border-slate-100">
+                <button type="button" class="btn-toggle-comments w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition" data-agenda-id="${item.id}">
+                  <i data-lucide="message-circle" class="h-3.5 w-3.5"></i>
+                  <span class="comment-toggle-label">Komentar</span>
+                  <span class="comment-count-badge text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold" data-count-for="${item.id}">0</span>
+                </button>
+              </div>
+
+              <!-- Expandable Comment Section -->
+              <div class="comment-section" id="comments-${item.id}">
+                <div class="mt-2 space-y-2">
+                  <div class="comment-messages comment-scroll max-h-[200px] overflow-y-auto space-y-1.5 pr-0.5" id="commentList-${item.id}">
+                    <p class="text-[11px] text-slate-400 text-center py-3">Memuat komentar...</p>
+                  </div>
+                  <form class="comment-form flex items-center gap-2" data-agenda-id="${item.id}">
+                    <input type="text" placeholder="Tulis komentar anonim..." required
+                      class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-200 transition" />
+                    <button type="submit"
+                      class="shrink-0 rounded-lg bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1">
+                      <i data-lucide="send" class="h-3 w-3"></i>
+                    </button>
+                  </form>
+                  <p class="text-[9px] text-slate-400 text-center">Komentar bersifat anonim & dapat dilihat semua anggota grup</p>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      });
+
+      listEl.innerHTML = html;
+      lucide.createIcons();
+
+      // Attach click handlers for pan-to-map (on header area only, not comment section)
+      listEl.querySelectorAll(".rundown-card[data-lat][data-lng]").forEach(card => {
+        const headerArea = card.querySelector(".rundown-card-header");
+        if (headerArea) {
+          headerArea.style.cursor = "pointer";
+          headerArea.addEventListener("click", () => {
+            const lat = parseFloat(card.dataset.lat);
+            const lng = parseFloat(card.dataset.lng);
+            const agendaId = card.dataset.agendaId;
+
+            if (isNaN(lat) || isNaN(lng)) return;
+
+            listEl.querySelectorAll(".rundown-card").forEach(c => c.classList.remove("active-highlight"));
+            card.classList.add("active-highlight");
+
+            highlightedAgendaId = agendaId;
+            publishMap.flyTo([lat, lng], 16, { duration: 0.8 });
+
+            if (agendaMarkers[agendaId]) {
+              agendaMarkers[agendaId].openPopup();
+              const tt = agendaMarkers[agendaId].getTooltip();
+              if (tt) {
+                const el = tt.getElement();
+                if (el) {
+                  document.querySelectorAll('.agenda-bubble-tooltip.highlight').forEach(t => {
+                    t.className = t.className.replace('highlight', '').trim();
+                  });
+                  el.className = 'leaflet-tooltip leaflet-zoom-animated agenda-bubble-tooltip highlight';
+                }
+              }
+            }
+
+            if (window.innerWidth < 1024) {
+              document.getElementById("publishMap").scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          });
+        }
+      });
+
+      // Fetch initial comment counts for cards
+      listEl.querySelectorAll(".comment-count-badge[data-count-for]").forEach(badge => {
+        const agendaId = badge.dataset.countFor;
+        if (!agendaId) return;
+        getCountFromServer(collection(db, "agendas", agendaId, "chats"))
+          .then(snapshot => {
+            badge.textContent = String(snapshot.data().count);
+          })
+          .catch(() => {});
+      });
+
+      // Attach comment toggle handlers
+      listEl.querySelectorAll(".btn-toggle-comments").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const agendaId = btn.dataset.agendaId;
+          const section = document.getElementById(`comments-${agendaId}`);
+          if (!section) return;
+
+          const isOpen = section.classList.contains("open");
+          // Close all other comment sections and stop their listeners
+          listEl.querySelectorAll(".comment-section.open").forEach(s => {
+            s.classList.remove("open");
+            const otherId = s.id.replace("comments-", "");
+            if (otherId !== agendaId) stopCommentListener(otherId);
+          });
+
+          if (!isOpen) {
+            section.classList.add("open");
+            startCommentListener(agendaId);
+          } else {
+            stopCommentListener(agendaId);
+          }
+        });
+      });
+
+      // Attach comment form submit handlers
+      listEl.querySelectorAll(".comment-form").forEach(form => {
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const agendaId = form.dataset.agendaId;
+          const input = form.querySelector("input");
+          const text = input.value.trim();
+          if (!text || !agendaId) return;
+
+          input.value = "";
+          input.disabled = true;
+
+          try {
+            await addDoc(collection(db, "agendas", agendaId, "chats"), {
+              senderId: "anonymous",
+              senderName: "Anonim",
+              senderGender: "unknown",
+              isAnonymous: true,
+              text,
+              localCreatedAt: Date.now(),
+              timestamp: serverTimestamp()
+            });
+          } catch (err) {
+            console.error("Gagal mengirim komentar:", err);
+            alert("Gagal mengirim komentar: " + err.message);
+          } finally {
+            input.disabled = false;
+            input.focus();
+          }
+        });
+      });
+    }
+
+    // ---- Comment Listeners per Agenda ----
+    const commentListeners = {};
+
+    function startCommentListener(agendaId) {
+      if (commentListeners[agendaId]) return; // already listening
+
+      const chatsRef = collection(db, "agendas", agendaId, "chats");
+      commentListeners[agendaId] = onSnapshot(chatsRef, (snapshot) => {
+        const listEl = document.getElementById(`commentList-${agendaId}`);
+        const countBadge = document.querySelector(`[data-count-for="${agendaId}"]`);
+        if (!listEl) return;
+
+        if (snapshot.empty) {
+          listEl.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-3">Belum ada komentar. Jadilah yang pertama!</p>`;
+          if (countBadge) countBadge.textContent = "0";
+          return;
+        }
+
+        const msgs = [];
+        snapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          let timeVal = 0;
+          if (data.timestamp?.toMillis) timeVal = data.timestamp.toMillis();
+          else if (data.localCreatedAt) timeVal = data.localCreatedAt;
+          else timeVal = Date.now();
+          msgs.push({ id: docSnap.id, ...data, _sortTime: timeVal });
+        });
+
+        msgs.sort((a, b) => a._sortTime - b._sortTime);
+        if (countBadge) countBadge.textContent = String(msgs.length);
+
+        listEl.innerHTML = "";
+        msgs.forEach(msg => {
+          const isAnon = msg.isAnonymous === true;
+          let time = "";
+          if (msg.timestamp?.toDate) {
+            time = IndonesianTime.formatTime(msg.timestamp.toDate());
+          } else if (typeof msg.localCreatedAt === "number") {
+            time = IndonesianTime.formatTime(new Date(msg.localCreatedAt));
+          }
+
+          let dateStr = "";
+          if (msg.timestamp?.toDate) {
+            dateStr = IndonesianTime.formatDateShort(msg.timestamp.toDate());
+          } else if (typeof msg.localCreatedAt === "number") {
+            dateStr = IndonesianTime.formatDateShort(new Date(msg.localCreatedAt));
+          }
+
+          const genderIcon = msg.senderGender === 'female' ? '👩' : (msg.senderGender === 'unknown' ? '👤' : '👨');
+          const senderLabel = isAnon ? '👤 Anonim' : `${genderIcon} ${escapeHtml(msg.senderName || 'User')}`;
+          const bubbleBg = isAnon ? 'bg-amber-50 border border-amber-100' : 'bg-slate-50 border border-slate-100';
+          const nameColor = isAnon ? 'text-amber-600' : 'text-slate-600';
+
+          const el = document.createElement("div");
+          el.className = `comment-bubble rounded-lg px-3 py-2 ${bubbleBg}`;
+          el.innerHTML = `
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-[10px] font-semibold ${nameColor}">${senderLabel}</span>
+              <span class="text-[9px] text-slate-400 shrink-0">${time}${dateStr ? ` • ${dateStr}` : ''}</span>
+            </div>
+            <p class="text-xs text-slate-800 mt-0.5 break-words leading-relaxed">${escapeHtml(msg.text)}</p>
+          `;
+          listEl.appendChild(el);
+        });
+
+        listEl.scrollTop = listEl.scrollHeight;
+      }, (err) => {
+        console.error("Error listening comments:", err);
+      });
+    }
+
+    function stopCommentListener(agendaId) {
+      if (commentListeners[agendaId]) {
+        commentListeners[agendaId]();
+        delete commentListeners[agendaId];
+      }
+    }
+
+  </script>
+</body>
+
+</html>
