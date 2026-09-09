@@ -140,15 +140,11 @@
 
     /* ==================== COMMENT SECTION ==================== */
     .comment-section {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.35s ease, opacity 0.25s ease;
-      opacity: 0;
+      display: none;
     }
 
     .comment-section.open {
-      max-height: 600px;
-      opacity: 1;
+      display: block;
     }
 
     .comment-bubble {
@@ -157,15 +153,6 @@
 
     .comment-bubble:hover {
       background-color: #f1f5f9;
-    }
-
-    .comment-scroll::-webkit-scrollbar {
-      width: 3px;
-    }
-
-    .comment-scroll::-webkit-scrollbar-thumb {
-      background: #e2e8f0;
-      border-radius: 100px;
     }
   </style>
 </head>
@@ -561,6 +548,9 @@
       }
     }
 
+    // Simpan agenda ID yang komentar-nya sedang dibuka agar tidak collapse saat data re-render
+    const openedCommentAgendaIds = new Set();
+
     // ---- Render Rundown List (Grouped by Date) ----
     function renderRundown(agendas, todayStr) {
       const listEl = document.getElementById("rundownList");
@@ -619,6 +609,8 @@
           const isPersonal = item.type === "private";
           const borderAccent = isPersonal ? 'border-l-emerald-500' : 'border-l-indigo-500';
 
+          const isCommentsOpen = openedCommentAgendaIds.has(item.id);
+
           html += `
             <div class="rundown-card rounded-xl border border-slate-200 bg-white p-3.5 border-l-4 ${borderAccent} ${hasLocation ? '' : 'opacity-80'}"
                  data-agenda-id="${item.id}"
@@ -664,9 +656,9 @@
               </div>
 
               <!-- Expandable Comment Section -->
-              <div class="comment-section" id="comments-${item.id}">
+              <div class="comment-section ${isCommentsOpen ? 'open' : ''}" id="comments-${item.id}">
                 <div class="mt-2 space-y-2">
-                  <div class="comment-messages comment-scroll max-h-[200px] overflow-y-auto space-y-1.5 pr-0.5" id="commentList-${item.id}">
+                  <div class="comment-messages space-y-1.5" id="commentList-${item.id}">
                     <p class="text-[11px] text-slate-400 text-center py-3">Memuat komentar...</p>
                   </div>
                   <form class="comment-form flex items-center gap-2" data-agenda-id="${item.id}">
@@ -687,6 +679,12 @@
 
       listEl.innerHTML = html;
       lucide.createIcons();
+
+      // Re-attach listeners untuk semua komentar yang sedang terbuka
+      openedCommentAgendaIds.forEach(agendaId => {
+        stopCommentListener(agendaId);
+        startCommentListener(agendaId);
+      });
 
       // Attach click handlers for pan-to-map (on header area only, not comment section)
       listEl.querySelectorAll(".rundown-card[data-lat][data-lng]").forEach(card => {
@@ -747,17 +745,13 @@
           if (!section) return;
 
           const isOpen = section.classList.contains("open");
-          // Close all other comment sections and stop their listeners
-          listEl.querySelectorAll(".comment-section.open").forEach(s => {
-            s.classList.remove("open");
-            const otherId = s.id.replace("comments-", "");
-            if (otherId !== agendaId) stopCommentListener(otherId);
-          });
-
           if (!isOpen) {
             section.classList.add("open");
+            openedCommentAgendaIds.add(agendaId);
             startCommentListener(agendaId);
           } else {
+            section.classList.remove("open");
+            openedCommentAgendaIds.delete(agendaId);
             stopCommentListener(agendaId);
           }
         });
@@ -772,6 +766,11 @@
           const input = form.querySelector("input");
           const text = input.value.trim();
           if (!text || !agendaId) return;
+
+          // Pastikan tetap terbuka saat dan setelah komentar dikirim
+          openedCommentAgendaIds.add(agendaId);
+          const section = document.getElementById(`comments-${agendaId}`);
+          if (section) section.classList.add("open");
 
           input.value = "";
           input.disabled = true;
@@ -799,8 +798,16 @@
             console.error("Gagal mengirim komentar:", err);
             alert("Gagal mengirim komentar: " + err.message);
           } finally {
-            input.disabled = false;
-            input.focus();
+            const currentForm = document.querySelector(`.comment-form[data-agenda-id="${agendaId}"]`);
+            if (currentForm) {
+              const curInput = currentForm.querySelector("input");
+              if (curInput) {
+                curInput.disabled = false;
+                curInput.focus();
+              }
+            } else {
+              input.disabled = false;
+            }
           }
         });
       });
@@ -879,8 +886,6 @@
           }
           listEl.appendChild(el);
         });
-
-        listEl.scrollTop = listEl.scrollHeight;
       }, (err) => {
         console.error("Error listening comments:", err);
       });
