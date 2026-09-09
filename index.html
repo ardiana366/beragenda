@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GroupSync - Kalender Agenda & Live Lokasi Grup</title>
+  <title>BerAgenda - Kalender Agenda & Live Lokasi Grup</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -274,7 +274,7 @@
   <div id="joinScreen" class="flex min-h-screen items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 p-8 shadow-md">
       <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">GroupSync</h1>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">BerAgenda</h1>
         <p class="text-xs text-slate-500 mt-1">Berbagi agenda, lokasi live, dan obrolan untuk keluarga, tim, atau komunitas</p>
       </div>
 
@@ -346,8 +346,17 @@
         </div>
       </div>
 
-      <!-- Header Right: Notification Tray Toggle -->
-      <div class="flex items-center gap-3">
+      <!-- Header Right: Live Clock & Notification Tray -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Widget Waktu Indonesia (Live Clock & Tanggal) -->
+        <div id="indonesianTimeWidget" class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/90 bg-white/90 shadow-sm backdrop-blur-sm">
+          <i data-lucide="clock" class="h-4 w-4 text-indigo-600 hidden sm:inline-block"></i>
+          <div class="flex flex-col text-right sm:text-left">
+            <span id="liveClockTime" class="font-mono text-xs sm:text-sm font-bold text-slate-800 tracking-tight leading-tight">--:--:--</span>
+            <span id="liveClockDate" class="text-[10px] text-slate-500 font-medium hidden sm:inline-block leading-tight">--</span>
+          </div>
+        </div>
+
         <div class="relative">
           <button id="btnNotifTray" class="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition shadow-sm flex items-center justify-center">
             <i data-lucide="bell" class="h-5 w-5"></i>
@@ -723,12 +732,121 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // ====================================================
+    // MODUL FORMAT WAKTU & TANGGAL INDONESIA (id-ID)
+    // ====================================================
+    const IndonesianTime = {
+      // Nama Hari Baku Bahasa Indonesia (PUEBI)
+      days: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
+
+      // Nama Bulan Baku Bahasa Indonesia (PUEBI)
+      months: [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ],
+
+      monthsShort: [
+        "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+        "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+      ],
+
+      getDateParts(date = new Date()) {
+        const d = date instanceof Date ? date : new Date(date);
+        const validDate = isNaN(d.getTime()) ? new Date() : d;
+
+        const year = String(validDate.getFullYear());
+        const month = String(validDate.getMonth() + 1).padStart(2, "0");
+        const day = String(validDate.getDate()).padStart(2, "0");
+        const hour = String(validDate.getHours()).padStart(2, "0");
+        const minute = String(validDate.getMinutes()).padStart(2, "0");
+        const second = String(validDate.getSeconds()).padStart(2, "0");
+        const dayOfWeek = validDate.getDay();
+
+        return {
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          second,
+          dayName: this.days[dayOfWeek],
+          dayShort: this.days[dayOfWeek].substring(0, 3),
+          monthName: this.months[validDate.getMonth()],
+          monthShort: this.monthsShort[validDate.getMonth()]
+        };
+      },
+
+      // Format Jam Digital: e.g. "16:09" atau "16:09:19" (tanpa zona waktu)
+      formatTime(date = new Date(), options = { withSeconds: false, usePuebiDot: false }) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        const sep = options?.usePuebiDot ? "." : ":";
+        return options?.withSeconds ? `${p.hour}${sep}${p.minute}${sep}${p.second}` : `${p.hour}${sep}${p.minute}`;
+      },
+
+      // Format Tanggal Penuh Bahasa Indonesia: "Rabu, 9 September 2026"
+      formatDateFull(date = new Date()) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${p.dayName}, ${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+      },
+
+      // Format Tanggal Standar: "9 September 2026"
+      formatDateStandard(date = new Date()) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+      },
+
+      // Format Tanggal Singkat: "9 Sep 2026"
+      formatDateShort(date = new Date()) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${parseInt(p.day, 10)} ${p.monthShort} ${p.year}`;
+      },
+
+      // Format Tanggal & Jam Lengkap: "Rabu, 9 September 2026 pukul 16:09"
+      formatDateTime(date = new Date(), options = { usePuebi: false, withSeconds: false }) {
+        if (!date) return "";
+        const datePart = this.formatDateFull(date);
+        const timePart = this.formatTime(date, { withSeconds: options?.withSeconds, usePuebiDot: options?.usePuebi });
+        return `${datePart} pukul ${timePart}`;
+      },
+
+      // Format ISO YYYY-MM-DD lokal (mencegah UTC offset bug)
+      getLocalDateString(date = new Date()) {
+        const p = this.getDateParts(date);
+        return `${p.year}-${p.month}-${p.day}`;
+      },
+
+      // Format YYYY-MM-DDTHH:mm untuk input datetime-local
+      getLocalDateTimeInput(date = new Date()) {
+        const p = this.getDateParts(date);
+        return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+      },
+
+      init() {
+        const clockTimeEl = document.getElementById("liveClockTime");
+        const clockDateEl = document.getElementById("liveClockDate");
+        const tick = () => {
+          const now = new Date();
+          if (clockTimeEl) clockTimeEl.textContent = this.formatTime(now, { withSeconds: true });
+          if (clockDateEl) {
+            const p = this.getDateParts(now);
+            clockDateEl.textContent = `${p.dayName}, ${parseInt(p.day, 10)} ${p.monthShort} ${p.year}`;
+          }
+        };
+        tick();
+        setInterval(tick, 1000);
+      }
+    };
+
     // State Aplikasi
     let userProfile = JSON.parse(localStorage.getItem("group_user_profile")) || null;
     let readReceipts = JSON.parse(localStorage.getItem("group_chat_read_receipts")) || {};
     let allAgendas = [];
     let currentViewingDate = new Date();
-    let selectedDateStr = new Date().toISOString().split('T')[0];
+    let selectedDateStr = IndonesianTime.getLocalDateString();
     let currentActiveChatAgendaId = null;
     let currentActiveChatAgendaDate = null;
     let chatUnsubscribe = null;
@@ -920,6 +1038,7 @@
       avatar.textContent = userProfile.name.charAt(0).toUpperCase();
 
       lucide.createIcons();
+      IndonesianTime.init();
       initMap();
       syncLocation();
       listenToLocations();
@@ -981,8 +1100,8 @@
 
       recentChatAgendas.forEach((item) => {
         const isUnread = checkHasUnreadChat(item);
-        const timeStr = item.lastChatTime ? new Date(item.lastChatTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-        const dateStr = item.lastChatTime ? new Date(item.lastChatTime).toLocaleDateString("id-ID", { day: 'numeric', month: 'short' }) : '';
+        const timeStr = item.lastChatTime ? IndonesianTime.formatTime(new Date(item.lastChatTime)) : '';
+        const dateStr = item.lastChatTime ? IndonesianTime.formatDateShort(new Date(item.lastChatTime)) : '';
 
         const itemEl = document.createElement("div");
         itemEl.className = `p-2.5 rounded-xl border transition cursor-pointer flex items-start justify-between gap-2 ${
@@ -1117,7 +1236,7 @@
 
     document.getElementById("btnTodayMonth").addEventListener("click", () => {
       currentViewingDate = new Date();
-      selectedDateStr = new Date().toISOString().split('T')[0];
+      selectedDateStr = IndonesianTime.getLocalDateString();
       closeChecklistView();
       renderCalendar();
       renderSelectedDayAgendas();
@@ -1140,7 +1259,7 @@
       const gridEl = document.getElementById("calendarGrid");
       gridEl.innerHTML = "";
 
-      const todayStr = new Date().toISOString().split('T')[0];
+      const todayStr = IndonesianTime.getLocalDateString();
 
       for (let x = firstDayIndex; x > 0; x--) {
         const dayNum = prevMonthDays - x + 1;
@@ -1259,12 +1378,7 @@
       const countEl = document.getElementById("selectedDayCount");
 
       const dateObj = new Date(selectedDateStr + "T00:00:00");
-      const formattedTitle = dateObj.toLocaleDateString("id-ID", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      });
+      const formattedTitle = IndonesianTime.formatDateFull(dateObj);
       titleEl.textContent = formattedTitle;
 
       const dayEvents = allAgendas.filter(a => {
@@ -1297,8 +1411,8 @@
         const durationText = calculateDuration(item.start, item.end);
         const hasUnread = checkHasUnreadChat(item);
 
-        const startTime = new Date(item.start).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
-        const endTime = new Date(item.end).toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
+        const startTime = IndonesianTime.formatTime(new Date(item.start));
+        const endTime = IndonesianTime.formatTime(new Date(item.end));
 
         let badgeLabel = '';
         let badgeClass = '';
@@ -1453,12 +1567,7 @@
     function formatDateTimeShort(dateTimeStr) {
       if (!dateTimeStr) return "";
       const d = new Date(dateTimeStr);
-      return d.toLocaleDateString("id-ID", {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit"
-      });
+      return `${IndonesianTime.formatDateShort(d)}, ${IndonesianTime.formatTime(d)}`;
     }
 
     function calculateTimelineProgress(item) {
@@ -1527,7 +1636,7 @@
     }
 
     function checkDailyReset(items) {
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = IndonesianTime.getLocalDateString();
       const now = new Date();
       let updated = false;
 
@@ -2051,7 +2160,7 @@
         return;
       }
 
-      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayStr = IndonesianTime.getLocalDateString();
       const items = agenda.checklistItems || [];
 
       if (itemId) {
@@ -2210,9 +2319,9 @@
       const formattedText = parseMessageWithLinks(msg.text, isMine);
       let time = "";
       if (msg.timestamp?.toDate) {
-        time = msg.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        time = IndonesianTime.formatTime(msg.timestamp.toDate());
       } else if (typeof msg.localCreatedAt === "number") {
-        time = new Date(msg.localCreatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        time = IndonesianTime.formatTime(new Date(msg.localCreatedAt));
       }
 
       const bubble = document.createElement("div");
@@ -2242,7 +2351,7 @@
       document.getElementById("chatModalTitle").textContent = agendaTitle;
       
       const formattedDate = currentActiveChatAgendaDate 
-        ? new Date(currentActiveChatAgendaDate + "T00:00:00").toLocaleDateString("id-ID", { day: 'numeric', month: 'short', year: 'numeric' })
+        ? IndonesianTime.formatDateStandard(new Date(currentActiveChatAgendaDate + "T00:00:00"))
         : '';
       
       document.getElementById("chatModalSubtitle").textContent = formattedDate ? `📅 ${formattedDate} • Klik untuk lihat di kalender` : 'Klik untuk lihat di kalender';
