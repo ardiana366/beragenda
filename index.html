@@ -531,6 +531,21 @@
     .drag-handle:active {
       cursor: grabbing;
     }
+
+    .goal-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+      border-color: #6366f1;
+    }
+
+    .goal-drag-handle {
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .goal-drag-handle:active {
+      cursor: grabbing;
+    }
   </style>
 </head>
 
@@ -1281,8 +1296,11 @@
       <div id="finance-subview-goals" class="space-y-4 hidden">
         <div class="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
           <div>
-            <h3 class="font-bold text-slate-800 text-sm">Daftar Budget (Anggaran Kebutuhan)</h3>
-            <p class="text-xs text-slate-500">Pantau pemakaian belanja vs alokasi budget</p>
+            <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-4 h-4 text-indigo-600"></i>
+              <span>Daftar Budget (Anggaran Kebutuhan)</span>
+            </h3>
+            <p class="text-xs text-slate-500">Pantau pemakaian belanja vs alokasi budget (tahan & geser untuk atur urutan)</p>
           </div>
           <button onclick="window.openGoalModal()"
             class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow transition">
@@ -6101,13 +6119,13 @@
         }
       }
 
-      // Budget List View
+      // Budget List View (Draggable)
       const goalsListEl = document.getElementById("goals-list");
       if (goalsListEl) {
         if (financeState.goals.length === 0) {
           goalsListEl.innerHTML = `<p class="text-slate-400 text-xs py-3 text-center">Belum ada alokasi pos budget.</p>`;
         } else {
-          goalsListEl.innerHTML = financeState.goals.map(g => {
+          goalsListEl.innerHTML = financeState.goals.map((g, idx) => {
             const goalCat = catTotals[g.name] || { in: 0, out: 0 };
             const spentExpense = goalCat.out;
             const percentProgress = Math.round((spentExpense / g.amount) * 100) || 0;
@@ -6115,18 +6133,26 @@
             const diffAmount = Math.abs(g.amount - spentExpense);
 
             return `
-              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
-                <div class="flex justify-between items-center">
-                  <div>
-                    <span class="font-bold text-slate-800 text-sm">${escapeHtml(g.name)}</span>
-                    <span class="text-xs text-slate-500 font-semibold ml-1">(${formatRp(g.amount)})</span>
+              <div class="goal-card p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/80 space-y-2 transition-all duration-150 select-none relative group"
+                   data-id="${g.id}"
+                   data-index="${idx}"
+                   draggable="true">
+                <div class="flex justify-between items-center gap-2">
+                  <div class="flex items-center gap-2 min-w-0 flex-1">
+                    <div class="goal-drag-handle text-slate-300 hover:text-indigo-600 cursor-grab active:cursor-grabbing p-1 -ml-1.5 transition rounded-lg hover:bg-indigo-50 shrink-0" title="Tahan dan geser untuk mengatur urutan pos budget">
+                      <i data-lucide="grip-vertical" class="w-4 h-4"></i>
+                    </div>
+                    <div class="min-w-0 flex-1 truncate">
+                      <span class="font-bold text-slate-800 text-sm">${escapeHtml(g.name)}</span>
+                      <span class="text-xs text-slate-500 font-semibold ml-1">(${formatRp(g.amount)})</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-1">
-                    <button onclick="window.editGoal('${g.id}')" class="text-slate-400 hover:text-indigo-600 p-1 transition" title="Edit Budget">
-                      <i data-lucide="pencil" class="w-4 h-4"></i>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="window.editGoal('${g.id}')" class="text-slate-400 hover:text-indigo-600 p-1.5 rounded-lg hover:bg-indigo-50 transition" title="Edit Budget">
+                      <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                     </button>
-                    <button onclick="window.deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 p-1 transition" title="Hapus Budget">
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <button onclick="window.deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-50 transition" title="Hapus Budget">
+                      <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                     </button>
                   </div>
                 </div>
@@ -6145,6 +6171,8 @@
               </div>
             `;
           }).join("");
+
+          setupGoalDragAndDrop();
         }
       }
 
@@ -6264,6 +6292,134 @@
       updateFinanceCategoryDropdown();
     }
     window.handleGoalSubmit = handleGoalSubmit;
+
+    // ====================================================
+    // DRAG AND DROP: REORDER DAFTAR BUDGET
+    // ====================================================
+    let draggedGoalId = null;
+
+    function setupGoalDragAndDrop() {
+      const container = document.getElementById("goals-list");
+      if (!container) return;
+
+      const cards = container.querySelectorAll(".goal-card");
+      cards.forEach(card => {
+        // Desktop HTML5 Drag and Drop
+        card.addEventListener("dragstart", function(e) {
+          draggedGoalId = this.dataset.id;
+          this.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", this.dataset.id);
+        });
+
+        card.addEventListener("dragover", function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          const bounding = this.getBoundingClientRect();
+          const offset = e.clientY - bounding.top;
+          if (offset > bounding.height / 2) {
+            this.classList.remove("border-t-2", "border-t-indigo-600");
+            this.classList.add("border-b-2", "border-b-indigo-600");
+          } else {
+            this.classList.remove("border-b-2", "border-b-indigo-600");
+            this.classList.add("border-t-2", "border-t-indigo-600");
+          }
+        });
+
+        card.addEventListener("dragleave", function() {
+          this.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
+        });
+
+        card.addEventListener("drop", function(e) {
+          e.preventDefault();
+          this.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
+          const targetId = this.dataset.id;
+          if (!draggedGoalId || draggedGoalId === targetId) return;
+
+          const draggedIdx = financeState.goals.findIndex(g => g.id === draggedGoalId);
+          const targetIdx = financeState.goals.findIndex(g => g.id === targetId);
+
+          if (draggedIdx !== -1 && targetIdx !== -1) {
+            const bounding = this.getBoundingClientRect();
+            const offset = e.clientY - bounding.top;
+            const insertAfter = offset > bounding.height / 2;
+
+            const [movedItem] = financeState.goals.splice(draggedIdx, 1);
+            const newTargetIdx = financeState.goals.findIndex(g => g.id === targetId);
+            const finalIdx = insertAfter ? newTargetIdx + 1 : newTargetIdx;
+            financeState.goals.splice(finalIdx, 0, movedItem);
+
+            saveFinanceState();
+            renderFinanceAll();
+            updateAgendaCategoryDropdown();
+            updateFinanceCategoryDropdown();
+          }
+        });
+
+        card.addEventListener("dragend", function() {
+          this.classList.remove("dragging", "border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
+          draggedGoalId = null;
+        });
+
+        // Mobile Touch Support via .goal-drag-handle
+        const handle = card.querySelector(".goal-drag-handle");
+        if (handle) {
+          let touchStartY = 0;
+          let currentTargetCard = null;
+
+          handle.addEventListener("touchstart", function(e) {
+            draggedGoalId = card.dataset.id;
+            touchStartY = e.touches[0].clientY;
+            card.classList.add("dragging");
+          }, { passive: true });
+
+          handle.addEventListener("touchmove", function(e) {
+            const touchY = e.touches[0].clientY;
+            const touchX = e.touches[0].clientX;
+            const elemBelow = document.elementFromPoint(touchX, touchY);
+            const target = elemBelow ? elemBelow.closest(".goal-card") : null;
+
+            cards.forEach(c => c.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600"));
+
+            if (target && target !== card) {
+              currentTargetCard = target;
+              const bounding = target.getBoundingClientRect();
+              if (touchY - bounding.top > bounding.height / 2) {
+                target.classList.add("border-b-2", "border-b-indigo-600");
+              } else {
+                target.classList.add("border-t-2", "border-t-indigo-600");
+              }
+            }
+          }, { passive: true });
+
+          handle.addEventListener("touchend", function() {
+            card.classList.remove("dragging");
+            if (currentTargetCard && draggedGoalId && currentTargetCard.dataset.id !== draggedGoalId) {
+              const targetId = currentTargetCard.dataset.id;
+              const draggedIdx = financeState.goals.findIndex(g => g.id === draggedGoalId);
+              const targetIdx = financeState.goals.findIndex(g => g.id === targetId);
+
+              if (draggedIdx !== -1 && targetIdx !== -1) {
+                const isBottom = currentTargetCard.classList.contains("border-b-2");
+                const [movedItem] = financeState.goals.splice(draggedIdx, 1);
+                const newTargetIdx = financeState.goals.findIndex(g => g.id === targetId);
+                const finalIdx = isBottom ? newTargetIdx + 1 : newTargetIdx;
+                financeState.goals.splice(finalIdx, 0, movedItem);
+
+                saveFinanceState();
+                renderFinanceAll();
+                updateAgendaCategoryDropdown();
+                updateFinanceCategoryDropdown();
+              }
+            }
+            cards.forEach(c => c.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600"));
+            draggedGoalId = null;
+            currentTargetCard = null;
+          });
+        }
+      });
+    }
+    window.setupGoalDragAndDrop = setupGoalDragAndDrop;
 
     // CRUD: SCHEMES (PEMBAGIAN PATUNGAN)
     function openSchemeModal() {
