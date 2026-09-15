@@ -2242,6 +2242,12 @@
         return `${parseInt(p.day, 10)} ${p.monthShort} ${p.year}`;
       },
 
+      // Format Tanggal (Alias praktis ke formatDateShort)
+      formatDate(date = new Date()) {
+        if (!date) return "";
+        return this.formatDateShort(date);
+      },
+
       // Format Tanggal & Jam Lengkap: "Rabu, 9 September 2026 pukul 16:09"
       formatDateTime(date = new Date(), options = { usePuebi: false, withSeconds: false }) {
         if (!date) return "";
@@ -2326,10 +2332,11 @@
     let deferredPwaPrompt = null;
 
     const formatRp = (num) => "Rp " + Number(num || 0).toLocaleString("id-ID");
-    const getLocalDateTime = () => {
-      const now = new Date();
-      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-      return now.toISOString().slice(0, 16);
+    const getLocalDateTime = (d = new Date()) => {
+      const now = d instanceof Date ? new Date(d) : new Date(d || Date.now());
+      const valid = isNaN(now.getTime()) ? new Date() : now;
+      valid.setMinutes(valid.getMinutes() - valid.getTimezoneOffset());
+      return valid.toISOString().slice(0, 16);
     };
 
     // Helper Perhitungan Arus Kas Per-Agenda
@@ -6060,7 +6067,7 @@
         } else {
           agendaFinanceListEl.innerHTML = connectedAgendas.map(ag => {
             const cf = getAgendaCashFlow(ag.id);
-            const dateStr = ag.start ? IndonesianTime.formatDate(new Date(ag.start)) : "";
+            const dateStr = ag.start ? IndonesianTime.formatDateShort(new Date(ag.start)) : "";
             const isOver = cf.hasBudget && cf.budgetRemaining < 0;
 
             return `
@@ -6483,8 +6490,9 @@
       if (!selectEl) return;
       let html = `<option value="">-- Tanpa Agenda Khusus --</option>`;
       allAgendas.forEach(a => {
-        const dateStr = a.start ? IndonesianTime.formatDate(new Date(a.start)) : "";
-        html += `<option value="${a.id}" ${a.id === selectedAgendaId ? 'selected' : ''}>📅 ${escapeHtml(a.title)} (${dateStr})</option>`;
+        const dateStr = a.start ? IndonesianTime.formatDateShort(new Date(a.start)) : "";
+        const dateDisplay = dateStr ? ` (${dateStr})` : "";
+        html += `<option value="${a.id}" ${a.id === selectedAgendaId ? 'selected' : ''}>📅 ${escapeHtml(a.title || 'Agenda')}${dateDisplay}</option>`;
       });
       selectEl.innerHTML = html;
     }
@@ -6563,16 +6571,23 @@
     function openTxModal(prefillAgendaId = null) {
       document.getElementById("tx-id").value = "";
       document.getElementById("tx-title").value = "";
+      document.getElementById("tx-type").value = "expense";
       document.getElementById("tx-amount").value = "";
       document.getElementById("tx-inputer").value = userProfile?.name || "";
       document.getElementById("tx-datetime").value = getLocalDateTime();
       
+      const customInput = document.getElementById("tx-category-custom");
+      if (customInput) {
+        customInput.classList.add("hidden");
+        customInput.value = "";
+      }
+
       updateTxAgendaDropdown(prefillAgendaId || "");
 
       if (prefillAgendaId) {
         const ag = allAgendas.find(a => a.id === prefillAgendaId);
         if (ag) {
-          document.getElementById("tx-title").value = "Biaya " + ag.title;
+          document.getElementById("tx-title").value = "Biaya " + (ag.title || "Agenda");
           updateFinanceCategoryDropdown(ag.category || "");
         } else {
           updateFinanceCategoryDropdown();
@@ -6593,13 +6608,11 @@
       if (!tx) return;
       document.getElementById("tx-id").value = tx.id;
       document.getElementById("tx-title").value = tx.title || tx.category;
-      document.getElementById("tx-type").value = tx.type;
+      document.getElementById("tx-type").value = tx.type || "expense";
       document.getElementById("tx-amount").value = tx.amount;
-      document.getElementById("tx-inputer").value = tx.inputer;
+      document.getElementById("tx-inputer").value = tx.inputer || userProfile?.name || "";
 
-      const dt = tx.date ? new Date(tx.date) : new Date();
-      dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
-      document.getElementById("tx-datetime").value = dt.toISOString().slice(0, 16);
+      document.getElementById("tx-datetime").value = getLocalDateTime(tx.date);
 
       updateTxAgendaDropdown(tx.agendaId || "");
       updateFinanceCategoryDropdown(tx.category);
@@ -6614,6 +6627,7 @@
       if (confirm("Hapus transaksi ini?")) {
         financeState.transactions = financeState.transactions.filter(tx => tx.id !== id);
         saveFinanceState();
+        renderFinanceAll();
         renderSelectedDayAgendas();
         if (typeof renderWeekView === 'function') renderWeekView();
       }
@@ -6626,9 +6640,21 @@
       const title = document.getElementById("tx-title").value.trim();
       const type = document.getElementById("tx-type").value;
       const amount = Number(document.getElementById("tx-amount").value);
-      const inputer = document.getElementById("tx-inputer").value.trim();
-      const date = new Date(document.getElementById("tx-datetime").value).toISOString();
+      const inputer = document.getElementById("tx-inputer").value.trim() || userProfile?.name || "Member";
+      
+      const dtVal = document.getElementById("tx-datetime").value;
+      const dateObj = dtVal ? new Date(dtVal) : new Date();
+      const date = isNaN(dateObj.getTime()) ? new Date().toISOString() : dateObj.toISOString();
       const agendaId = document.getElementById("tx-agenda-id") ? document.getElementById("tx-agenda-id").value : "";
+
+      if (!title) {
+        alert("Silakan masukkan judul transaksi.");
+        return;
+      }
+      if (!amount || isNaN(amount) || amount <= 0) {
+        alert("Nominal transaksi harus lebih besar dari 0.");
+        return;
+      }
 
       const selectVal = document.getElementById("tx-category-select").value;
       let category = selectVal;
@@ -6673,6 +6699,7 @@
 
       document.getElementById("modal-tx").close();
       saveFinanceState();
+      renderFinanceAll();
       renderSelectedDayAgendas();
       if (typeof renderWeekView === 'function') renderWeekView();
     }
