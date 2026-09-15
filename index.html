@@ -3,8 +3,23 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GroupSync - Kalender Agenda & Live Lokasi Grup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Beragenda — Kalender Agenda, Map, Chat & Finance</title>
+
+  <!-- PWA & Mobile Web Meta Tags -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4f46e5" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Beragenda" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg" />
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -17,9 +32,16 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     #map {
-      height: 320px;
-      border-radius: 0.875rem;
+      height: 100%;
+      min-height: 480px;
+      width: 100%;
+      border-radius: 1rem;
     }
 
     #locationPickerMap {
@@ -27,6 +49,9 @@
       width: 100%;
       border-radius: 0.75rem;
     }
+
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     /* Tooltip Bubble untuk Agenda di Peta */
     .agenda-bubble-tooltip {
@@ -576,6 +601,18 @@
           class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
           Masuk ke Ruang Grup
         </button>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span class="flex items-center gap-1.5 text-[11px]">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-500"></i>
+            Aplikasi PWA Siap Pakai
+          </span>
+          <button type="button" onclick="window.triggerDirectPwaInstall()"
+            class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1 cursor-pointer">
+            <i data-lucide="download" class="w-3 h-3"></i>
+            Install di Android / iOS
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -660,6 +697,14 @@
 
       <!-- Header Right: Live Clock & Notification Tray -->
       <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Tombol Install PWA -->
+        <button id="btnInstallPwa" type="button"
+          class="hidden rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-2 text-xs font-bold transition shadow-2xs flex items-center gap-1.5"
+          title="Install Aplikasi ke Perangkat">
+          <i data-lucide="download" class="h-4 w-4"></i>
+          <span class="hidden sm:inline">Install App</span>
+        </button>
+
         <div class="relative">
           <button id="btnNotifTray"
             class="relative rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition shadow-sm flex items-center justify-center">
@@ -690,201 +735,639 @@
 
     </header>
 
-    <!-- Location Card (Peta Leaflet Multi-Member & Lokasi Agenda) -->
-    <section class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-2">
-      <div class="flex items-center justify-between flex-wrap gap-2">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-          <i data-lucide="map" class="h-4 w-4 text-indigo-600"></i>
-          Peta Lokasi Anggota & Agenda
-        </h3>
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-2 text-[11px] text-slate-500 font-medium">
-            <span class="flex items-center gap-1"><span
-                class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-white shadow-2xs"></span>
-              Anggota</span>
-            <span class="flex items-center gap-1"><span
-                class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white shadow-2xs"></span>
-              Agenda</span>
-          </div>
-          <button id="btnUpdateLocation" type="button"
-            class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 transition font-medium">
-            <i data-lucide="refresh-cw" class="h-3.5 w-3.5"></i> Perbarui Lokasi Saya
+    <!-- ==================================================== -->
+    <!-- MAIN APP NAVIGATION TABS (Desktop & Tablet)          -->
+    <!-- ==================================================== -->
+    <nav class="hidden md:flex items-center justify-between p-1.5 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xs">
+      <div class="flex items-center gap-2">
+        <button onclick="window.switchMainTab('agenda')" id="top-nav-btn-agenda"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition bg-indigo-600 text-white shadow-sm">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Agenda</span>
+        </button>
+        <button onclick="window.switchMainTab('map')" id="top-nav-btn-map"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs transition text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+          <i data-lucide="map" class="w-4 h-4"></i>
+          <span>Peta Lokasi</span>
+        </button>
+        <button onclick="window.switchMainTab('chat')" id="top-nav-btn-chat"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs transition text-slate-600 hover:text-slate-900 hover:bg-slate-100 relative">
+          <i data-lucide="message-square" class="w-4 h-4"></i>
+          <span>Obrolan</span>
+          <span id="tabChatBadge" class="hidden h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span>
+        </button>
+        <button onclick="window.switchMainTab('finance')" id="top-nav-btn-finance"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs transition text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+          <i data-lucide="wallet" class="w-4 h-4"></i>
+          <span>Finance & Patungan</span>
+        </button>
+      </div>
+
+      <!-- Quick Group Room Info Pill -->
+      <div class="flex items-center gap-2 pr-2 text-xs text-slate-500">
+        <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="font-mono text-slate-800 font-bold uppercase tracking-wider" id="navGroupCodeBadge">-</span>
+      </div>
+    </nav>
+
+    <!-- ==================================================== -->
+    <!-- TAB 1: AGENDA (MONTH & WEEK VIEW)                    -->
+    <!-- ==================================================== -->
+    <main id="tab-agenda" class="space-y-4">
+      <!-- Agenda Control Bar: Switcher Month vs Week & Tambah Agenda -->
+      <div class="flex items-center justify-between flex-wrap gap-2.5 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs">
+          <button id="btnAgendaViewMonth" onclick="window.switchAgendaView('month')" type="button"
+            class="px-3.5 py-1.5 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition">
+            <i data-lucide="calendar" class="h-3.5 w-3.5"></i>
+            <span>Tampilan Month (Bulan)</span>
+          </button>
+          <button id="btnAgendaViewWeek" onclick="window.switchAgendaView('week')" type="button"
+            class="px-3.5 py-1.5 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition">
+            <i data-lucide="calendar-days" class="h-3.5 w-3.5"></i>
+            <span>Tampilan Week (Minggu)</span>
           </button>
         </div>
+
+        <button id="btnOpenAddModalTop" onclick="window.openCreateAgendaModal()" type="button"
+          class="rounded-xl bg-slate-900 text-white px-4 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="plus" class="h-4 w-4"></i>
+          <span>Tambah Agenda Baru</span>
+        </button>
       </div>
-      <div id="map"></div>
-    </section>
 
-    <!-- KALENDER 1 BULAN & DETAIL HARIAN -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-      <!-- Kolom Kiri: Kalender 1 Bulan Penuh -->
-      <section class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-7 space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-          <h3 id="currentMonthYearLabel" class="text-base font-bold text-slate-900">Bulan Tahun</h3>
-          <div class="flex items-center gap-1">
-            <button id="btnPrevMonth"
-              class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
-              <i data-lucide="chevron-left" class="h-4 w-4"></i>
-            </button>
-            <button id="btnTodayMonth"
-              class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100">
-              Hari Ini
-            </button>
-            <button id="btnNextMonth"
-              class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100">
-              <i data-lucide="chevron-right" class="h-4 w-4"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
-          <div>Min</div>
-          <div>Sen</div>
-          <div>Sel</div>
-          <div>Rab</div>
-          <div>Kam</div>
-          <div>Jum</div>
-          <div>Sab</div>
-        </div>
-
-        <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-sm">
-          <!-- Render Hari/Tanggal via JS -->
-        </div>
-
-        <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-500 pt-2 border-t border-slate-100">
-          <div class="flex items-center gap-1.5">
-            <span class="h-2 w-2 rounded-full bg-indigo-500"></span> Agenda Grup (Bersama)
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Agenda Personal Saya
-          </div>
-          <div class="flex items-center gap-1.5">
-            <span class="h-2 w-2 rounded-full bg-amber-500"></span> Agenda Personal Anggota Lain
-          </div>
-          <div class="flex items-center gap-1.5 font-semibold text-rose-600">
-            <span class="h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span> Kolom Berkedip: Ada Chat Baru
-          </div>
-        </div>
-      </section>
-
-      <!-- Kolom Kanan: Detail Agenda Tanggal & Checklist Agenda -->
-      <section id="rightSection"
-        class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm lg:col-span-5 flex flex-col justify-between space-y-4 min-h-[420px]">
-
-        <!-- VIEW 1: Detail Agenda Tanggal (Default) -->
-        <div id="viewAgendaList" class="space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
-            <div>
-              <div class="flex items-center gap-2">
-                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Agenda Tanggal</p>
-                <span id="selectedDayCount"
-                  class="text-[10px] rounded-full bg-slate-200 px-2 py-0.5 font-semibold text-slate-700">0 Jadwal</span>
+      <!-- VIEW A: TAMPILAN MONTH (BULAN) -->
+      <!-- Kolom Atas: Kalender 1 Bulan Penuh | Kolom Bawah: Nama Kegiatan & Checklist -->
+      <div id="agendaMonthContainer" class="space-y-5">
+        <!-- Kolom Atas: Kalender 1 Bulan Penuh -->
+        <section class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <i data-lucide="calendar" class="h-4 w-4"></i>
               </div>
-              <h4 id="selectedDateTitle" class="text-base font-bold text-slate-900 mt-0.5">Pilih Tanggal</h4>
+              <h3 id="currentMonthYearLabel" class="text-base font-bold text-slate-900">Bulan Tahun</h3>
             </div>
-
-            <!-- Tombol Tambah Agenda -->
-            <button id="btnOpenAddModal"
-              class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm shrink-0">
-              <i data-lucide="plus" class="h-4 w-4"></i>
-              <span>Tambah Agenda</span>
-            </button>
-          </div>
-
-          <div id="dayAgendaList" class="space-y-3 pt-1 max-h-[420px] overflow-y-auto pr-1">
-            <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender untuk melihat jam dan detail
-              agenda.</p>
-          </div>
-        </div>
-
-        <!-- VIEW 2: Checklist Agenda (Menggantikan tampilan saat tombol checklist diklik) -->
-        <div id="viewChecklist" class="hidden space-y-3">
-          <!-- Checklist Header: Back button, Agenda Info, Action buttons -->
-          <div class="border-b border-slate-200 pb-3 space-y-2.5">
-            <div class="flex items-center justify-between gap-2">
-              <button id="btnBackToAgendas" type="button"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-sm">
-                <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i>
-                <span>Kembali ke Jadwal</span>
+            <div class="flex items-center gap-1.5">
+              <button id="btnPrevMonth"
+                class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100 transition shadow-2xs">
+                <i data-lucide="chevron-left" class="h-4 w-4"></i>
               </button>
-              <div class="flex items-center gap-1.5">
-                <button id="btnAddCategoryBtn" type="button"
-                  class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition shadow-sm">
-                  <i data-lucide="folder-plus" class="h-3.5 w-3.5 text-indigo-600"></i>
-                  <span>+ Kategori</span>
-                </button>
-                <button id="btnAddChecklistItemBtn" type="button"
-                  class="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
-                  <i data-lucide="plus" class="h-3.5 w-3.5"></i>
-                  <span>+ Checklist</span>
-                </button>
-              </div>
+              <button id="btnTodayMonth"
+                class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shadow-2xs">
+                Hari Ini
+              </button>
+              <button id="btnNextMonth"
+                class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100 transition shadow-2xs">
+                <i data-lucide="chevron-right" class="h-4 w-4"></i>
+              </button>
             </div>
+          </div>
 
-            <!-- Agenda Title & Overall Progress -->
-            <div class="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
-              <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-2 overflow-hidden">
-                  <span
-                    class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk
-                    Agenda</span>
-                  <h4 id="checklistAgendaTitle" class="text-sm font-bold text-slate-900 truncate">Judul Agenda</h4>
+          <!-- Header Hari Kalender -->
+          <div class="grid grid-cols-7 gap-1 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <div>Min</div>
+            <div>Sen</div>
+            <div>Sel</div>
+            <div>Rab</div>
+            <div>Kam</div>
+            <div>Jum</div>
+            <div>Sab</div>
+          </div>
+
+          <!-- Grid Sel Tanggal Kalender 1 Bulan Penuh -->
+          <div id="calendarGrid" class="grid grid-cols-7 gap-1 text-sm"></div>
+
+          <!-- Legend Keterangan Warna Kalender -->
+          <div class="flex flex-wrap items-center gap-4 text-[11px] text-slate-500 pt-2 border-t border-slate-100">
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-indigo-500"></span> Agenda Grup (Bersama)
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span> Agenda Personal Saya
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="h-2 w-2 rounded-full bg-amber-500"></span> Agenda Anggota Lain
+            </div>
+            <div class="flex items-center gap-1.5 font-semibold text-rose-600">
+              <span class="h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span> Kolom Berkedip: Chat Baru
+            </div>
+          </div>
+        </section>
+
+        <!-- Kolom Bawah: Detail Agenda & Nama Kegiatan Tanggal Terpilih -->
+        <section id="rightSection" class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <!-- VIEW 1: Detail Agenda Tanggal -->
+          <div id="viewAgendaList" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nama Kegiatan & Jadwal</p>
+                  <span id="selectedDayCount"
+                    class="text-[10px] rounded-full bg-indigo-100 text-indigo-800 px-2 py-0.5 font-bold">0 Jadwal</span>
                 </div>
-                <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0
-                  Selesai</span>
+                <h4 id="selectedDateTitle" class="text-base font-bold text-slate-900 mt-0.5">Pilih Tanggal</h4>
               </div>
 
-              <!-- Mini Overall Progress Bar -->
-              <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
-                <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
-                  style="width: 0%"></div>
-              </div>
+              <!-- Tombol Tambah Agenda Hari Ini -->
+              <button id="btnOpenAddModal" onclick="window.openCreateAgendaModal()"
+                class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm shrink-0">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+                <span>Tambah Agenda</span>
+              </button>
+            </div>
+
+            <!-- List Kartu Kegiatan / Agenda -->
+            <div id="dayAgendaList" class="space-y-3 pt-1 max-h-[520px] overflow-y-auto pr-1">
+              <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender di atas untuk melihat jam dan nama kegiatan.</p>
             </div>
           </div>
 
-          <!-- Tabs Navigasi Kategori Checklist -->
-          <nav class="tabs-container" id="checklistTabsContainer"></nav>
-
-          <!-- Banner Kategori Aktif & Aksi -->
-          <div id="checklistCategoryBanner" class="category-banner flex items-center justify-between gap-2">
-            <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer min-w-0 flex-1"
-              id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
-              <span id="currentCategoryTitle" class="truncate">Kategori</span>
-              <span class="hint text-[10px] text-slate-400 font-normal shrink-0 hidden sm:inline">(Ketuk untuk edit)</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              <!-- Switcher Layout: List (1 Kolom) & Grid (2 Kolom) -->
-              <div class="flex items-center bg-slate-200/70 p-0.5 rounded-lg mr-1 text-slate-600">
-                <button id="btnChecklistLayoutList" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan List (1 Kolom)">
-                  <i data-lucide="list" class="h-3.5 w-3.5"></i>
+          <!-- VIEW 2: Checklist Agenda Terintegrasi -->
+          <div id="viewChecklist" class="hidden space-y-3">
+            <div class="border-b border-slate-200 pb-3 space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <button id="btnBackToAgendas" type="button"
+                  class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition shadow-sm">
+                  <i data-lucide="arrow-left" class="h-3.5 w-3.5"></i>
+                  <span>Kembali ke Jadwal</span>
                 </button>
-                <button id="btnChecklistLayoutGrid" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan Grid (2 Kolom)">
-                  <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i>
+                <div class="flex items-center gap-1.5">
+                  <button id="btnAddCategoryBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 transition shadow-sm">
+                    <i data-lucide="folder-plus" class="h-3.5 w-3.5 text-indigo-600"></i>
+                    <span>+ Kategori</span>
+                  </button>
+                  <button id="btnAddChecklistItemBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
+                    <i data-lucide="plus" class="h-3.5 w-3.5"></i>
+                    <span>+ Checklist</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Agenda Title & Overall Progress -->
+              <div class="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 overflow-hidden">
+                    <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk Agenda</span>
+                    <h4 id="checklistAgendaTitle" class="text-sm font-bold text-slate-900 truncate">Judul Agenda</h4>
+                  </div>
+                  <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0 Selesai</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
+                  <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabs Navigasi Kategori Checklist -->
+            <nav class="tabs-container" id="checklistTabsContainer"></nav>
+
+            <!-- Banner Kategori Aktif & Aksi -->
+            <div id="checklistCategoryBanner" class="category-banner flex items-center justify-between gap-2">
+              <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer min-w-0 flex-1"
+                id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
+                <span id="currentCategoryTitle" class="truncate">Kategori</span>
+                <span class="hint text-[10px] text-slate-400 font-normal shrink-0 hidden sm:inline">(Ketuk untuk edit)</span>
+              </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center bg-slate-200/70 p-0.5 rounded-lg mr-1 text-slate-600">
+                  <button id="btnChecklistLayoutList" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan List">
+                    <i data-lucide="list" class="h-3.5 w-3.5"></i>
+                  </button>
+                  <button id="btnChecklistLayoutGrid" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan Grid">
+                    <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i>
+                  </button>
+                </div>
+                <button id="btnQuickEditCategory" type="button" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Edit Kategori">
+                  <i data-lucide="edit-2" class="h-3.5 w-3.5"></i>
+                </button>
+                <button id="btnQuickDeleteCategory" type="button" class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
+                  <i data-lucide="trash" class="h-3.5 w-3.5"></i>
                 </button>
               </div>
-              <button id="btnQuickEditCategory" type="button"
-                class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-                title="Edit Kategori">
-                <i data-lucide="edit-2" class="h-3.5 w-3.5"></i>
+            </div>
+
+            <!-- Daftar Kartu Item Checklist -->
+            <div id="checklistItemsContainer" class="item-cards-grid max-h-[460px] md:max-h-[480px] overflow-y-auto pr-1 checklist-scroll"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- VIEW B: TAMPILAN WEEK (MINGGU) -->
+      <!-- Kolom Atas: Tampilan Waktu (1 Minggu) | Kolom Bawah: Nama Kegiatan & Timeline -->
+      <div id="agendaWeekContainer" class="hidden space-y-5">
+        <!-- Kolom Atas: Tampilan Waktu 1 Minggu -->
+        <section class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3 flex-wrap gap-2">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Tampilan 1 Minggu</p>
+              <h3 id="weekRangeLabel" class="text-base font-bold text-slate-900">Rentang Tanggal Minggu</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button id="btnPrevWeek" onclick="window.changeWeek(-1)" type="button"
+                class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100 transition shadow-2xs">
+                <i data-lucide="chevron-left" class="h-4 w-4"></i>
               </button>
-              <button id="btnQuickDeleteCategory" type="button"
-                class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                title="Hapus Kategori">
-                <i data-lucide="trash" class="h-3.5 w-3.5"></i>
+              <button id="btnTodayWeek" onclick="window.changeWeek(0)" type="button"
+                class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition shadow-2xs">
+                Minggu Ini
+              </button>
+              <button id="btnNextWeek" onclick="window.changeWeek(1)" type="button"
+                class="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 hover:bg-slate-100 transition shadow-2xs">
+                <i data-lucide="chevron-right" class="h-4 w-4"></i>
               </button>
             </div>
           </div>
 
-          <!-- Daftar Kartu Item Checklist -->
-          <div id="checklistItemsContainer" class="item-cards-grid max-h-[460px] md:max-h-[480px] overflow-y-auto pr-1 checklist-scroll">
-            <!-- Rendered by JS -->
+          <!-- Bar 7 Hari dalam Minggu Aktif -->
+          <div class="overflow-x-auto pb-1 hide-scrollbar">
+            <div id="weekHeaderDays" class="flex gap-2 min-w-[500px] sm:min-w-0 justify-between"></div>
+          </div>
+
+          <!-- Filter Rentang Waktu Dari (Jam Pelaksanaan) -->
+          <div class="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-100 text-xs">
+            <div class="flex items-center gap-2 text-slate-600">
+              <i data-lucide="clock" class="h-4 w-4 text-indigo-600"></i>
+              <span class="font-medium">Tampilan Waktu Dari:</span>
+              <select id="weekTimeFilterSelect" onchange="window.handleWeekTimeFilterChange(this.value)"
+                class="rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 focus:outline-none focus:border-indigo-600">
+                <option value="all">Semua Jam (24 Jam)</option>
+                <option value="morning">Pagi (05:00 - 12:00)</option>
+                <option value="afternoon">Siang & Sore (12:00 - 18:00)</option>
+                <option value="night">Malam (18:00 - 24:00)</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2 text-[11px] text-slate-500">
+              <span>📅 Pilih hari di atas untuk filter kegiatan spesifik</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Kolom Bawah: Nama Kegiatan Mingguan -->
+        <section class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Jadwal Mingguan</p>
+              <h4 class="text-base font-bold text-slate-900 mt-0.5">Nama Kegiatan Minggu Ini</h4>
+            </div>
+            <button onclick="window.openCreateAgendaModal()" type="button"
+              class="rounded-xl bg-slate-900 text-white px-3 py-1.5 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="plus" class="h-4 w-4"></i>
+              <span>Tambah Jadwal</span>
+            </button>
+          </div>
+
+          <!-- Kontainer Daftar Nama Kegiatan Mingguan -->
+          <div id="weekActivitiesList" class="space-y-4 max-h-[540px] overflow-y-auto pr-1"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ==================================================== -->
+    <!-- TAB 2: MAP (VIEW TAMPILAN MAP PENUH & PILIHAN)       -->
+    <!-- ==================================================== -->
+    <main id="tab-map" class="space-y-4 hidden">
+      <section class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
+        <!-- Map Header & Filter Pilihan Bar -->
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <i data-lucide="map-pin" class="h-4 w-4 text-indigo-600"></i>
+              <span>Peta Lokasi Anggota & Agenda (Tampilan Penuh)</span>
+            </h3>
+            <p class="text-[11px] text-slate-500">Pantau live location anggota grup dan titik pertemuan agenda</p>
+          </div>
+
+          <!-- Tombol Aksi Peta -->
+          <div class="flex items-center gap-2">
+            <button id="btnUpdateLocation" type="button"
+              class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+              <i data-lucide="crosshair" class="h-3.5 w-3.5 text-indigo-600"></i>
+              <span>Perbarui Lokasi GPS</span>
+            </button>
+            <button onclick="window.fitMapBounds()" type="button"
+              class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
+              <i data-lucide="maximize" class="h-3.5 w-3.5 text-slate-600"></i>
+              <span>Pusatkan Peta</span>
+            </button>
           </div>
         </div>
 
-      </section>
+        <!-- Panel Pilihan Filter (Poin Agenda & Poin Users) -->
+        <div class="p-3 bg-slate-50/90 rounded-xl border border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
+          <div class="flex items-center gap-2 font-bold text-slate-700">
+            <i data-lucide="sliders-horizontal" class="h-4 w-4 text-indigo-600"></i>
+            <span>Pilihan Tampilan Poin:</span>
+          </div>
 
+          <div class="flex items-center gap-4 flex-wrap">
+            <!-- Pilihan Poin Lokasi Agenda -->
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="toggleMapAgendas" checked onchange="window.toggleMapFilter('agenda')"
+                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+              <span class="flex items-center gap-1.5 font-semibold text-slate-800">
+                <span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-indigo-200"></span>
+                Poin Lokasi Agenda
+                <span id="mapAgendaCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 font-bold">0</span>
+              </span>
+            </label>
+
+            <!-- Pilihan Poin Lokasi Users -->
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="toggleMapMembers" checked onchange="window.toggleMapFilter('member')"
+                class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300" />
+              <span class="flex items-center gap-1.5 font-semibold text-slate-800">
+                <span class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-blue-200"></span>
+                Poin Lokasi Users
+                <span id="mapMemberCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold">0</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Wadah Map Leaflet Layar Penuh -->
+        <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner h-[62vh] min-h-[460px]">
+          <div id="map"></div>
+        </div>
+
+        <!-- Daftar Titik Agenda Berlokasi -->
+        <div class="space-y-2 pt-1">
+          <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+            <i data-lucide="map-pin" class="h-3.5 w-3.5 text-indigo-600"></i>
+            <span>Daftar Titik Agenda Pada Peta:</span>
+          </h4>
+          <div id="mapAgendaPillsList" class="flex gap-2 overflow-x-auto pb-1 text-xs hide-scrollbar">
+            <p class="text-slate-400 text-xs py-1">Belum ada agenda yang memiliki titik koordinat peta.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==================================================== -->
+    <!-- TAB 3: CHAT (CHAT ALL FORUM & CHAT PER-AGENDA)       -->
+    <!-- ==================================================== -->
+    <main id="tab-chat" class="space-y-4 hidden">
+      <section class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4">
+        <!-- Sub-Navigasi Chat Switcher -->
+        <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-200 pb-3">
+          <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs">
+            <button id="btnChatSubTabForum" onclick="window.switchChatSubTab('forum')" type="button"
+              class="px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition">
+              <i data-lucide="message-circle" class="h-3.5 w-3.5"></i>
+              <span>Chat All Forum (Grup)</span>
+            </button>
+            <button id="btnChatSubTabAgendas" onclick="window.switchChatSubTab('agendas')" type="button"
+              class="px-4 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition">
+              <i data-lucide="calendar" class="h-3.5 w-3.5"></i>
+              <span>Chat Per-Agenda</span>
+            </button>
+          </div>
+
+          <div class="text-xs text-slate-500 flex items-center gap-1 font-medium">
+            <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Realtime Firestore</span>
+          </div>
+        </div>
+
+        <!-- SUB-VIEW 1: CHAT ALL FORUM (FORUM DISKUSI BERSAMA SELURUH ANGGOTA) -->
+        <div id="chatSubViewForum" class="space-y-3">
+          <div class="p-3 bg-indigo-50/80 border border-indigo-100 rounded-xl flex items-center justify-between text-xs text-indigo-900">
+            <div class="flex items-center gap-2">
+              <div class="h-7 w-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
+                <i data-lucide="users" class="h-3.5 w-3.5"></i>
+              </div>
+              <div>
+                <p class="font-bold">Ruang Forum Obrolan Grup</p>
+                <p class="text-[11px] text-indigo-700">Terhubung dengan seluruh anggota grup <strong id="forumGroupCodeTitle">-</strong></p>
+              </div>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-200 text-indigo-800 font-bold">Forum Umum</span>
+          </div>
+
+          <!-- Message Area Forum Chat -->
+          <div id="forumChatMessagesList" class="h-[52vh] min-h-[380px] overflow-y-auto p-3 space-y-3 bg-slate-50/60 rounded-2xl border border-slate-200 text-sm">
+            <p class="text-xs text-slate-400 text-center py-10">Memuat obrolan forum...</p>
+          </div>
+
+          <!-- Form Kirim Pesan Forum -->
+          <form id="formForumChat" onsubmit="window.handleSendForumChat(event)" class="flex gap-2 pt-1">
+            <input id="inputForumChat" type="text" required autocomplete="off" placeholder="Tulis pesan ke forum grup..."
+              class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-indigo-600 focus:outline-none shadow-2xs" />
+            <button type="submit" id="btnSendForumChat"
+              class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
+              <i data-lucide="send" class="h-4 w-4"></i>
+              <span class="hidden sm:inline">Kirim</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- SUB-VIEW 2: CHAT PER-AGENDA (DAFTAR AGENDA DENGAN RUANG OBROLAN) -->
+        <div id="chatSubViewAgendas" class="hidden space-y-3">
+          <p class="text-xs text-slate-500">Pilih salah satu agenda di bawah untuk membuka ruang obrolan khusus agenda tersebut:</p>
+          <div id="agendaChatCardsList" class="space-y-2.5 max-h-[56vh] overflow-y-auto pr-1"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==================================================== -->
+    <!-- TAB 4: FINANCE (FITUR DARI PATUNGAN-MAIN)            -->
+    <!-- ==================================================== -->
+    <main id="tab-finance" class="space-y-4 hidden">
+      <!-- Metrik Saldo Utama Card -->
+      <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs text-indigo-200 uppercase tracking-wider font-semibold">Total Saldo Kas Grup</p>
+            <h2 id="dash-total-balance" class="text-3xl font-extrabold mt-1">Rp 0</h2>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 text-indigo-200 text-xs font-mono font-bold" id="financeRoomCodeBadge">ROOM</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-indigo-400/30 text-xs">
+          <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-xs">
+            <span class="text-indigo-200 text-[11px] block">Total Income (Masuk):</span>
+            <p id="dash-total-income" class="font-bold text-emerald-300 text-sm mt-0.5">Rp 0</p>
+          </div>
+          <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-xs">
+            <span class="text-indigo-200 text-[11px] block">Total Expense (Keluar):</span>
+            <p id="dash-total-expense" class="font-bold text-rose-300 text-sm mt-0.5">Rp 0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alokasi Budget & Status Patungan Card -->
+      <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
+        <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="target" class="w-4 h-4 text-indigo-600"></i>
+          <span>Alokasi Budget & Status Patungan</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="text-xs text-slate-500 block">Total Budget (Kebutuhan)</span>
+            <p id="dash-total-goals" class="font-extrabold text-slate-800 mt-1">Rp 0</p>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+            <span class="text-xs text-slate-500 block">Kurang Kas ke Budget</span>
+            <p id="dash-remaining-goals" class="font-extrabold text-amber-600 mt-1">Rp 0</p>
+          </div>
+        </div>
+
+        <div id="dash-split-diff-card" class="p-3 rounded-xl border text-xs flex items-center justify-between">
+          <span class="font-semibold text-slate-700">Status Skema Patungan:</span>
+          <span id="dash-split-diff" class="font-bold">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- Sub-Navigasi Fitur Finance (Tabs Internal) -->
+      <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl text-xs overflow-x-auto hide-scrollbar">
+        <button id="finance-tab-btn-overview" onclick="window.switchFinanceSubTab('overview')"
+          class="flex-1 min-w-[100px] py-2 px-3 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs transition flex items-center justify-center gap-1.5">
+          <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+          <span>Ringkasan</span>
+        </button>
+        <button id="finance-tab-btn-goals" onclick="window.switchFinanceSubTab('goals')"
+          class="flex-1 min-w-[100px] py-2 px-3 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="badge-dollar-sign" class="w-3.5 h-3.5"></i>
+          <span>Budget List</span>
+        </button>
+        <button id="finance-tab-btn-schemes" onclick="window.switchFinanceSubTab('schemes')"
+          class="flex-1 min-w-[100px] py-2 px-3 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="users" class="w-3.5 h-3.5"></i>
+          <span>Patungan</span>
+        </button>
+        <button id="finance-tab-btn-ledger" onclick="window.switchFinanceSubTab('ledger')"
+          class="flex-1 min-w-[100px] py-2 px-3 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>Realisasi</span>
+        </button>
+      </div>
+
+      <!-- SUB-SECTION 1: OVERVIEW (SETORAN MEMBER & KATEGORI) -->
+      <div id="finance-subview-overview" class="space-y-4">
+        <!-- Setoran & Sisa Patungan per-Member -->
+        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
+            <span>Setoran & Sisa Patungan per-Member</span>
+          </h3>
+          <div id="dash-members-list" class="space-y-2 text-sm"></div>
+        </div>
+
+        <!-- Breakdown Kategori Kas -->
+        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600"></i>
+            <span>Arus Kas per-Kategori</span>
+          </h3>
+          <div id="dash-category-list" class="space-y-2 text-xs"></div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 2: DAFTAR BUDGET (ANGGARAN) -->
+      <div id="finance-subview-goals" class="space-y-4 hidden">
+        <div class="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">Daftar Budget (Anggaran Kebutuhan)</h3>
+            <p class="text-xs text-slate-500">Pantau pemakaian belanja vs alokasi budget</p>
+          </div>
+          <button onclick="window.openGoalModal()"
+            class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Tambah Budget</span>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div id="goals-list" class="space-y-3 text-sm"></div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 3: SETUP SKEMA PEMBAGIAN PATUNGAN -->
+      <div id="finance-subview-schemes" class="space-y-4 hidden">
+        <div class="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">Setup Pembagian Member (Patungan)</h3>
+            <p class="text-xs text-slate-500">Skema tanggung jawab anggota menanggung Total Budget</p>
+          </div>
+          <button onclick="window.openSchemeModal()"
+            class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow transition">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            <span>Setup Skema</span>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2">Skema Pembagian Aktif</h3>
+          <div id="split-schemes-list" class="divide-y text-xs"></div>
+        </div>
+      </div>
+
+      <!-- SUB-SECTION 4: REALISASI (BUKU SALDO KAS) -->
+      <div id="finance-subview-ledger" class="space-y-4 hidden">
+        <div class="flex justify-between items-center bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">Buku Realisasi Transaksi Kas</h3>
+            <p class="text-xs text-slate-500">Catatan mutasi pemasukan & pengeluaran realisasi</p>
+          </div>
+          <button onclick="window.openTxModal()"
+            class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Catat Transaksi</span>
+          </button>
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+          <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Riwayat Transaksi Mutasi</h3>
+          <div id="tx-list" class="divide-y space-y-2 text-xs"></div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- ==================================================== -->
+  <!-- MOBILE FIXED BOTTOM NAVIGATION BAR (SETELAH LOGIN)   -->
+  <!-- ==================================================== -->
+  <nav id="mobileBottomNav" class="hidden md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-3 py-2 flex justify-around items-center shadow-lg">
+    <button onclick="window.switchMainTab('agenda')" id="mob-nav-btn-agenda" class="flex flex-col items-center gap-0.5 text-indigo-600 transition">
+      <i data-lucide="calendar" class="w-5 h-5"></i>
+      <span class="text-[10px] font-bold">Agenda</span>
+    </button>
+    <button onclick="window.switchMainTab('map')" id="mob-nav-btn-map" class="flex flex-col items-center gap-0.5 text-slate-400 transition">
+      <i data-lucide="map" class="w-5 h-5"></i>
+      <span class="text-[10px] font-medium">Peta</span>
+    </button>
+    <button onclick="window.switchMainTab('chat')" id="mob-nav-btn-chat" class="flex flex-col items-center gap-0.5 text-slate-400 transition relative">
+      <i data-lucide="message-square" class="w-5 h-5"></i>
+      <span class="text-[10px] font-medium">Obrolan</span>
+      <span id="mobTabChatBadge" class="hidden absolute top-0 right-1 h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span>
+    </button>
+    <button onclick="window.switchMainTab('finance')" id="mob-nav-btn-finance" class="flex flex-col items-center gap-0.5 text-slate-400 transition">
+      <i data-lucide="wallet" class="w-5 h-5"></i>
+      <span class="text-[10px] font-medium">Finance</span>
+    </button>
+  </nav>
+
+  <!-- ==================================================== -->
+  <!-- MOBILE BAR: INSTALL DI ANDROID / IOS (SAAT ONBOARDING)-->
+  <!-- ==================================================== -->
+  <div id="mobileInstallBar" class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-4 py-2.5 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-2.5">
+      <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
+        <i data-lucide="download" class="w-4 h-4"></i>
+      </div>
+      <div class="text-left leading-tight">
+        <p class="text-xs font-bold text-slate-800">Install di Android / iOS</p>
+        <p class="text-[10px] text-slate-500">Pasang di layar utama tanpa App Store</p>
+      </div>
     </div>
+    <button type="button" onclick="window.triggerDirectPwaInstall()"
+      class="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 text-xs font-bold flex items-center gap-1.5 shadow-sm transition shrink-0 cursor-pointer">
+      <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+      <span>Install</span>
+    </button>
   </div>
 
   <!-- MODAL FORM AGENDA (CREATE & UPDATE) -->
@@ -916,6 +1399,16 @@
             <option value="couple">Agenda Grup (Kegiatan Bersama)</option>
             <option value="private">Agenda Personal (Jadwal Mandiri)</option>
           </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-600 mb-1">Kategori Agenda (Terhubung ke Finance & Budget)</label>
+          <div class="space-y-1.5">
+            <select id="agendaCategory" onchange="window.handleAgendaCategorySelectChange(this.value)"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none bg-white font-medium">
+            </select>
+            <input type="text" id="agendaCategoryCustom" placeholder="Ketik nama kategori baru..."
+              class="hidden w-full rounded-lg border border-indigo-300 bg-indigo-50/50 px-3 py-1.5 text-xs focus:border-indigo-600 focus:outline-none" />
+          </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -1402,6 +1895,176 @@
     </div>
   </div>
 
+  <!-- ==================================================== -->
+  <!-- MODAL FINANCE 1: TAMBAH / EDIT BUDGET               -->
+  <!-- ==================================================== -->
+  <dialog id="modal-goal" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+    <div class="flex justify-between items-center mb-3">
+      <h3 id="modal-goal-title" class="font-bold text-slate-800 text-base">Tambah Pos Budget</h3>
+      <button type="button" onclick="document.getElementById('modal-goal').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="form-goal" onsubmit="window.handleGoalSubmit(event)" class="space-y-3.5 text-sm">
+      <input type="hidden" id="goal-id" value="" />
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Pos Anggaran (Budget)</label>
+        <input type="text" id="goal-name" required placeholder="Contoh: Sewa Villa, Belanja BBQ, Bensin"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nominal Anggaran (Rp)</label>
+        <input type="number" id="goal-amount" required placeholder="Contoh: 1500000"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+      </div>
+      <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
+        <button type="button" onclick="document.getElementById('modal-goal').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="goal-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Budget</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ==================================================== -->
+  <!-- MODAL FINANCE 2: SETUP SKEMA PEMBAGIAN MEMBER       -->
+  <!-- ==================================================== -->
+  <dialog id="modal-scheme" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+    <div class="flex justify-between items-center mb-3">
+      <h3 id="modal-scheme-title" class="font-bold text-slate-800 text-base">Setup Skema Pembagian</h3>
+      <button type="button" onclick="document.getElementById('modal-scheme').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="form-member-scheme" onsubmit="window.handleSchemeSubmit(event)" class="space-y-3.5 text-sm">
+      <input type="hidden" id="scheme-id" value="" />
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Anggota (Member)</label>
+        <input type="text" id="member-name-input" required placeholder="Contoh: Ari"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Tipe Pembagian</label>
+        <select id="member-split-type" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none bg-white">
+          <option value="fixed">Fixed Nominal (Rp Tetap)</option>
+          <option value="percent">Persentase (%) dari Total Budget</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Nominal (Rp) / Nilai Persen (%)</label>
+        <input type="number" id="member-split-val" required placeholder="Contoh: 250000 atau 25"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+      </div>
+      <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
+        <button type="button" onclick="document.getElementById('modal-scheme').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="scheme-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Skema</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ==================================================== -->
+  <!-- MODAL FINANCE 3: CATAT TRANSAKSI KAS REALISASI      -->
+  <!-- ==================================================== -->
+  <dialog id="modal-tx" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+    <div class="flex justify-between items-center mb-3">
+      <h3 id="modal-tx-title" class="font-bold text-slate-800 text-base">Catat Transaksi Kas Realisasi</h3>
+      <button type="button" onclick="document.getElementById('modal-tx').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <form id="form-tx" onsubmit="window.handleTxSubmit(event)" class="space-y-3.5 text-sm">
+      <input type="hidden" id="tx-id" value="" />
+      
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Judul Transaksi</label>
+        <input type="text" id="tx-title" required placeholder="Contoh: Belanja Pasar, Bayar Villa, Setoran Awal"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Mutasi</label>
+          <select id="tx-type" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:border-indigo-600 focus:outline-none bg-white">
+            <option value="expense">Expense (- Pengeluaran)</option>
+            <option value="income">Income (+ Saldo Masuk)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nominal (Rp)</label>
+          <input type="number" id="tx-amount" required placeholder="0"
+            class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Transaksi</label>
+        <select id="tx-category-select" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none font-medium" onchange="window.handleFinanceCategorySelectChange(this.value)">
+        </select>
+        <input type="text" id="tx-category-custom" placeholder="Ketik nama kategori baru..."
+          class="hidden w-full mt-2 px-3.5 py-2 border border-indigo-300 rounded-xl bg-indigo-50/50 text-xs focus:ring-1 focus:ring-indigo-500" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-2.5">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Inputer / Pembayar</label>
+          <input type="text" id="tx-inputer" required placeholder="Nama Orang"
+            class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal & Jam</label>
+          <input type="datetime-local" id="tx-datetime" required
+            class="w-full px-2.5 py-2 border border-slate-300 rounded-xl text-xs focus:border-indigo-600 focus:outline-none" />
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
+        <button type="button" onclick="document.getElementById('modal-tx').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="tx-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Transaksi</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ==================================================== -->
+  <!-- MODAL PWA INSTALLATION GUIDE                         -->
+  <!-- ==================================================== -->
+  <dialog id="modal-install-pwa" class="rounded-2xl p-6 backdrop:bg-slate-900/50 shadow-2xl w-11/12 max-w-sm border border-slate-200">
+    <div class="text-center space-y-3">
+      <div class="inline-flex p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl">
+        <i data-lucide="download-cloud" class="w-8 h-8"></i>
+      </div>
+      <h3 class="font-bold text-slate-900 text-base">Install Aplikasi Beragenda</h3>
+      <p class="text-xs text-slate-500 leading-relaxed">
+        Aplikasi ini mendukung PWA (Progressive Web App) dan dapat diinstall di layar utama Android dan iOS tanpa unduhan dari App Store/Play Store.
+      </p>
+
+      <div class="bg-slate-50 p-3.5 rounded-xl text-left text-xs space-y-2 text-slate-700 border border-slate-200">
+        <p class="font-bold text-indigo-900 flex items-center gap-1.5">
+          <span>🍏 Untuk Pengguna iPhone / iPad (iOS):</span>
+        </p>
+        <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600 pl-1">
+          <li>Buka di browser <strong>Safari</strong>.</li>
+          <li>Ketuk tombol <strong>Share</strong> (ikon kotak dengan panah ke atas) di menu bawah.</li>
+          <li>Pilih <strong>Tambah ke Layar Utama (Add to Home Screen)</strong>.</li>
+        </ol>
+
+        <p class="font-bold text-indigo-900 pt-1 flex items-center gap-1.5">
+          <span>🤖 Untuk Pengguna Android / Chrome:</span>
+        </p>
+        <p class="text-[11px] text-slate-600">
+          Ketuk tombol <strong>"Install Sekarang"</strong> di bawah atau pilih menu browser ⋮ &gt; <em>Install App / Tambahkan ke Layar Utama</em>.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button type="button" onclick="document.getElementById('modal-install-pwa').close()"
+          class="flex-1 py-2.5 border rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50">Tutup</button>
+        <button type="button" id="btnPwaDirectInstall" onclick="window.triggerDirectPwaInstall()"
+          class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-sm flex items-center justify-center gap-1.5">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Install Sekarang</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- FIREBASE MODULAR SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
@@ -1563,6 +2226,41 @@
     let activeChecklistTabId = null;
     let checklistLayoutPreference = null; // null = auto (grid jika > 4, list jika <= 4)
     let draggedItemId = null;
+
+    // State Navigasi Utama, View Mode & Filter
+    let currentMainTab = 'agenda'; // 'agenda', 'map', 'chat', 'finance'
+    let currentAgendaViewMode = 'month'; // 'month' or 'week'
+    let currentWeekOffset = 0; // 0 = minggu ini
+    let weekTimeFilter = 'all'; // 'all', 'morning', 'afternoon', 'night'
+    let currentChatSubTab = 'forum'; // 'forum' or 'agendas'
+    let currentFinanceSubTab = 'overview'; // 'overview', 'goals', 'schemes', 'ledger'
+
+    // State Map Filter (Pilihan Titik Agenda & Titik Users)
+    let showAgendaPins = true;
+    let showMemberPins = true;
+
+    // State Forum Chat Realtime
+    let forumChats = [];
+    let forumChatUnsubscribe = null;
+
+    // State Finance (dari patungan-main)
+    let financeState = {
+      goals: [],
+      schemes: [],
+      categories: ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"],
+      transactions: []
+    };
+    let unsubscribeFinance = null;
+
+    // PWA deferred prompt
+    let deferredPwaPrompt = null;
+
+    const formatRp = (num) => "Rp " + Number(num || 0).toLocaleString("id-ID");
+    const getLocalDateTime = () => {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      return now.toISOString().slice(0, 16);
+    };
 
     function getOrCreateDeviceId() {
       let devId = localStorage.getItem("group_device_id");
@@ -2306,6 +3004,9 @@
       } else {
         joinScreen.classList.remove("hidden");
         appScreen.classList.add("hidden");
+        document.getElementById("mobileBottomNav")?.classList.add("hidden");
+        document.getElementById("mobileInstallBar")?.classList.remove("hidden");
+        if (typeof lucide !== "undefined") lucide.createIcons();
       }
     }
 
@@ -2332,6 +3033,8 @@
     function loadMainApp() {
       joinScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
+      document.getElementById("mobileBottomNav")?.classList.remove("hidden");
+      document.getElementById("mobileInstallBar")?.classList.add("hidden");
 
       const avatar = document.getElementById("userAvatar");
       const badge = document.getElementById("headerGenderBadge");
@@ -2383,14 +3086,29 @@
         syncLocation();
       }
 
+      // Update Group Code Badges
+      const groupCodeText = userProfile?.pairCode || "-";
+      const navBadge = document.getElementById("navGroupCodeBadge");
+      if (navBadge) navBadge.textContent = groupCodeText;
+      const finBadge = document.getElementById("financeRoomCodeBadge");
+      if (finBadge) finBadge.textContent = groupCodeText;
+      const forumTitle = document.getElementById("forumGroupCodeTitle");
+      if (forumTitle) forumTitle.textContent = groupCodeText;
+
       listenToLocations();
       listenToAgendas();
+      listenToForumChats();
+      listenToFinance();
+      initPwa();
+
+      switchMainTab('agenda');
+      switchAgendaView('month');
       renderCalendar();
       renderSelectedDayAgendas();
     }
 
     // Modal Create Trigger
-    document.getElementById("btnOpenAddModal").addEventListener("click", () => {
+    function openCreateAgendaModal() {
       document.getElementById("editAgendaId").value = "";
       document.getElementById("agendaModalTitle").innerHTML = `<i data-lucide="calendar-plus" class="h-4 w-4 text-slate-700"></i> Tambah Agenda Baru`;
       document.getElementById("btnSubmitAgenda").textContent = "Simpan Agenda";
@@ -2402,10 +3120,15 @@
       document.getElementById("agendaEnd").value = defaultEnd;
       document.getElementById("editAgendaId").value = "";
       LocationPicker.clearAgendaLocation();
+      updateAgendaCategoryDropdown("Umum");
 
       agendaModal.classList.remove("hidden");
       lucide.createIcons();
-    });
+    }
+    window.openCreateAgendaModal = openCreateAgendaModal;
+
+    document.getElementById("btnOpenAddModal")?.addEventListener("click", openCreateAgendaModal);
+    document.getElementById("btnOpenAddModalTop")?.addEventListener("click", openCreateAgendaModal);
 
     document.getElementById("btnCloseAgendaModal").addEventListener("click", () => {
       agendaModal.classList.add("hidden");
@@ -2940,6 +3663,7 @@
                 <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold shrink-0 ${badgeClass}">
                   ${badgeLabel}
                 </span>
+                ${item.category ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">💼 ${escapeHtml(item.category)}</span>` : ''}
                 <h4 class="font-bold text-slate-900 text-sm break-words">${item.title}</h4>
               </div>
               <p class="text-xs text-slate-500 mt-1 break-words">${item.desc || 'Tidak ada catatan tambahan'}</p>
@@ -3020,6 +3744,7 @@
           document.getElementById("agendaLocationLat").value = item.locationLat || "";
           document.getElementById("agendaLocationLng").value = item.locationLng || "";
           document.getElementById("agendaLocationAddress").value = item.locationAddress || "";
+          updateAgendaCategoryDropdown(item.category || "Umum");
           LocationPicker.updateAgendaFormPreview(item.locationName, item.locationLat, item.locationLng);
 
           document.getElementById("agendaModalTitle").innerHTML = `<i data-lucide="edit-3" class="h-4 w-4 text-slate-700"></i> Edit Agenda`;
@@ -3874,6 +4599,17 @@
       const editId = document.getElementById("editAgendaId").value.trim();
       const title = document.getElementById("agendaTitle").value.trim();
       const type = document.getElementById("agendaType").value;
+
+      const catSelect = document.getElementById("agendaCategory") ? document.getElementById("agendaCategory").value : "Umum";
+      let category = catSelect;
+      if (catSelect === "__NEW__" || !catSelect) {
+        category = document.getElementById("agendaCategoryCustom").value.trim() || "Umum";
+      }
+      if (category && !financeState.categories.includes(category)) {
+        financeState.categories.push(category);
+        saveFinanceState();
+      }
+
       const start = document.getElementById("agendaStart").value;
       const end = document.getElementById("agendaEnd").value;
       const desc = document.getElementById("agendaDesc").value.trim();
@@ -3897,6 +4633,7 @@
           await updateDoc(doc(db, "agendas", editId), {
             title,
             type,
+            category,
             start,
             end,
             desc,
@@ -3910,6 +4647,7 @@
           await addDoc(collection(db, "agendas"), {
             title,
             type,
+            category,
             start,
             end,
             desc,
@@ -4266,14 +5004,26 @@
                 await deleteDoc(doc(db, "locations", `${code}_${userProfile.uid}`));
               } catch (e) {}
             }
+            // 4. Hapus data Finance grup dari Firestore
+            try {
+              await deleteDoc(doc(db, "finance", code));
+            } catch (e) {}
+
+            // 5. Hapus data Forum Chat grup dari Firestore
+            try {
+              const forumSnap = await getDocs(collection(db, "rooms", code, "forumChats"));
+              if (!forumSnap.empty) {
+                await Promise.all(forumSnap.docs.map(d => deleteDoc(d.ref)));
+              }
+            } catch (e) {}
           }
 
-          // 4. Hapus seluruh data sesi dan profil grup dari LocalStorage & SessionStorage
+          // 6. Hapus seluruh data sesi dan profil grup dari LocalStorage & SessionStorage
           localStorage.removeItem("group_user_profile");
           localStorage.removeItem("group_chat_read_receipts");
           sessionStorage.clear();
 
-          alert(`Grup "${targetPairCode}" beserta seluruh agenda, chat, dan lokasi berhasil dihapus permanen dari Database dan LocalStorage.`);
+          alert(`Grup "${targetPairCode}" beserta seluruh agenda, chat, map, dan finance berhasil dihapus permanen dari Database dan LocalStorage.`);
           window.location.href = window.location.origin + window.location.pathname;
         } catch (err) {
           console.error("Gagal menghapus grup:", err);
@@ -4286,6 +5036,1249 @@
         }
       });
     }
+
+    // ====================================================
+    // 1. NAVIGASI UTAMA APLIKASI (TAB SWITCHER)
+    // ====================================================
+    function switchMainTab(tabId) {
+      currentMainTab = tabId;
+      const tabs = ['agenda', 'map', 'chat', 'finance'];
+
+      tabs.forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (el) el.classList.toggle("hidden", t !== tabId);
+
+        // Desktop Top Tab Buttons
+        const topBtn = document.getElementById(`top-nav-btn-${t}`);
+        if (topBtn) {
+          if (t === tabId) {
+            topBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition bg-indigo-600 text-white shadow-sm";
+          } else {
+            topBtn.className = "flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs transition text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+          }
+        }
+
+        // Mobile Bottom Tab Buttons
+        const mobBtn = document.getElementById(`mob-nav-btn-${t}`);
+        if (mobBtn) {
+          if (t === tabId) {
+            mobBtn.className = "flex flex-col items-center gap-0.5 text-indigo-600 transition";
+            const span = mobBtn.querySelector("span");
+            if (span) span.className = "text-[10px] font-bold";
+          } else {
+            mobBtn.className = "flex flex-col items-center gap-0.5 text-slate-400 transition";
+            const span = mobBtn.querySelector("span");
+            if (span) span.className = "text-[10px] font-medium";
+          }
+        }
+      });
+
+      if (tabId === 'map') {
+        setTimeout(() => {
+          if (map) {
+            map.invalidateSize();
+            fitMapBounds();
+          }
+          updateMapAgendaPills();
+        }, 150);
+      } else if (tabId === 'chat') {
+        renderForumChatMessages();
+        renderChatAgendasList();
+      } else if (tabId === 'finance') {
+        renderFinanceAll();
+      } else if (tabId === 'agenda') {
+        if (currentAgendaViewMode === 'month') {
+          renderCalendar();
+          renderSelectedDayAgendas();
+        } else {
+          renderWeekView();
+        }
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+    }
+    window.switchMainTab = switchMainTab;
+
+    // ====================================================
+    // 2. AGENDA VIEW SWITCHER (MONTH VS WEEK)
+    // ====================================================
+    function switchAgendaView(mode) {
+      currentAgendaViewMode = mode;
+      const monthContainer = document.getElementById("agendaMonthContainer");
+      const weekContainer = document.getElementById("agendaWeekContainer");
+      const btnMonth = document.getElementById("btnAgendaViewMonth");
+      const btnWeek = document.getElementById("btnAgendaViewWeek");
+
+      if (mode === 'month') {
+        monthContainer.classList.remove("hidden");
+        weekContainer.classList.add("hidden");
+        btnMonth.className = "px-3.5 py-1.5 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition";
+        btnWeek.className = "px-3.5 py-1.5 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition";
+        renderCalendar();
+        renderSelectedDayAgendas();
+      } else {
+        monthContainer.classList.add("hidden");
+        weekContainer.classList.remove("hidden");
+        btnMonth.className = "px-3.5 py-1.5 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition";
+        btnWeek.className = "px-3.5 py-1.5 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition";
+        renderWeekView();
+      }
+      lucide.createIcons();
+    }
+    window.switchAgendaView = switchAgendaView;
+
+    // ====================================================
+    // 3. TAMPILAN WEEK (1 MINGGU, KOLOM WAKTU & NAMA KEGIATAN)
+    // ====================================================
+    function getWeekDays(offset = 0) {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const distToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + distToMonday + (offset * 7));
+
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+        days.push(d);
+      }
+      return days;
+    }
+
+    function changeWeek(delta) {
+      if (delta === 0) {
+        currentWeekOffset = 0;
+      } else {
+        currentWeekOffset += delta;
+      }
+      renderWeekView();
+    }
+    window.changeWeek = changeWeek;
+
+    function handleWeekTimeFilterChange(val) {
+      weekTimeFilter = val;
+      renderWeekView();
+    }
+    window.handleWeekTimeFilterChange = handleWeekTimeFilterChange;
+
+    function renderWeekView() {
+      const weekDays = getWeekDays(currentWeekOffset);
+      const startDay = weekDays[0];
+      const endDay = weekDays[6];
+
+      const startStr = `${startDay.getDate()} ${IndonesianTime.monthsShort[startDay.getMonth()]}`;
+      const endStr = `${endDay.getDate()} ${IndonesianTime.monthsShort[endDay.getMonth()]} ${endDay.getFullYear()}`;
+      document.getElementById("weekRangeLabel").textContent = `${startStr} – ${endStr}`;
+
+      // Render Bar 7 Hari (Kolom Atas Tampilan Waktu)
+      const headerDaysEl = document.getElementById("weekHeaderDays");
+      headerDaysEl.innerHTML = "";
+
+      const todayStr = IndonesianTime.getLocalDateString();
+
+      weekDays.forEach((d) => {
+        const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayName = IndonesianTime.days[d.getDay()].substring(0, 3);
+        const dayNum = d.getDate();
+        const isToday = dStr === todayStr;
+        const isSelected = dStr === selectedDateStr;
+
+        const dayEvents = allAgendas.filter(a => {
+          const aStart = a.start.split('T')[0];
+          const aEnd = a.end ? a.end.split('T')[0] : aStart;
+          return dStr >= aStart && dStr <= aEnd;
+        });
+
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = `flex-1 min-w-[58px] py-2 px-1 rounded-xl flex flex-col items-center justify-center transition border text-xs cursor-pointer ${
+          isSelected
+            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+            : (isToday
+                ? 'bg-indigo-50 border-indigo-300 text-indigo-900 font-bold'
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50')
+        }`;
+
+        card.innerHTML = `
+          <span class="text-[10px] uppercase font-semibold opacity-75">${dayName}</span>
+          <span class="text-sm font-extrabold my-0.5">${dayNum}</span>
+          ${dayEvents.length > 0
+            ? `<span class="text-[9px] px-1.5 py-0.2 rounded-full ${isSelected ? 'bg-indigo-400 text-slate-950 font-bold' : 'bg-indigo-100 text-indigo-800 font-bold'}">${dayEvents.length}</span>`
+            : `<span class="h-1.5 w-1.5 rounded-full bg-slate-200"></span>`}
+        `;
+
+        card.addEventListener("click", () => {
+          selectedDateStr = dStr;
+          renderWeekView();
+        });
+
+        headerDaysEl.appendChild(card);
+      });
+
+      // Render Kolom Bawah (Nama Kegiatan Mingguan)
+      renderWeekActivities(weekDays);
+      lucide.createIcons();
+    }
+    window.renderWeekView = renderWeekView;
+
+    function renderWeekActivities(weekDays) {
+      const container = document.getElementById("weekActivitiesList");
+      container.innerHTML = "";
+
+      // Cari agenda yang aktif di rentang minggu ini
+      const weekStartStr = `${weekDays[0].getFullYear()}-${String(weekDays[0].getMonth() + 1).padStart(2, '0')}-${String(weekDays[0].getDate()).padStart(2, '0')}`;
+      const weekEndStr = `${weekDays[6].getFullYear()}-${String(weekDays[6].getMonth() + 1).padStart(2, '0')}-${String(weekDays[6].getDate()).padStart(2, '0')}`;
+
+      // Filter berdasarkan rentang waktu jam
+      const weekAgendas = allAgendas.filter(a => {
+        const aStart = a.start.split('T')[0];
+        const aEnd = a.end ? a.end.split('T')[0] : aStart;
+        const inWeek = aEnd >= weekStartStr && aStart <= weekEndStr;
+        if (!inWeek) return false;
+
+        if (weekTimeFilter !== 'all') {
+          const hour = a.start.includes('T') ? parseInt(a.start.split('T')[1].split(':')[0], 10) : 0;
+          if (weekTimeFilter === 'morning' && (hour < 5 || hour >= 12)) return false;
+          if (weekTimeFilter === 'afternoon' && (hour < 12 || hour >= 18)) return false;
+          if (weekTimeFilter === 'night' && (hour < 18 && hour >= 5)) return false;
+        }
+
+        return true;
+      });
+
+      if (weekAgendas.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 space-y-3">
+            <div class="inline-flex p-3 bg-slate-100 text-slate-400 rounded-full">
+              <i data-lucide="calendar-x" class="w-6 h-6"></i>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">Tidak ada kegiatan yang terjadwal pada rentang minggu ini.</p>
+            <button onclick="window.openCreateAgendaModal()" class="px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 transition shadow-sm inline-flex items-center gap-1.5">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>Buat Jadwal Baru</span>
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      // Kelompokkan kegiatan per hari dalam minggu aktif
+      weekDays.forEach(d => {
+        const dStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayAgendas = weekAgendas.filter(a => {
+          const aStart = a.start.split('T')[0];
+          const aEnd = a.end ? a.end.split('T')[0] : aStart;
+          return dStr >= aStart && dStr <= aEnd;
+        });
+
+        if (dayAgendas.length === 0) return;
+
+        const daySection = document.createElement("div");
+        daySection.className = "space-y-2.5";
+
+        const dayTitle = IndonesianTime.formatDateFull(d);
+        const isToday = dStr === IndonesianTime.getLocalDateString();
+
+        daySection.innerHTML = `
+          <div class="flex items-center gap-2 pb-1 border-b border-slate-200">
+            <span class="h-2 w-2 rounded-full ${isToday ? 'bg-indigo-600 animate-pulse' : 'bg-slate-400'}"></span>
+            <h5 class="text-xs font-bold ${isToday ? 'text-indigo-900' : 'text-slate-800'}">${dayTitle} ${isToday ? '<span class="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full font-bold ml-1">Hari Ini</span>' : ''}</h5>
+            <span class="text-[10px] text-slate-400 font-semibold ml-auto">${dayAgendas.length} Kegiatan</span>
+          </div>
+          <div class="space-y-2.5 pl-2" id="week-day-items-${dStr}"></div>
+        `;
+
+        const itemsContainer = daySection.querySelector(`#week-day-items-${dStr}`);
+
+        dayAgendas.forEach(item => {
+          const isMine = item.createdBy === userProfile?.uid;
+          const isPersonal = item.type === "private";
+          const startTime = IndonesianTime.formatTime(new Date(item.start));
+          const endTime = IndonesianTime.formatTime(new Date(item.end));
+          const durationText = calculateDuration(item.start, item.end);
+          const hasUnread = checkHasUnreadChat(item);
+
+          const card = document.createElement("div");
+          card.className = `p-3 rounded-xl border transition shadow-2xs ${
+            isPersonal ? (isMine ? 'bg-emerald-50/40 border-emerald-200' : 'bg-amber-50/50 border-amber-200') : 'bg-white border-slate-200 hover:border-slate-300'
+          } ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/40' : ''}`;
+
+          card.innerHTML = `
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1 space-y-1">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold ${
+                    isPersonal ? (isMine ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900') : 'bg-indigo-100 text-indigo-800'
+                  }">
+                    ${isPersonal ? (isMine ? 'Personal (Saya)' : `Personal (${item.createdByName || 'Anggota'})`) : 'Grup Bersama'}
+                  </span>
+                  ${item.category ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">💼 ${escapeHtml(item.category)}</span>` : ''}
+                  <h4 class="font-bold text-slate-900 text-xs truncate">${escapeHtml(item.title)}</h4>
+                </div>
+
+                <div class="flex items-center gap-3 text-[11px] text-slate-500 flex-wrap">
+                  <span class="flex items-center gap-1 font-medium text-slate-700">
+                    <i data-lucide="clock" class="w-3 h-3 text-slate-400"></i> ${startTime} - ${endTime} (${durationText})
+                  </span>
+                  ${item.locationName ? `
+                    <span class="flex items-center gap-1 text-indigo-600 font-medium truncate max-w-[200px]">
+                      <i data-lucide="map-pin" class="w-3 h-3"></i> ${escapeHtml(item.locationName)}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <button onclick="window.openChatModal('${item.id}', '${escapeHtml(item.title)}', '${item.start}')"
+                  class="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition relative" title="Buka Chat Agenda">
+                  <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                  ${hasUnread ? '<span class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span>' : ''}
+                </button>
+                <button onclick="window.openChecklistView('${item.id}')"
+                  class="p-1.5 rounded-lg border border-slate-200 text-indigo-600 hover:bg-indigo-50 transition" title="Lihat Checklist">
+                  <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `;
+          itemsContainer.appendChild(card);
+        });
+
+        container.appendChild(daySection);
+      });
+    }
+
+    // ====================================================
+    // 4. MAP FILTER PILIHAN (TOGGLE AGENDA & USERS)
+    // ====================================================
+    function toggleMapFilter(type) {
+      if (type === 'agenda') {
+        showAgendaPins = document.getElementById("toggleMapAgendas")?.checked ?? true;
+        Object.keys(agendaMarkers).forEach(id => {
+          if (agendaMarkers[id]) {
+            if (showAgendaPins) {
+              if (!map.hasLayer(agendaMarkers[id])) map.addLayer(agendaMarkers[id]);
+            } else {
+              if (map.hasLayer(agendaMarkers[id])) map.removeLayer(agendaMarkers[id]);
+            }
+          }
+        });
+      } else if (type === 'member') {
+        showMemberPins = document.getElementById("toggleMapMembers")?.checked ?? true;
+        Object.keys(markers).forEach(uid => {
+          if (markers[uid]) {
+            if (showMemberPins) {
+              if (!map.hasLayer(markers[uid])) map.addLayer(markers[uid]);
+            } else {
+              if (map.hasLayer(markers[uid])) map.removeLayer(markers[uid]);
+            }
+          }
+        });
+      }
+      updateMapCounters();
+    }
+    window.toggleMapFilter = toggleMapFilter;
+
+    function updateMapCounters() {
+      const agendaCount = Object.keys(agendaMarkers).length;
+      const memberCount = Object.keys(markers).length;
+      const aBadge = document.getElementById("mapAgendaCountBadge");
+      if (aBadge) aBadge.textContent = agendaCount;
+      const mBadge = document.getElementById("mapMemberCountBadge");
+      if (mBadge) mBadge.textContent = memberCount;
+    }
+
+    function fitMapBounds() {
+      if (!map) return;
+      const group = [];
+      if (showAgendaPins) {
+        Object.values(agendaMarkers).forEach(m => group.push(m.getLatLng()));
+      }
+      if (showMemberPins) {
+        Object.values(markers).forEach(m => group.push(m.getLatLng()));
+      }
+      if (group.length > 0) {
+        const bounds = L.latLngBounds(group);
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+      } else if (lastKnownUserLocation) {
+        map.setView([lastKnownUserLocation.lat, lastKnownUserLocation.lng], 14);
+      }
+    }
+    window.fitMapBounds = fitMapBounds;
+
+    function updateMapAgendaPills() {
+      const container = document.getElementById("mapAgendaPillsList");
+      if (!container) return;
+
+      const locatedAgendas = allAgendas.filter(a => {
+        const lat = parseFloat(a.locationLat);
+        const lng = parseFloat(a.locationLng);
+        return !isNaN(lat) && !isNaN(lng);
+      });
+
+      updateMapCounters();
+
+      if (locatedAgendas.length === 0) {
+        container.innerHTML = `<p class="text-slate-400 text-xs py-1">Belum ada agenda yang memiliki titik koordinat peta.</p>`;
+        return;
+      }
+
+      container.innerHTML = locatedAgendas.map(a => `
+        <button type="button" onclick="window.panToMapAgenda('${a.locationLat}', '${a.locationLng}', '${a.id}')"
+          class="shrink-0 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 transition flex items-center gap-1.5 shadow-2xs">
+          <i data-lucide="map-pin" class="w-3 h-3 text-indigo-600"></i>
+          <span class="font-semibold text-xs truncate max-w-[140px]">${escapeHtml(a.title)}</span>
+          <span class="text-[10px] text-slate-400 truncate max-w-[90px]">(${escapeHtml(a.locationName || 'Peta')})</span>
+        </button>
+      `).join("");
+
+      lucide.createIcons();
+    }
+
+    function panToMapAgenda(lat, lng, agendaId) {
+      if (!map) return;
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      if (isNaN(latitude) || isNaN(longitude)) return;
+
+      map.setView([latitude, longitude], 16, { animate: true });
+      if (agendaMarkers[agendaId]) {
+        agendaMarkers[agendaId].openPopup();
+      }
+    }
+    window.panToMapAgenda = panToMapAgenda;
+
+    // ====================================================
+    // 5. CHAT VIEW (ALL FORUM & PER-AGENDA)
+    // ====================================================
+    function switchChatSubTab(subTab) {
+      currentChatSubTab = subTab;
+      const forumView = document.getElementById("chatSubViewForum");
+      const agendasView = document.getElementById("chatSubViewAgendas");
+      const btnForum = document.getElementById("btnChatSubTabForum");
+      const btnAgendas = document.getElementById("btnChatSubTabAgendas");
+
+      if (subTab === 'forum') {
+        forumView.classList.remove("hidden");
+        agendasView.classList.add("hidden");
+        btnForum.className = "px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition";
+        btnAgendas.className = "px-4 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition";
+        renderForumChatMessages();
+      } else {
+        forumView.classList.add("hidden");
+        agendasView.classList.remove("hidden");
+        btnForum.className = "px-4 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 flex items-center gap-1.5 transition";
+        btnAgendas.className = "px-4 py-2 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition";
+        renderChatAgendasList();
+      }
+      lucide.createIcons();
+    }
+    window.switchChatSubTab = switchChatSubTab;
+
+    function listenToForumChats() {
+      if (!userProfile?.pairCode) return;
+      if (forumChatUnsubscribe) forumChatUnsubscribe();
+
+      const q = collection(db, "rooms", userProfile.pairCode, "forumChats");
+      forumChatUnsubscribe = onSnapshot(q, (snapshot) => {
+        forumChats = [];
+        snapshot.forEach(docSnap => {
+          const d = docSnap.data();
+          let timeVal = d.timestamp?.toMillis ? d.timestamp.toMillis() : (d.localCreatedAt || 0);
+          forumChats.push({
+            id: docSnap.id,
+            ...d,
+            _sortTime: timeVal
+          });
+        });
+        forumChats.sort((a, b) => a._sortTime - b._sortTime);
+
+        if (currentMainTab === 'chat' && currentChatSubTab === 'forum') {
+          renderForumChatMessages();
+        }
+      }, err => {
+        console.error("Forum chat error:", err);
+      });
+    }
+
+    async function handleSendForumChat(e) {
+      e.preventDefault();
+      const input = document.getElementById("inputForumChat");
+      const text = input.value.trim();
+      if (!text || !userProfile?.pairCode) return;
+
+      input.value = "";
+      try {
+        await addDoc(collection(db, "rooms", userProfile.pairCode, "forumChats"), {
+          text,
+          senderId: userProfile.uid,
+          senderName: userProfile.name,
+          senderGender: userProfile.gender,
+          localCreatedAt: Date.now(),
+          timestamp: serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Gagal mengirim chat forum:", err);
+        alert("Gagal kirim pesan forum: " + err.message);
+      }
+    }
+    window.handleSendForumChat = handleSendForumChat;
+
+    function renderForumChatMessages() {
+      const container = document.getElementById("forumChatMessagesList");
+      if (!container) return;
+
+      if (forumChats.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 space-y-2">
+            <div class="inline-flex p-3 bg-indigo-100 text-indigo-600 rounded-full">
+              <i data-lucide="message-square" class="w-6 h-6"></i>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">Belum ada obrolan di forum grup.</p>
+            <p class="text-[11px] text-slate-400">Jadilah yang pertama mengirim salam atau memulai obrolan!</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = "";
+      forumChats.forEach(msg => {
+        const isMine = msg.senderId === userProfile?.uid;
+        const time = msg.localCreatedAt ? IndonesianTime.formatTime(new Date(msg.localCreatedAt)) : '';
+        const bubble = document.createElement("div");
+        bubble.className = `flex flex-col ${isMine ? 'items-end' : 'items-start'}`;
+
+        bubble.innerHTML = `
+          <span class="text-[10px] text-slate-400 mb-0.5 px-1">${escapeHtml(msg.senderName || 'Anggota')} (${msg.senderGender === 'female' ? '👩' : '👨'})</span>
+          <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words shadow-2xs ${
+            isMine ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
+          }">
+            ${parseMessageWithLinks(msg.text, isMine)}
+          </div>
+          <span class="text-[9px] text-slate-400 mt-0.5 px-1">${time}</span>
+        `;
+        container.appendChild(bubble);
+      });
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    function renderChatAgendasList() {
+      const container = document.getElementById("agendaChatCardsList");
+      if (!container) return;
+
+      if (allAgendas.length === 0) {
+        container.innerHTML = `<p class="text-slate-400 text-xs py-8 text-center">Belum ada agenda kegiatan.</p>`;
+        return;
+      }
+
+      container.innerHTML = allAgendas.map(item => {
+        const hasUnread = checkHasUnreadChat(item);
+        const lastChat = item.lastChatText ? escapeHtml(item.lastChatText) : 'Belum ada obrolan';
+        const formattedDate = item.start ? IndonesianTime.formatDateStandard(new Date(item.start)) : '-';
+
+        return `
+          <div class="p-3.5 rounded-xl border transition shadow-2xs flex items-center justify-between gap-3 bg-white hover:border-slate-300 ${
+            hasUnread ? 'border-rose-400 bg-rose-50/40' : 'border-slate-200'
+          }">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-800 shrink-0">📅 ${formattedDate}</span>
+                ${item.category ? `<span class="text-[10px] px-1.5 py-0.5 rounded font-semibold bg-slate-100 text-slate-600">💼 ${escapeHtml(item.category)}</span>` : ''}
+                <h4 class="font-bold text-slate-900 text-xs truncate">${escapeHtml(item.title)}</h4>
+              </div>
+              <p class="text-[11px] text-slate-500 truncate mt-1">💬 ${lastChat}</p>
+            </div>
+
+            <button type="button" onclick="window.openChatModal('${item.id}', '${escapeHtml(item.title)}', '${item.start}')"
+              class="px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 transition flex items-center gap-1.5 shadow-2xs ${
+                hasUnread ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold' : 'bg-slate-900 hover:bg-slate-800 text-white'
+              }">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+              <span>Buka Obrolan</span>
+              ${hasUnread ? '<span class="h-2 w-2 rounded-full bg-white badge-unread-ping ml-0.5"></span>' : ''}
+            </button>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    // ====================================================
+    // 6. MODUL FINANCE LENGKAP (DARI PATUNGAN-MAIN)
+    // ====================================================
+    function switchFinanceSubTab(subTab) {
+      currentFinanceSubTab = subTab;
+      const subviews = ['overview', 'goals', 'schemes', 'ledger'];
+
+      subviews.forEach(s => {
+        const viewEl = document.getElementById(`finance-subview-${s}`);
+        if (viewEl) viewEl.classList.toggle("hidden", s !== subTab);
+
+        const btn = document.getElementById(`finance-tab-btn-${s}`);
+        if (btn) {
+          if (s === subTab) {
+            btn.className = "flex-1 min-w-[100px] py-2 px-3 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs transition flex items-center justify-center gap-1.5";
+          } else {
+            btn.className = "flex-1 min-w-[100px] py-2 px-3 rounded-lg font-semibold text-xs text-slate-600 hover:bg-slate-200/80 transition flex items-center justify-center gap-1.5";
+          }
+        }
+      });
+      lucide.createIcons();
+    }
+    window.switchFinanceSubTab = switchFinanceSubTab;
+
+    function listenToFinance() {
+      if (!userProfile?.pairCode) return;
+      if (unsubscribeFinance) unsubscribeFinance();
+
+      const docRef = doc(db, "finance", userProfile.pairCode);
+      unsubscribeFinance = onSnapshot(docRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          financeState.goals = data.goals || [];
+          financeState.schemes = data.schemes || [];
+          financeState.categories = (data.categories && data.categories.length > 0)
+            ? data.categories
+            : ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"];
+          financeState.transactions = data.transactions || [];
+        } else {
+          financeState = {
+            goals: [],
+            schemes: [],
+            categories: ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"],
+            transactions: []
+          };
+        }
+        renderFinanceAll();
+        updateAgendaCategoryDropdown();
+        updateFinanceCategoryDropdown();
+      }, (error) => {
+        console.error("Firestore Finance Error:", error);
+      });
+    }
+
+    async function saveFinanceState() {
+      if (!userProfile?.pairCode) return;
+      try {
+        const docRef = doc(db, "finance", userProfile.pairCode);
+        await setDoc(docRef, financeState, { merge: true });
+      } catch (err) {
+        console.error("Gagal simpan ke Firestore finance:", err);
+      }
+    }
+
+    function renderFinanceAll() {
+      let totalIncome = 0;
+      let totalExpense = 0;
+      const catTotals = {};
+      const inputerIncome = {};
+
+      financeState.transactions.forEach((tx) => {
+        if (tx.type === "income") {
+          totalIncome += tx.amount;
+          inputerIncome[tx.inputer] = (inputerIncome[tx.inputer] || 0) + tx.amount;
+        } else {
+          totalExpense += tx.amount;
+        }
+
+        if (!catTotals[tx.category]) catTotals[tx.category] = { in: 0, out: 0 };
+        catTotals[tx.category][tx.type === "income" ? "in" : "out"] += tx.amount;
+      });
+
+      const totalBalance = totalIncome - totalExpense;
+      const totalBudget = financeState.goals.reduce((acc, g) => acc + g.amount, 0);
+      const remainingGoals = Math.max(0, totalBudget - totalBalance);
+
+      let totalAllocated = 0;
+      const memberObligations = {};
+
+      financeState.schemes.forEach((s) => {
+        if (s.type === "fixed") {
+          memberObligations[s.name.toLowerCase()] = s.value;
+          totalAllocated += s.value;
+        } else if (s.type === "percent") {
+          const nominalPercent = (s.value / 100) * totalBudget;
+          memberObligations[s.name.toLowerCase()] = nominalPercent;
+          totalAllocated += nominalPercent;
+        }
+      });
+
+      const diff = totalBudget - totalAllocated;
+
+      // Dashboard View
+      const balEl = document.getElementById("dash-total-balance");
+      if (balEl) balEl.innerText = formatRp(totalBalance);
+      const inEl = document.getElementById("dash-total-income");
+      if (inEl) inEl.innerText = formatRp(totalIncome);
+      const outEl = document.getElementById("dash-total-expense");
+      if (outEl) outEl.innerText = formatRp(totalExpense);
+      const goalEl = document.getElementById("dash-total-goals");
+      if (goalEl) goalEl.innerText = formatRp(totalBudget);
+      const remEl = document.getElementById("dash-remaining-goals");
+      if (remEl) remEl.innerText = formatRp(remainingGoals);
+
+      // Notifikasi Selisih Skema vs Total Budget
+      const diffCardEl = document.getElementById("dash-split-diff-card");
+      const diffTextEl = document.getElementById("dash-split-diff");
+
+      if (diffCardEl && diffTextEl) {
+        if (diff > 0) {
+          diffCardEl.className = "p-3 rounded-xl border border-amber-200/80 bg-amber-50 text-xs flex items-center justify-between";
+          diffTextEl.className = "font-bold text-amber-700";
+          diffTextEl.innerText = `Tinggal ${formatRp(diff)} lagi`;
+        } else if (diff < 0) {
+          diffCardEl.className = "p-3 rounded-xl border border-blue-200/80 bg-blue-50 text-xs flex items-center justify-between";
+          diffTextEl.className = "font-bold text-blue-700";
+          diffTextEl.innerText = `Ada lebih ${formatRp(Math.abs(diff))}`;
+        } else {
+          diffCardEl.className = "p-3 rounded-xl border border-emerald-200/80 bg-emerald-50 text-xs flex items-center justify-between";
+          diffTextEl.className = "font-bold text-emerald-700";
+          diffTextEl.innerText = "Pas (100%)";
+        }
+      }
+
+      // Members Breakdown View
+      const membersListEl = document.getElementById("dash-members-list");
+      if (membersListEl) {
+        const allMembers = Array.from(new Set([...financeState.schemes.map(s => s.name), ...Object.keys(inputerIncome)]));
+        if (allMembers.length === 0) {
+          membersListEl.innerHTML = `<p class="text-slate-400 text-xs py-2">Belum ada data skema member atau setoran patungan.</p>`;
+        } else {
+          membersListEl.innerHTML = allMembers.map(m => {
+            const targetObligation = memberObligations[m.toLowerCase()] || 0;
+            const paid = inputerIncome[m] || 0;
+            const sisaObligation = targetObligation - paid;
+
+            return `
+              <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                <div>
+                  <p class="font-bold text-slate-800">${escapeHtml(m)}</p>
+                  <span class="text-slate-500 text-[11px]">Telah setor: <strong class="text-slate-700">${formatRp(paid)}</strong> / Target: ${formatRp(targetObligation)}</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] uppercase font-semibold text-slate-400 block">Sisa Patungan</span>
+                  <p class="font-bold ${sisaObligation > 0 ? 'text-amber-600' : 'text-emerald-600'}">
+                    ${sisaObligation > 0 ? formatRp(sisaObligation) : 'Lunas (OK)'}
+                  </p>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // Categories Breakdown View
+      const catListEl = document.getElementById("dash-category-list");
+      if (catListEl) {
+        const catKeys = Object.keys(catTotals);
+        if (catKeys.length === 0) {
+          catListEl.innerHTML = `<p class="text-slate-400 text-xs py-2">Belum ada mutasi kas.</p>`;
+        } else {
+          catListEl.innerHTML = catKeys.map(c => `
+            <div class="flex justify-between items-center p-2 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="font-semibold text-slate-700">${escapeHtml(c)}</span>
+              <div class="flex gap-3 text-[11px]">
+                <span class="text-emerald-600 font-bold">+${formatRp(catTotals[c].in)}</span>
+                <span class="text-rose-600 font-bold">-${formatRp(catTotals[c].out)}</span>
+              </div>
+            </div>
+          `).join("");
+        }
+      }
+
+      // Budget List View
+      const goalsListEl = document.getElementById("goals-list");
+      if (goalsListEl) {
+        if (financeState.goals.length === 0) {
+          goalsListEl.innerHTML = `<p class="text-slate-400 text-xs py-3 text-center">Belum ada alokasi pos budget.</p>`;
+        } else {
+          goalsListEl.innerHTML = financeState.goals.map(g => {
+            const goalCat = catTotals[g.name] || { in: 0, out: 0 };
+            const spentExpense = goalCat.out;
+            const percentProgress = Math.round((spentExpense / g.amount) * 100) || 0;
+            const isOverBudget = spentExpense > g.amount;
+            const diffAmount = Math.abs(g.amount - spentExpense);
+
+            return `
+              <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <span class="font-bold text-slate-800 text-sm">${escapeHtml(g.name)}</span>
+                    <span class="text-xs text-slate-500 font-semibold ml-1">(${formatRp(g.amount)})</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="window.editGoal('${g.id}')" class="text-slate-400 hover:text-indigo-600 p-1 transition" title="Edit Budget">
+                      <i data-lucide="pencil" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="window.deleteGoal('${g.id}')" class="text-slate-400 hover:text-rose-500 p-1 transition" title="Hapus Budget">
+                      <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-1">
+                  <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div class="${isOverBudget ? 'bg-rose-500' : 'bg-indigo-600'} h-2 rounded-full transition-all duration-300" style="width: ${Math.min(100, percentProgress)}%"></div>
+                  </div>
+                  <div class="flex justify-between items-center text-[10px] pt-0.5">
+                    <span class="text-slate-500">Terpakai: <strong class="text-slate-700">${formatRp(spentExpense)}</strong> (${percentProgress}%)</span>
+                    <span class="font-bold ${isOverBudget ? 'text-rose-600' : 'text-emerald-600'}">
+                      ${isOverBudget ? `Boros ${formatRp(diffAmount)}` : `Hemat ${formatRp(diffAmount)}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("");
+        }
+      }
+
+      // Schemes List View
+      const schemesListEl = document.getElementById("split-schemes-list");
+      if (schemesListEl) {
+        schemesListEl.innerHTML = financeState.schemes.length === 0
+          ? `<p class="text-slate-400 text-xs py-3 text-center">Belum ada skema pembagian tersimpan.</p>`
+          : financeState.schemes.map(s => `
+            <div class="flex justify-between items-center py-2.5">
+              <div>
+                <span class="font-bold text-slate-800 text-xs">${escapeHtml(s.name)}</span>
+                <span class="text-slate-400 text-[11px]"> (${s.type === 'fixed' ? 'Fixed Price' : 'Persentase'})</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-700 text-xs">${s.type === 'fixed' ? formatRp(s.value) : s.value + '% (' + formatRp(memberObligations[s.name.toLowerCase()] || 0) + ')'}</span>
+                <button onclick="window.editScheme('${s.id}')" class="text-slate-400 hover:text-indigo-600 p-1" title="Edit Skema">
+                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="window.deleteScheme('${s.id}')" class="text-slate-400 hover:text-rose-500 p-1" title="Hapus Skema">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `).join("");
+      }
+
+      // List Income / Expense View
+      const txListEl = document.getElementById("tx-list");
+      if (txListEl) {
+        txListEl.innerHTML = financeState.transactions.length === 0
+          ? `<p class="text-slate-400 text-xs py-3 text-center">Belum ada transaksi di buku saldo.</p>`
+          : financeState.transactions.map(tx => {
+            const isBudgetLinked = financeState.goals.some(g => g.name.toLowerCase() === tx.category.toLowerCase());
+
+            return `
+              <div class="py-2.5 flex justify-between items-center">
+                <div>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-bold text-slate-800 text-xs">${escapeHtml(tx.title || tx.category)}</span>
+                    <span class="text-[10px] ${isBudgetLinked ? 'bg-indigo-100 text-indigo-700 font-semibold' : 'bg-slate-100 text-slate-600'} px-2 py-0.5 rounded-md">
+                      ${isBudgetLinked ? '💼 ' : ''}${escapeHtml(tx.category)}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-0.5 text-[10px] text-slate-400">
+                    <span>Inputer: <strong class="text-slate-600">${escapeHtml(tx.inputer)}</strong></span>
+                    <span>•</span>
+                    <span>${new Date(tx.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-xs ${tx.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
+                    ${tx.type === 'income' ? '+' : '-'} ${formatRp(tx.amount)}
+                  </span>
+                  <button onclick="window.editTx('${tx.id}')" class="text-slate-400 hover:text-indigo-600 p-1" title="Edit Transaksi">
+                    <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button onclick="window.deleteTx('${tx.id}')" class="text-slate-400 hover:text-rose-500 p-1" title="Hapus Transaksi">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join("");
+      }
+
+      lucide.createIcons();
+    }
+
+    // CRUD: GOAL (BUDGET)
+    function openGoalModal() {
+      document.getElementById("goal-id").value = "";
+      document.getElementById("goal-name").value = "";
+      document.getElementById("goal-amount").value = "";
+      document.getElementById("modal-goal-title").innerText = "Tambah Pos Budget";
+      document.getElementById("goal-submit-btn").innerText = "Simpan Budget";
+      document.getElementById("modal-goal").showModal();
+    }
+    window.openGoalModal = openGoalModal;
+
+    function editGoal(id) {
+      const g = financeState.goals.find(item => item.id === id);
+      if (!g) return;
+      document.getElementById("goal-id").value = g.id;
+      document.getElementById("goal-name").value = g.name;
+      document.getElementById("goal-amount").value = g.amount;
+      document.getElementById("modal-goal-title").innerText = "Edit Pos Budget";
+      document.getElementById("goal-submit-btn").innerText = "Update Budget";
+      document.getElementById("modal-goal").showModal();
+    }
+    window.editGoal = editGoal;
+
+    function deleteGoal(id) {
+      if (confirm("Hapus pos budget ini?")) {
+        financeState.goals = financeState.goals.filter(g => g.id !== id);
+        saveFinanceState();
+      }
+    }
+    window.deleteGoal = deleteGoal;
+
+    function handleGoalSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById("goal-id").value;
+      const name = document.getElementById("goal-name").value.trim();
+      const amount = Number(document.getElementById("goal-amount").value);
+
+      if (!financeState.categories.includes(name)) {
+        financeState.categories.push(name);
+      }
+
+      if (id) {
+        const idx = financeState.goals.findIndex(g => g.id === id);
+        if (idx !== -1) financeState.goals[idx] = { ...financeState.goals[idx], name, amount };
+      } else {
+        financeState.goals.push({ id: "g_" + Date.now(), name, amount });
+      }
+
+      document.getElementById("modal-goal").close();
+      saveFinanceState();
+    }
+    window.handleGoalSubmit = handleGoalSubmit;
+
+    // CRUD: SCHEMES (PEMBAGIAN PATUNGAN)
+    function openSchemeModal() {
+      document.getElementById("scheme-id").value = "";
+      document.getElementById("member-name-input").value = userProfile?.name || "";
+      document.getElementById("member-split-val").value = "";
+      document.getElementById("modal-scheme-title").innerText = "Setup Skema Pembagian";
+      document.getElementById("scheme-submit-btn").innerText = "Simpan Skema";
+      document.getElementById("modal-scheme").showModal();
+    }
+    window.openSchemeModal = openSchemeModal;
+
+    function editScheme(id) {
+      const s = financeState.schemes.find(item => item.id === id);
+      if (!s) return;
+      document.getElementById("scheme-id").value = s.id;
+      document.getElementById("member-name-input").value = s.name;
+      document.getElementById("member-split-type").value = s.type;
+      document.getElementById("member-split-val").value = s.value;
+      document.getElementById("modal-scheme-title").innerText = "Edit Skema Pembagian";
+      document.getElementById("scheme-submit-btn").innerText = "Update Skema";
+      document.getElementById("modal-scheme").showModal();
+    }
+    window.editScheme = editScheme;
+
+    function deleteScheme(id) {
+      if (confirm("Hapus skema member ini?")) {
+        financeState.schemes = financeState.schemes.filter(s => s.id !== id);
+        saveFinanceState();
+      }
+    }
+    window.deleteScheme = deleteScheme;
+
+    function handleSchemeSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById("scheme-id").value;
+      const name = document.getElementById("member-name-input").value.trim();
+      const type = document.getElementById("member-split-type").value;
+      const value = Number(document.getElementById("member-split-val").value);
+
+      if (id) {
+        const idx = financeState.schemes.findIndex(s => s.id === id);
+        if (idx !== -1) financeState.schemes[idx] = { id, name, type, value };
+      } else {
+        const existingIdx = financeState.schemes.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+        if (existingIdx >= 0) {
+          financeState.schemes[existingIdx] = { ...financeState.schemes[existingIdx], type, value };
+        } else {
+          financeState.schemes.push({ id: "s_" + Date.now(), name, type, value });
+        }
+      }
+
+      document.getElementById("modal-scheme").close();
+      saveFinanceState();
+    }
+    window.handleSchemeSubmit = handleSchemeSubmit;
+
+    // CRUD: TRANSAKSI KAS REALISASI
+    function updateFinanceCategoryDropdown(selectedVal = "") {
+      const selectEl = document.getElementById("tx-category-select");
+      if (!selectEl) return;
+
+      const budgetCategories = financeState.goals.map(g => g.name);
+      const combined = Array.from(new Set([...financeState.categories, ...budgetCategories]));
+
+      let optionsHtml = `<option value="" disabled ${!selectedVal ? 'selected' : ''}>-- Pilih Kategori --</option>`;
+
+      if (budgetCategories.length > 0) {
+        optionsHtml += `<optgroup label="Dari Daftar Budget">`;
+        budgetCategories.forEach(g => {
+          optionsHtml += `<option value="${g}">${g}</option>`;
+        });
+        optionsHtml += `</optgroup>`;
+      }
+
+      optionsHtml += `<optgroup label="Kategori Lainnya">`;
+      financeState.categories.forEach(c => {
+        optionsHtml += `<option value="${c}">${c}</option>`;
+      });
+      optionsHtml += `</optgroup>`;
+
+      optionsHtml += `<option value="__NEW__" class="font-bold text-indigo-600">+ Input Nama Kategori Baru...</option>`;
+
+      selectEl.innerHTML = optionsHtml;
+
+      const customInput = document.getElementById("tx-category-custom");
+      if (selectedVal) {
+        if (combined.includes(selectedVal)) {
+          selectEl.value = selectedVal;
+          if (customInput) customInput.classList.add("hidden");
+        } else {
+          selectEl.value = "__NEW__";
+          if (customInput) {
+            customInput.classList.remove("hidden");
+            customInput.value = selectedVal;
+          }
+        }
+      } else {
+        if (customInput) customInput.classList.add("hidden");
+      }
+    }
+
+    function handleFinanceCategorySelectChange(val) {
+      const customInput = document.getElementById("tx-category-custom");
+      if (val === "__NEW__") {
+        customInput.classList.remove("hidden");
+        customInput.value = "";
+        customInput.focus();
+      } else {
+        customInput.classList.add("hidden");
+      }
+    }
+    window.handleFinanceCategorySelectChange = handleFinanceCategorySelectChange;
+
+    function openTxModal() {
+      document.getElementById("tx-id").value = "";
+      document.getElementById("tx-title").value = "";
+      document.getElementById("tx-amount").value = "";
+      document.getElementById("tx-inputer").value = userProfile?.name || "";
+      document.getElementById("tx-datetime").value = getLocalDateTime();
+      updateFinanceCategoryDropdown();
+      document.getElementById("modal-tx-title").innerText = "Catat Transaksi Kas Realisasi";
+      document.getElementById("tx-submit-btn").innerText = "Simpan Transaksi";
+      document.getElementById("modal-tx").showModal();
+    }
+    window.openTxModal = openTxModal;
+
+    function editTx(id) {
+      const tx = financeState.transactions.find(item => item.id === id);
+      if (!tx) return;
+      document.getElementById("tx-id").value = tx.id;
+      document.getElementById("tx-title").value = tx.title || tx.category;
+      document.getElementById("tx-type").value = tx.type;
+      document.getElementById("tx-amount").value = tx.amount;
+      document.getElementById("tx-inputer").value = tx.inputer;
+
+      const dt = tx.date ? new Date(tx.date) : new Date();
+      dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
+      document.getElementById("tx-datetime").value = dt.toISOString().slice(0, 16);
+
+      updateFinanceCategoryDropdown(tx.category);
+
+      document.getElementById("modal-tx-title").innerText = "Edit Transaksi Kas Realisasi";
+      document.getElementById("tx-submit-btn").innerText = "Update Transaksi";
+      document.getElementById("modal-tx").showModal();
+    }
+    window.editTx = editTx;
+
+    function deleteTx(id) {
+      if (confirm("Hapus transaksi ini?")) {
+        financeState.transactions = financeState.transactions.filter(tx => tx.id !== id);
+        saveFinanceState();
+      }
+    }
+    window.deleteTx = deleteTx;
+
+    function handleTxSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById("tx-id").value;
+      const title = document.getElementById("tx-title").value.trim();
+      const type = document.getElementById("tx-type").value;
+      const amount = Number(document.getElementById("tx-amount").value);
+      const inputer = document.getElementById("tx-inputer").value.trim();
+      const date = new Date(document.getElementById("tx-datetime").value).toISOString();
+
+      const selectVal = document.getElementById("tx-category-select").value;
+      let category = selectVal;
+      if (selectVal === "__NEW__" || !selectVal) {
+        category = document.getElementById("tx-category-custom").value.trim();
+      }
+      if (!category) {
+        alert("Silakan pilih atau masukkan kategori transaksi.");
+        return;
+      }
+
+      if (!financeState.categories.includes(category) && !financeState.goals.some(g => g.name.toLowerCase() === category.toLowerCase())) {
+        financeState.categories.push(category);
+      }
+
+      if (id) {
+        const idx = financeState.transactions.findIndex(tx => tx.id === id);
+        if (idx !== -1) {
+          financeState.transactions[idx] = { ...financeState.transactions[idx], title, type, amount, category, inputer, date };
+        }
+      } else {
+        financeState.transactions.unshift({
+          id: "tx_" + Date.now(),
+          title,
+          type,
+          amount,
+          category,
+          inputer,
+          date
+        });
+      }
+
+      document.getElementById("modal-tx").close();
+      saveFinanceState();
+    }
+    window.handleTxSubmit = handleTxSubmit;
+
+    // ====================================================
+    // 7. SINKRONISASI KATEGORI PADA MODAL AGENDA
+    // ====================================================
+    function updateAgendaCategoryDropdown(selectedVal = "Umum") {
+      const selectEl = document.getElementById("agendaCategory");
+      if (!selectEl) return;
+
+      const budgetCategories = financeState.goals.map(g => g.name);
+      const combined = Array.from(new Set([...financeState.categories, ...budgetCategories]));
+
+      let html = `<option value="" disabled ${!selectedVal ? 'selected' : ''}>-- Pilih Kategori --</option>`;
+
+      if (budgetCategories.length > 0) {
+        html += `<optgroup label="Pos Anggaran Budget">`;
+        budgetCategories.forEach(g => {
+          html += `<option value="${escapeHtml(g)}" ${g === selectedVal ? 'selected' : ''}>💼 ${escapeHtml(g)}</option>`;
+        });
+        html += `</optgroup>`;
+      }
+
+      html += `<optgroup label="Kategori Umum">`;
+      financeState.categories.forEach(c => {
+        html += `<option value="${escapeHtml(c)}" ${c === selectedVal ? 'selected' : ''}>${escapeHtml(c)}</option>`;
+      });
+      html += `</optgroup>`;
+
+      html += `<option value="__NEW__" class="font-bold text-indigo-600">+ Buat Kategori Baru...</option>`;
+      selectEl.innerHTML = html;
+
+      const customInput = document.getElementById("agendaCategoryCustom");
+      if (selectedVal && combined.includes(selectedVal)) {
+        selectEl.value = selectedVal;
+        if (customInput) customInput.classList.add("hidden");
+      } else if (selectedVal) {
+        selectEl.value = "__NEW__";
+        if (customInput) {
+          customInput.classList.remove("hidden");
+          customInput.value = selectedVal;
+        }
+      }
+    }
+    window.updateAgendaCategoryDropdown = updateAgendaCategoryDropdown;
+
+    function handleAgendaCategorySelectChange(val) {
+      const customInput = document.getElementById("agendaCategoryCustom");
+      if (val === "__NEW__") {
+        customInput.classList.remove("hidden");
+        customInput.value = "";
+        customInput.focus();
+      } else {
+        customInput.classList.add("hidden");
+      }
+    }
+    window.handleAgendaCategorySelectChange = handleAgendaCategorySelectChange;
+
+    // ====================================================
+    // 8. PWA SERVICE WORKER & INSTALLATION HANDLER
+    // ====================================================
+    function initPwa() {
+      // Registrasi Service Worker untuk PWA Caching & Installability
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then(reg => {
+              console.log('[PWA] ServiceWorker terdaftar:', reg.scope);
+            })
+            .catch(err => {
+              console.warn('[PWA] Gagal registrasi ServiceWorker:', err);
+            });
+        });
+      }
+
+      // Tangani event beforeinstallprompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPwaPrompt = e;
+        const btnInstall = document.getElementById("btnInstallPwa");
+        if (btnInstall) {
+          btnInstall.classList.remove("hidden");
+        }
+      });
+
+      // Listener klik tombol install di header
+      const btnInstall = document.getElementById("btnInstallPwa");
+      if (btnInstall) {
+        btnInstall.addEventListener("click", () => {
+          if (deferredPwaPrompt) {
+            deferredPwaPrompt.prompt();
+            deferredPwaPrompt.userChoice.then((choiceResult) => {
+              if (choiceResult.outcome === 'accepted') {
+                console.log('[PWA] Pengguna menyetujui instalasi');
+                btnInstall.classList.add("hidden");
+              }
+              deferredPwaPrompt = null;
+            });
+          } else {
+            document.getElementById("modal-install-pwa")?.showModal();
+          }
+        });
+      }
+    }
+
+    function triggerDirectPwaInstall() {
+      if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById("btnInstallPwa")?.classList.add("hidden");
+            document.getElementById("mobileInstallBar")?.classList.add("hidden");
+          }
+          deferredPwaPrompt = null;
+        });
+      } else {
+        const modal = document.getElementById("modal-install-pwa");
+        if (modal) {
+          modal.showModal();
+          if (typeof lucide !== "undefined") lucide.createIcons();
+        } else {
+          alert("Untuk pengguna Android/Chrome, silakan buka menu ⋮ > 'Install Aplikasi'. Untuk iPhone, gunakan tombol Share > 'Tambah ke Layar Utama'.");
+        }
+      }
+    }
+    window.triggerDirectPwaInstall = triggerDirectPwaInstall;
 
   </script>
 </body>

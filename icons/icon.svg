@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)" />
+  
+  <!-- Inner Glow Card -->
+  <rect x="36" y="36" width="440" height="440" rx="90" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="3" />
+  
+  <!-- Calendar Base -->
+  <g filter="url(#dropShadow)">
+    <rect x="100" y="110" width="312" height="290" rx="36" fill="#ffffff" />
+    
+    <!-- Calendar Header (Indigo) -->
+    <path d="M 100 146 A 36 36 0 0 1 136 110 L 376 110 A 36 36 0 0 1 412 146 L 412 195 L 100 195 Z" fill="#4f46e5" />
+    
+    <!-- Calendar Rings -->
+    <rect x="160" y="85" width="22" height="46" rx="11" fill="#cbd5e1" stroke="#334155" stroke-width="4" />
+    <rect x="330" y="85" width="22" height="46" rx="11" fill="#cbd5e1" stroke="#334155" stroke-width="4" />
+    
+    <!-- Calendar Grid Dots -->
+    <circle cx="160" cy="245" r="14" fill="#818cf8" />
+    <circle cx="225" cy="245" r="14" fill="#818cf8" />
+    <circle cx="290" cy="245" r="14" fill="#818cf8" />
+    <circle cx="355" cy="245" r="14" fill="#818cf8" />
+    
+    <circle cx="160" cy="305" r="14" fill="#818cf8" />
+    <circle cx="225" cy="305" r="14" fill="#818cf8" />
+    <circle cx="290" cy="305" r="14" fill="#818cf8" />
+    <circle cx="355" cy="305" r="14" fill="#818cf8" />
+    
+    <!-- Finance Badge (Wallet / Currency overlapping lower right) -->
+    <g transform="translate(255, 260)">
+      <circle cx="95" cy="95" r="72" fill="url(#accentGrad)" stroke="#ffffff" stroke-width="8" />
+      <path d="M 95 62 L 95 128 M 80 78 C 80 68, 110 68, 110 82 C 110 96, 80 96, 80 110 C 80 124, 110 124, 110 114" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </g>
+</svg>

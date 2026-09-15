@@ -1,0 +1,43 @@
+{
+  "name": "Beragenda - Kalender Agenda, Map & Finance",
+  "short_name": "Beragenda",
+  "description": "Aplikasi kalender agenda grup, live peta lokasi, forum obrolan, serta manajemen keuangan budget & patungan realtime.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "finance", "social"],
+  "shortcuts": [
+    {
+      "name": "Agenda",
+      "url": "./index.html#agenda",
+      "description": "Buka jadwal agenda grup"
+    },
+    {
+      "name": "Finance",
+      "url": "./index.html#finance",
+      "description": "Buka buku kas & patungan"
+    },
+    {
+      "name": "Peta Lokasi",
+      "url": "./index.html#map",
+      "description": "Buka peta lokasi grup"
+    }
+  ]
+}
