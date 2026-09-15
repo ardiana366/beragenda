@@ -1263,6 +1263,18 @@
           </h3>
           <div id="dash-category-list" class="space-y-2 text-xs"></div>
         </div>
+
+        <!-- Breakdown Arus Kas per-Agenda -->
+        <div class="glass-card rounded-2xl p-4 shadow-sm border border-slate-200">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-slate-800 text-xs uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
+              <span>Arus Kas per-Agenda</span>
+            </h3>
+            <span id="dash-agenda-finance-count" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">0 Agenda</span>
+          </div>
+          <div id="dash-agenda-finance-list" class="space-y-2.5 text-xs"></div>
+        </div>
       </div>
 
       <!-- SUB-SECTION 2: DAFTAR BUDGET (ANGGARAN) -->
@@ -1401,13 +1413,20 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-600 mb-1">Kategori Agenda (Terhubung ke Finance & Budget)</label>
-          <div class="space-y-1.5">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-slate-700">Koneksi ke Finance & Arus Kas</label>
+            <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs text-indigo-600 font-semibold select-none">
+              <input type="checkbox" id="agendaConnectFinance" checked onchange="window.handleAgendaConnectFinanceToggle(this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5 border-slate-300">
+              <span>Aktifkan Arus Kas</span>
+            </label>
+          </div>
+          <div id="agendaFinanceOptions" class="space-y-1.5">
             <select id="agendaCategory" onchange="window.handleAgendaCategorySelectChange(this.value)"
               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-600 focus:outline-none bg-white font-medium">
             </select>
             <input type="text" id="agendaCategoryCustom" placeholder="Ketik nama kategori baru..."
               class="hidden w-full rounded-lg border border-indigo-300 bg-indigo-50/50 px-3 py-1.5 text-xs focus:border-indigo-600 focus:outline-none" />
+            <p class="text-[11px] text-slate-400">Pilih Pos Anggaran atau Kategori Umum untuk memantau transaksi kas masuk/keluar agenda ini.</p>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1995,6 +2014,13 @@
       </div>
 
       <div>
+        <label class="block text-xs font-semibold text-slate-600 mb-1">Hubungkan ke Agenda (Opsional)</label>
+        <select id="tx-agenda-id" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none text-xs font-medium" onchange="window.handleTxAgendaSelectChange(this.value)">
+          <option value="">-- Tanpa Agenda Khusus --</option>
+        </select>
+      </div>
+
+      <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Transaksi</label>
         <select id="tx-category-select" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none font-medium" onchange="window.handleFinanceCategorySelectChange(this.value)">
         </select>
@@ -2020,6 +2046,32 @@
         <button type="submit" id="tx-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Transaksi</button>
       </div>
     </form>
+  </dialog>
+
+  <!-- ==================================================== -->
+  <!-- MODAL: RINCIAN ARUS KAS PER AGENDA                   -->
+  <!-- ==================================================== -->
+  <dialog id="modal-agenda-cashflow" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-lg border border-slate-200">
+    <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+      <div>
+        <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Mutasi Kas Agenda</span>
+        <h3 id="modal-cashflow-agenda-title" class="font-bold text-slate-900 text-base">Arus Kas Agenda</h3>
+      </div>
+      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    
+    <div id="modal-cashflow-content" class="py-4 space-y-3.5 text-xs">
+      <!-- Diisi secara dinamis -->
+    </div>
+
+    <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50 font-semibold text-xs">Tutup</button>
+      <button id="modal-cashflow-add-btn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition">
+        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Catat Transaksi Baru
+      </button>
+    </div>
   </dialog>
 
   <!-- ==================================================== -->
@@ -2261,6 +2313,52 @@
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       return now.toISOString().slice(0, 16);
     };
+
+    // Helper Perhitungan Arus Kas Per-Agenda
+    function getAgendaCashFlow(agendaId) {
+      const agenda = allAgendas.find(a => a.id === agendaId);
+      if (!agenda) return null;
+
+      // Cek apakah agenda dikoneksikan ke finance
+      const isConnected = agenda.connectFinance !== false && Boolean(agenda.category);
+      if (!isConnected) return null;
+
+      const agCategoryLower = (agenda.category || "").toLowerCase();
+
+      // Temukan transaksi yang cocok via tx.agendaId atau tx.category
+      const txs = (financeState.transactions || []).filter(tx => {
+        if (tx.agendaId && tx.agendaId === agendaId) return true;
+        if (agCategoryLower && tx.category && tx.category.toLowerCase() === agCategoryLower) return true;
+        return false;
+      });
+
+      const income = txs.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+      const expense = txs.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount || 0), 0);
+      const net = income - expense;
+
+      // Cek apakah ada pos budget yang cocok
+      const matchedGoal = (financeState.goals || []).find(g => (g.name || '').toLowerCase() === agCategoryLower);
+      const budgetAmount = matchedGoal ? matchedGoal.amount : 0;
+      const budgetUsed = expense;
+      const budgetRemaining = budgetAmount ? (budgetAmount - budgetUsed) : 0;
+      const budgetPercent = budgetAmount ? Math.min(Math.round((budgetUsed / budgetAmount) * 100), 999) : 0;
+
+      return {
+        isConnected: true,
+        category: agenda.category,
+        income,
+        expense,
+        net,
+        txCount: txs.length,
+        transactions: txs,
+        hasBudget: Boolean(matchedGoal),
+        budgetAmount,
+        budgetUsed,
+        budgetRemaining,
+        budgetPercent
+      };
+    }
+    window.getAgendaCashFlow = getAgendaCashFlow;
 
     function getOrCreateDeviceId() {
       let devId = localStorage.getItem("group_device_id");
@@ -3120,12 +3218,26 @@
       document.getElementById("agendaEnd").value = defaultEnd;
       document.getElementById("editAgendaId").value = "";
       LocationPicker.clearAgendaLocation();
+      
+      const connectFinanceEl = document.getElementById("agendaConnectFinance");
+      if (connectFinanceEl) connectFinanceEl.checked = true;
+      const financeOpts = document.getElementById("agendaFinanceOptions");
+      if (financeOpts) financeOpts.classList.remove("hidden");
+
       updateAgendaCategoryDropdown("Umum");
 
       agendaModal.classList.remove("hidden");
       lucide.createIcons();
     }
     window.openCreateAgendaModal = openCreateAgendaModal;
+
+    function handleAgendaConnectFinanceToggle(isChecked) {
+      const optionsDiv = document.getElementById("agendaFinanceOptions");
+      if (optionsDiv) {
+        optionsDiv.classList.toggle("hidden", !isChecked);
+      }
+    }
+    window.handleAgendaConnectFinanceToggle = handleAgendaConnectFinanceToggle;
 
     document.getElementById("btnOpenAddModal")?.addEventListener("click", openCreateAgendaModal);
     document.getElementById("btnOpenAddModalTop")?.addEventListener("click", openCreateAgendaModal);
@@ -3691,6 +3803,61 @@
             </div>
           </div>
 
+          ${(() => {
+            const cf = getAgendaCashFlow(item.id);
+            if (!cf) return '';
+            const isOver = cf.hasBudget && cf.budgetRemaining < 0;
+            return `
+              <!-- Baris Arus Kas Agenda (Terkoneksi ke Finance) -->
+              <div class="mt-2.5 p-2.5 rounded-xl bg-slate-50/90 border border-indigo-100/90 space-y-1.5">
+                <div class="flex items-center justify-between gap-1 flex-wrap">
+                  <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                    <span class="p-1 rounded-md bg-indigo-100 text-indigo-700"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></span>
+                    <span>Arus Kas Agenda</span>
+                    ${cf.hasBudget ? `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Budget: ${formatRp(cf.budgetAmount)}</span>` : ''}
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="window.openTxForAgenda('${item.id}')" type="button" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold transition inline-flex items-center gap-1 shadow-2xs" title="Catat Pengeluaran/Pemasukan untuk Agenda Ini">
+                      <i data-lucide="plus" class="w-3 h-3"></i> Catat Kas
+                    </button>
+                    <button onclick="window.openAgendaCashflowModal('${item.id}')" type="button" class="px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-[10px] font-semibold transition" title="Lihat Rincian Mutasi Kas">
+                      Rincian (${cf.txCount})
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5 pt-1 text-center">
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Masuk</span>
+                    <span class="text-[11px] font-bold text-emerald-600">+${formatRp(cf.income)}</span>
+                  </div>
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Keluar</span>
+                    <span class="text-[11px] font-bold text-rose-600">-${formatRp(cf.expense)}</span>
+                  </div>
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Saldo Kas</span>
+                    <span class="text-[11px] font-bold ${cf.net >= 0 ? 'text-slate-800' : 'text-rose-600'}">${formatRp(cf.net)}</span>
+                  </div>
+                </div>
+
+                ${cf.hasBudget ? `
+                  <div class="pt-0.5">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-medium mb-1">
+                      <span>Terpakai: ${formatRp(cf.budgetUsed)} (${cf.budgetPercent}%)</span>
+                      <span class="${isOver ? 'text-rose-600 font-bold' : 'text-emerald-700 font-semibold'}">
+                        ${isOver ? `Over ${formatRp(Math.abs(cf.budgetRemaining))}` : `Sisa ${formatRp(cf.budgetRemaining)}`}
+                      </span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all ${isOver ? 'bg-rose-500' : (cf.budgetPercent > 80 ? 'bg-amber-500' : 'bg-indigo-600')}" style="width: ${Math.min(cf.budgetPercent, 100)}%"></div>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          })()}
+
           <!-- Baris 3: Tombol Aksi Checklist & Chat (Rapi & Responsif) -->
           <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2">
             <button data-checklist-id="${item.id}" type="button" class="btn-open-checklist flex-1 justify-center rounded-lg border border-slate-200 bg-white py-2 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition flex items-center gap-1.5 shadow-sm" title="Lihat & kelola checklist agenda ini">
@@ -3744,6 +3911,13 @@
           document.getElementById("agendaLocationLat").value = item.locationLat || "";
           document.getElementById("agendaLocationLng").value = item.locationLng || "";
           document.getElementById("agendaLocationAddress").value = item.locationAddress || "";
+
+          const isConnected = item.connectFinance !== false;
+          const connectFinanceEl = document.getElementById("agendaConnectFinance");
+          if (connectFinanceEl) connectFinanceEl.checked = isConnected;
+          const financeOpts = document.getElementById("agendaFinanceOptions");
+          if (financeOpts) financeOpts.classList.toggle("hidden", !isConnected);
+
           updateAgendaCategoryDropdown(item.category || "Umum");
           LocationPicker.updateAgendaFormPreview(item.locationName, item.locationLat, item.locationLng);
 
@@ -4587,6 +4761,10 @@
         if (currentActiveChecklistAgendaId) {
           renderChecklistForActiveAgenda();
         }
+        renderFinanceAll();
+        if (typeof renderWeekView === 'function') {
+          renderWeekView();
+        }
       }, (err) => {
         console.error("Firestore Agenda Error:", err);
       });
@@ -4600,14 +4778,18 @@
       const title = document.getElementById("agendaTitle").value.trim();
       const type = document.getElementById("agendaType").value;
 
-      const catSelect = document.getElementById("agendaCategory") ? document.getElementById("agendaCategory").value : "Umum";
-      let category = catSelect;
-      if (catSelect === "__NEW__" || !catSelect) {
-        category = document.getElementById("agendaCategoryCustom").value.trim() || "Umum";
-      }
-      if (category && !financeState.categories.includes(category)) {
-        financeState.categories.push(category);
-        saveFinanceState();
+      const connectFinance = document.getElementById("agendaConnectFinance") ? document.getElementById("agendaConnectFinance").checked : true;
+      let category = "";
+      if (connectFinance) {
+        const catSelect = document.getElementById("agendaCategory") ? document.getElementById("agendaCategory").value : "Umum";
+        category = catSelect;
+        if (catSelect === "__NEW__" || !catSelect) {
+          category = document.getElementById("agendaCategoryCustom").value.trim() || "Umum";
+        }
+        if (category && category.toLowerCase() !== "anggaran" && !financeState.goals.some(g => (g.name || '').toLowerCase() === category.toLowerCase()) && !financeState.categories.includes(category)) {
+          financeState.categories.push(category);
+          saveFinanceState();
+        }
       }
 
       const start = document.getElementById("agendaStart").value;
@@ -4633,6 +4815,7 @@
           await updateDoc(doc(db, "agendas", editId), {
             title,
             type,
+            connectFinance,
             category,
             start,
             end,
@@ -4647,6 +4830,7 @@
           await addDoc(collection(db, "agendas"), {
             title,
             type,
+            connectFinance,
             category,
             start,
             end,
@@ -5340,6 +5524,44 @@
                 </button>
               </div>
             </div>
+
+            ${(() => {
+              const cf = getAgendaCashFlow(item.id);
+              if (!cf) return '';
+              const isOver = cf.hasBudget && cf.budgetRemaining < 0;
+              return `
+                <div class="mt-2 pt-2 border-t border-slate-100 space-y-1.5">
+                  <div class="flex items-center justify-between gap-1 flex-wrap">
+                    <span class="text-[10px] font-bold text-slate-700 flex items-center gap-1">
+                      <i data-lucide="wallet" class="w-3 h-3 text-indigo-600"></i> Arus Kas
+                      ${cf.hasBudget ? `<span class="font-normal text-slate-400">(${formatRp(cf.budgetAmount)})</span>` : ''}
+                    </span>
+                    <div class="flex items-center gap-1">
+                      <button onclick="window.openTxForAgenda('${item.id}')" type="button" class="px-1.5 py-0.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-[9px] font-bold transition inline-flex items-center gap-0.5 shadow-2xs">
+                        <i data-lucide="plus" class="w-2.5 h-2.5"></i> Kas
+                      </button>
+                      <button onclick="window.openAgendaCashflowModal('${item.id}')" type="button" class="px-1.5 py-0.5 rounded border border-slate-200 bg-white hover:bg-slate-100 text-slate-600 text-[9px] font-semibold transition">
+                        Rincian (${cf.txCount})
+                      </button>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-1 text-center">
+                    <div class="bg-slate-50 p-1 rounded border border-slate-100">
+                      <span class="text-[8px] uppercase font-bold text-slate-400 block">Masuk</span>
+                      <span class="text-[10px] font-bold text-emerald-600">+${formatRp(cf.income)}</span>
+                    </div>
+                    <div class="bg-slate-50 p-1 rounded border border-slate-100">
+                      <span class="text-[8px] uppercase font-bold text-slate-400 block">Keluar</span>
+                      <span class="text-[10px] font-bold text-rose-600">-${formatRp(cf.expense)}</span>
+                    </div>
+                    <div class="bg-slate-50 p-1 rounded border border-slate-100">
+                      <span class="text-[8px] uppercase font-bold text-slate-400 block">Saldo</span>
+                      <span class="text-[10px] font-bold ${cf.net >= 0 ? 'text-slate-800' : 'text-rose-600'}">${formatRp(cf.net)}</span>
+                    </div>
+                  </div>
+                </div>
+              `;
+            })()}
           `;
           itemsContainer.appendChild(card);
         });
@@ -5641,9 +5863,16 @@
           const data = docSnap.data();
           financeState.goals = data.goals || [];
           financeState.schemes = data.schemes || [];
-          financeState.categories = (data.categories && data.categories.length > 0)
+          const rawCats = (data.categories && data.categories.length > 0)
             ? data.categories
             : ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"];
+          const goalNamesLower = (financeState.goals || []).map(g => (g.name || '').toLowerCase());
+          financeState.categories = rawCats.filter(c => 
+            c && c.toLowerCase() !== "anggaran" && !goalNamesLower.includes(c.toLowerCase())
+          );
+          if (financeState.categories.length === 0) {
+            financeState.categories = ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"];
+          }
           financeState.transactions = data.transactions || [];
         } else {
           financeState = {
@@ -5656,6 +5885,10 @@
         renderFinanceAll();
         updateAgendaCategoryDropdown();
         updateFinanceCategoryDropdown();
+        renderSelectedDayAgendas();
+        if (typeof renderWeekView === 'function') {
+          renderWeekView();
+        }
       }, (error) => {
         console.error("Firestore Finance Error:", error);
       });
@@ -5787,6 +6020,84 @@
               </div>
             </div>
           `).join("");
+        }
+      }
+
+      // Arus Kas per-Agenda View
+      const agendaFinanceListEl = document.getElementById("dash-agenda-finance-list");
+      const agendaFinanceCountEl = document.getElementById("dash-agenda-finance-count");
+      if (agendaFinanceListEl) {
+        const connectedAgendas = allAgendas.filter(a => a.connectFinance !== false && Boolean(a.category));
+        if (agendaFinanceCountEl) {
+          agendaFinanceCountEl.innerText = `${connectedAgendas.length} Agenda`;
+        }
+
+        if (connectedAgendas.length === 0) {
+          agendaFinanceListEl.innerHTML = `
+            <div class="text-center py-4 space-y-1">
+              <p class="text-slate-400 text-xs">Belum ada agenda yang dikoneksikan ke Finance.</p>
+              <p class="text-[11px] text-slate-400">Aktifkan opsi "Koneksi ke Finance" saat membuat atau mengedit agenda.</p>
+            </div>
+          `;
+        } else {
+          agendaFinanceListEl.innerHTML = connectedAgendas.map(ag => {
+            const cf = getAgendaCashFlow(ag.id);
+            const dateStr = ag.start ? IndonesianTime.formatDate(new Date(ag.start)) : "";
+            const isOver = cf.hasBudget && cf.budgetRemaining < 0;
+
+            return `
+              <div class="p-3 bg-slate-50/90 rounded-xl border border-slate-100 hover:border-slate-200 transition space-y-2">
+                <div class="flex justify-between items-start gap-2">
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <h4 class="font-bold text-slate-800 text-xs truncate">${escapeHtml(ag.title)}</h4>
+                      <span class="text-[10px] bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-md shrink-0">
+                        💼 ${escapeHtml(ag.category)}
+                      </span>
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-medium">📅 ${dateStr} • ${cf.txCount} Transaksi</span>
+                  </div>
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button onclick="window.openTxForAgenda('${ag.id}')" type="button" class="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-[10px] transition inline-flex items-center gap-1 shadow-2xs">
+                      <i data-lucide="plus" class="w-3 h-3"></i> Kas
+                    </button>
+                    <button onclick="window.openAgendaCashflowModal('${ag.id}')" type="button" class="px-2 py-1 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg font-semibold text-[10px] transition">
+                      Rincian
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-1.5 text-center pt-1 border-t border-slate-200/60">
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Masuk</span>
+                    <span class="text-[10px] font-bold text-emerald-600">+${formatRp(cf.income)}</span>
+                  </div>
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Keluar</span>
+                    <span class="text-[10px] font-bold text-rose-600">-${formatRp(cf.expense)}</span>
+                  </div>
+                  <div class="bg-white p-1 rounded-lg border border-slate-100">
+                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Saldo Bersih</span>
+                    <span class="text-[10px] font-bold ${cf.net >= 0 ? 'text-slate-800' : 'text-rose-600'}">${formatRp(cf.net)}</span>
+                  </div>
+                </div>
+
+                ${cf.hasBudget ? `
+                  <div class="pt-0.5">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-medium mb-1">
+                      <span>Target: ${formatRp(cf.budgetAmount)}</span>
+                      <span class="${isOver ? 'text-rose-600 font-bold' : 'text-slate-600 font-semibold'}">
+                        ${isOver ? `Over ${formatRp(Math.abs(cf.budgetRemaining))}` : `Sisa ${formatRp(cf.budgetRemaining)}`} (${cf.budgetPercent}%)
+                      </span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all ${isOver ? 'bg-rose-500' : (cf.budgetPercent > 80 ? 'bg-amber-500' : 'bg-indigo-600')}" style="width: ${Math.min(cf.budgetPercent, 100)}%"></div>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join("");
         }
       }
 
@@ -5940,10 +6251,6 @@
       const name = document.getElementById("goal-name").value.trim();
       const amount = Number(document.getElementById("goal-amount").value);
 
-      if (!financeState.categories.includes(name)) {
-        financeState.categories.push(name);
-      }
-
       if (id) {
         const idx = financeState.goals.findIndex(g => g.id === id);
         if (idx !== -1) financeState.goals[idx] = { ...financeState.goals[idx], name, amount };
@@ -5953,6 +6260,8 @@
 
       document.getElementById("modal-goal").close();
       saveFinanceState();
+      updateAgendaCategoryDropdown();
+      updateFinanceCategoryDropdown();
     }
     window.handleGoalSubmit = handleGoalSubmit;
 
@@ -6013,26 +6322,52 @@
     window.handleSchemeSubmit = handleSchemeSubmit;
 
     // CRUD: TRANSAKSI KAS REALISASI
+    function updateTxAgendaDropdown(selectedAgendaId = "") {
+      const selectEl = document.getElementById("tx-agenda-id");
+      if (!selectEl) return;
+      let html = `<option value="">-- Tanpa Agenda Khusus --</option>`;
+      allAgendas.forEach(a => {
+        const dateStr = a.start ? IndonesianTime.formatDate(new Date(a.start)) : "";
+        html += `<option value="${a.id}" ${a.id === selectedAgendaId ? 'selected' : ''}>📅 ${escapeHtml(a.title)} (${dateStr})</option>`;
+      });
+      selectEl.innerHTML = html;
+    }
+    window.updateTxAgendaDropdown = updateTxAgendaDropdown;
+
+    function handleTxAgendaSelectChange(agId) {
+      if (!agId) return;
+      const ag = allAgendas.find(a => a.id === agId);
+      if (ag && ag.category) {
+        updateFinanceCategoryDropdown(ag.category);
+      }
+    }
+    window.handleTxAgendaSelectChange = handleTxAgendaSelectChange;
+
     function updateFinanceCategoryDropdown(selectedVal = "") {
       const selectEl = document.getElementById("tx-category-select");
       if (!selectEl) return;
 
       const budgetCategories = financeState.goals.map(g => g.name);
-      const combined = Array.from(new Set([...financeState.categories, ...budgetCategories]));
+      // Saring kategori umum: jangan ada 'Anggaran' dan jangan duplikasi dengan pos budget
+      const generalCategories = financeState.categories.filter(c => 
+        c && c.toLowerCase() !== "anggaran" &&
+        !budgetCategories.some(bg => bg.toLowerCase() === c.toLowerCase())
+      );
+      const combined = Array.from(new Set([...generalCategories, ...budgetCategories]));
 
       let optionsHtml = `<option value="" disabled ${!selectedVal ? 'selected' : ''}>-- Pilih Kategori --</option>`;
 
       if (budgetCategories.length > 0) {
         optionsHtml += `<optgroup label="Dari Daftar Budget">`;
         budgetCategories.forEach(g => {
-          optionsHtml += `<option value="${g}">${g}</option>`;
+          optionsHtml += `<option value="${escapeHtml(g)}" ${g === selectedVal ? 'selected' : ''}>💼 ${escapeHtml(g)}</option>`;
         });
         optionsHtml += `</optgroup>`;
       }
 
       optionsHtml += `<optgroup label="Kategori Lainnya">`;
-      financeState.categories.forEach(c => {
-        optionsHtml += `<option value="${c}">${c}</option>`;
+      generalCategories.forEach(c => {
+        optionsHtml += `<option value="${escapeHtml(c)}" ${c === selectedVal ? 'selected' : ''}>${escapeHtml(c)}</option>`;
       });
       optionsHtml += `</optgroup>`;
 
@@ -6069,18 +6404,33 @@
     }
     window.handleFinanceCategorySelectChange = handleFinanceCategorySelectChange;
 
-    function openTxModal() {
+    function openTxModal(prefillAgendaId = null) {
       document.getElementById("tx-id").value = "";
       document.getElementById("tx-title").value = "";
       document.getElementById("tx-amount").value = "";
       document.getElementById("tx-inputer").value = userProfile?.name || "";
       document.getElementById("tx-datetime").value = getLocalDateTime();
-      updateFinanceCategoryDropdown();
+      
+      updateTxAgendaDropdown(prefillAgendaId || "");
+
+      if (prefillAgendaId) {
+        const ag = allAgendas.find(a => a.id === prefillAgendaId);
+        if (ag) {
+          document.getElementById("tx-title").value = "Biaya " + ag.title;
+          updateFinanceCategoryDropdown(ag.category || "");
+        } else {
+          updateFinanceCategoryDropdown();
+        }
+      } else {
+        updateFinanceCategoryDropdown();
+      }
+
       document.getElementById("modal-tx-title").innerText = "Catat Transaksi Kas Realisasi";
       document.getElementById("tx-submit-btn").innerText = "Simpan Transaksi";
       document.getElementById("modal-tx").showModal();
     }
     window.openTxModal = openTxModal;
+    window.openTxForAgenda = (agendaId) => openTxModal(agendaId);
 
     function editTx(id) {
       const tx = financeState.transactions.find(item => item.id === id);
@@ -6095,6 +6445,7 @@
       dt.setMinutes(dt.getMinutes() - dt.getTimezoneOffset());
       document.getElementById("tx-datetime").value = dt.toISOString().slice(0, 16);
 
+      updateTxAgendaDropdown(tx.agendaId || "");
       updateFinanceCategoryDropdown(tx.category);
 
       document.getElementById("modal-tx-title").innerText = "Edit Transaksi Kas Realisasi";
@@ -6107,6 +6458,8 @@
       if (confirm("Hapus transaksi ini?")) {
         financeState.transactions = financeState.transactions.filter(tx => tx.id !== id);
         saveFinanceState();
+        renderSelectedDayAgendas();
+        if (typeof renderWeekView === 'function') renderWeekView();
       }
     }
     window.deleteTx = deleteTx;
@@ -6119,6 +6472,7 @@
       const amount = Number(document.getElementById("tx-amount").value);
       const inputer = document.getElementById("tx-inputer").value.trim();
       const date = new Date(document.getElementById("tx-datetime").value).toISOString();
+      const agendaId = document.getElementById("tx-agenda-id") ? document.getElementById("tx-agenda-id").value : "";
 
       const selectVal = document.getElementById("tx-category-select").value;
       let category = selectVal;
@@ -6130,14 +6484,23 @@
         return;
       }
 
-      if (!financeState.categories.includes(category) && !financeState.goals.some(g => g.name.toLowerCase() === category.toLowerCase())) {
+      if (category.toLowerCase() !== "anggaran" && !financeState.categories.includes(category) && !financeState.goals.some(g => (g.name || '').toLowerCase() === category.toLowerCase())) {
         financeState.categories.push(category);
       }
 
       if (id) {
         const idx = financeState.transactions.findIndex(tx => tx.id === id);
         if (idx !== -1) {
-          financeState.transactions[idx] = { ...financeState.transactions[idx], title, type, amount, category, inputer, date };
+          financeState.transactions[idx] = { 
+            ...financeState.transactions[idx], 
+            title, 
+            type, 
+            amount, 
+            category, 
+            agendaId: agendaId || null, 
+            inputer, 
+            date 
+          };
         }
       } else {
         financeState.transactions.unshift({
@@ -6146,6 +6509,7 @@
           type,
           amount,
           category,
+          agendaId: agendaId || null,
           inputer,
           date
         });
@@ -6153,20 +6517,27 @@
 
       document.getElementById("modal-tx").close();
       saveFinanceState();
+      renderSelectedDayAgendas();
+      if (typeof renderWeekView === 'function') renderWeekView();
     }
     window.handleTxSubmit = handleTxSubmit;
 
     // ====================================================
-    // 7. SINKRONISASI KATEGORI PADA MODAL AGENDA
+    // 7. SINKRONISASI KATEGORI PADA MODAL AGENDA & ARUS KAS
     // ====================================================
     function updateAgendaCategoryDropdown(selectedVal = "Umum") {
       const selectEl = document.getElementById("agendaCategory");
       if (!selectEl) return;
 
       const budgetCategories = financeState.goals.map(g => g.name);
-      const combined = Array.from(new Set([...financeState.categories, ...budgetCategories]));
+      // Saring kategori umum: jangan ada 'Anggaran' dan jangan duplikasi dengan pos budget
+      const generalCategories = financeState.categories.filter(c => 
+        c && c.toLowerCase() !== "anggaran" &&
+        !budgetCategories.some(bg => bg.toLowerCase() === c.toLowerCase())
+      );
+      const combined = Array.from(new Set([...generalCategories, ...budgetCategories]));
 
-      let html = `<option value="" disabled ${!selectedVal ? 'selected' : ''}>-- Pilih Kategori --</option>`;
+      let html = `<option value="" disabled ${!selectedVal ? 'selected' : ''}>-- Pilih Kategori / Pos Finance --</option>`;
 
       if (budgetCategories.length > 0) {
         html += `<optgroup label="Pos Anggaran Budget">`;
@@ -6177,7 +6548,7 @@
       }
 
       html += `<optgroup label="Kategori Umum">`;
-      financeState.categories.forEach(c => {
+      generalCategories.forEach(c => {
         html += `<option value="${escapeHtml(c)}" ${c === selectedVal ? 'selected' : ''}>${escapeHtml(c)}</option>`;
       });
       html += `</optgroup>`;
@@ -6210,6 +6581,124 @@
       }
     }
     window.handleAgendaCategorySelectChange = handleAgendaCategorySelectChange;
+
+    function openAgendaCashflowModal(agendaId) {
+      const ag = allAgendas.find(a => a.id === agendaId);
+      if (!ag) return;
+      const cf = getAgendaCashFlow(agendaId);
+      if (!cf) return;
+
+      const titleEl = document.getElementById("modal-cashflow-agenda-title");
+      const contentEl = document.getElementById("modal-cashflow-content");
+      const addBtn = document.getElementById("modal-cashflow-add-btn");
+
+      if (titleEl) titleEl.innerText = ag.title;
+      if (addBtn) {
+        addBtn.onclick = () => {
+          document.getElementById("modal-agenda-cashflow").close();
+          openTxForAgenda(agendaId);
+        };
+      }
+
+      const dateStr = ag.start ? IndonesianTime.formatDateFull(new Date(ag.start)) : "-";
+
+      let txListHtml = '';
+      if (cf.transactions.length === 0) {
+        txListHtml = `
+          <div class="text-center py-6 bg-slate-50 rounded-xl border border-slate-100">
+            <p class="text-slate-400 text-xs">Belum ada transaksi kas untuk agenda ini.</p>
+            <button onclick="document.getElementById('modal-agenda-cashflow').close(); window.openTxForAgenda('${agendaId}')" class="mt-2 text-xs font-bold text-indigo-600 hover:underline">
+              + Catat Transaksi Pertama
+            </button>
+          </div>
+        `;
+      } else {
+        txListHtml = `
+          <div class="space-y-2 max-h-60 overflow-y-auto pr-1 hide-scrollbar">
+            ${cf.transactions.map(t => `
+              <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex justify-between items-center gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-bold text-slate-800 text-xs truncate">${escapeHtml(t.title || t.category)}</span>
+                    <span class="text-[10px] px-1.5 py-0.2 rounded font-semibold shrink-0 ${t.type === 'income' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                      ${t.type === 'income' ? 'Masuk' : 'Keluar'}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-400">
+                    <span>Inputer: <strong class="text-slate-600">${escapeHtml(t.inputer)}</strong></span>
+                    <span>•</span>
+                    <span>${new Date(t.date).toLocaleDateString("id-ID", { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div class="text-right shrink-0">
+                  <span class="font-extrabold text-xs ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
+                    ${t.type === 'income' ? '+' : '-'} ${formatRp(t.amount)}
+                  </span>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      contentEl.innerHTML = `
+        <div class="p-3 bg-indigo-50/50 rounded-xl border border-indigo-100 space-y-1">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Kategori / Pos Finance:</span>
+            <span class="font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-md border border-indigo-200">💼 ${escapeHtml(ag.category || 'Umum')}</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-slate-500">Waktu Agenda:</span>
+            <span class="font-semibold text-slate-700">${dateStr}</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="p-2 bg-emerald-50 rounded-xl border border-emerald-100">
+            <span class="text-[10px] uppercase font-bold text-emerald-700 block">Total Masuk</span>
+            <span class="text-xs font-extrabold text-emerald-700">+${formatRp(cf.income)}</span>
+          </div>
+          <div class="p-2 bg-rose-50 rounded-xl border border-rose-100">
+            <span class="text-[10px] uppercase font-bold text-rose-700 block">Total Keluar</span>
+            <span class="text-xs font-extrabold text-rose-700">-${formatRp(cf.expense)}</span>
+          </div>
+          <div class="p-2 bg-slate-100 rounded-xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-500 block">Saldo Kas</span>
+            <span class="text-xs font-extrabold ${cf.net >= 0 ? 'text-slate-800' : 'text-rose-600'}">${formatRp(cf.net)}</span>
+          </div>
+        </div>
+
+        ${cf.hasBudget ? `
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
+            <div class="flex justify-between items-center text-xs">
+              <span class="font-bold text-slate-700">Target Pos Anggaran:</span>
+              <span class="font-extrabold text-slate-900">${formatRp(cf.budgetAmount)}</span>
+            </div>
+            <div class="flex justify-between items-center text-[11px]">
+              <span class="text-slate-500">Realisasi Pengeluaran: ${formatRp(cf.budgetUsed)}</span>
+              <span class="${cf.budgetRemaining >= 0 ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}">
+                ${cf.budgetRemaining >= 0 ? `Sisa: ${formatRp(cf.budgetRemaining)}` : `Over: ${formatRp(Math.abs(cf.budgetRemaining))}`} (${cf.budgetPercent}%)
+              </span>
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all ${cf.budgetPercent > 100 ? 'bg-rose-500' : (cf.budgetPercent > 80 ? 'bg-amber-500' : 'bg-indigo-600')}" style="width: ${Math.min(cf.budgetPercent, 100)}%"></div>
+            </div>
+          </div>
+        ` : ''}
+
+        <div>
+          <h5 class="text-xs font-bold text-slate-800 mb-2 flex items-center justify-between">
+            <span>Daftar Riwayat Transaksi</span>
+            <span class="text-[10px] text-slate-400 font-medium">${cf.txCount} Transaksi</span>
+          </h5>
+          ${txListHtml}
+        </div>
+      `;
+
+      document.getElementById("modal-agenda-cashflow").showModal();
+      lucide.createIcons();
+    }
+    window.openAgendaCashflowModal = openAgendaCashflowModal;
 
     // ====================================================
     // 8. PWA SERVICE WORKER & INSTALLATION HANDLER
