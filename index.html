@@ -108,6 +108,131 @@
       border-top-color: rgba(255, 255, 255, 0.95) !important;
     }
 
+    /* ==================================================== */
+    /* TITIK EVENT MODERN (BENTUK SAMA, WARNA BERBEDA)      */
+    /* ==================================================== */
+    .event-pin-leaflet-wrapper {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .event-pin-bubble {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 22px -3px rgba(0, 0, 0, 0.16), 0 4px 8px -2px rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    /* Ekor lancip di bawah balon pin */
+    .event-pin-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 11px;
+      height: 11px;
+      background: #ffffff;
+      border-radius: 2px;
+      box-shadow: 3px 3px 6px -1px rgba(0, 0, 0, 0.08);
+      z-index: 1;
+      transition: all 0.2s ease;
+    }
+
+    /* Lingkaran dalam ikon dengan warna pastel / aksen */
+    .event-pin-inner {
+      position: relative;
+      z-index: 2;
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    /* Active / Selected state (saat kartu terkait digeser atau diklik) */
+    .event-pin-bubble.active {
+      transform: scale(1.25) translateY(-8px);
+      box-shadow: 0 18px 32px -4px rgba(37, 99, 235, 0.35), 0 8px 14px -2px rgba(0, 0, 0, 0.12);
+      border: 2px solid #2563eb;
+      z-index: 9999 !important;
+    }
+
+    .event-pin-bubble.active::after {
+      background: #ffffff;
+      border-right: 2px solid #2563eb;
+      border-bottom: 2px solid #2563eb;
+    }
+
+    /* ==================================================== */
+    /* TITIK LOKASI USER (TITIK BULAT SAJA DENGAN PULSE)    */
+    /* ==================================================== */
+    .user-gps-leaflet-wrapper {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .user-gps-marker {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-gps-pulse {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.25);
+      animation: user-gps-pulse-ring 2.2s cubic-bezier(0.25, 0.8, 0.25, 1) infinite;
+    }
+
+    .user-gps-dot {
+      position: relative;
+      z-index: 2;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2563eb;
+      border: 2.5px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.45);
+    }
+
+    @keyframes user-gps-pulse-ring {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.95;
+      }
+      70% {
+        transform: scale(1.65);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1.65);
+        opacity: 0;
+      }
+    }
+
+    /* Kartu Slider Agenda Aktif */
+    .map-agenda-card.active-card {
+      border-color: #2563eb !important;
+      box-shadow: 0 16px 30px -4px rgba(37, 99, 235, 0.18), 0 6px 12px -2px rgba(0, 0, 0, 0.08) !important;
+      transform: scale(1.02);
+      background-color: #ffffff !important;
+    }
+
     .glass-card {
       background: rgba(255, 255, 255, 0.90);
       backdrop-filter: blur(12px);
@@ -1086,85 +1211,80 @@
     <!-- ==================================================== -->
     <!-- TAB 2: MAP (VIEW TAMPILAN MAP PENUH & PILIHAN)       -->
     <!-- ==================================================== -->
-    <main id="tab-map" class="space-y-4 hidden">
-      <section class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-3">
-        <!-- Map Header & Filter Pilihan Bar -->
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-              <i data-lucide="map-pin" class="h-4 w-4 text-indigo-600"></i>
-              <span>Peta Lokasi Anggota & Agenda (Tampilan Penuh)</span>
-            </h3>
-            <p class="text-[11px] text-slate-500">Pantau live location anggota grup dan titik pertemuan agenda</p>
-          </div>
+    <main id="tab-map" class="hidden relative w-full h-[calc(100vh-140px)] sm:h-[calc(100vh-150px)] min-h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 bg-slate-100">
+      <!-- Wadah Map Leaflet Layar Penuh -->
+      <div id="map" class="w-full h-full z-0"></div>
 
-          <!-- Tombol Aksi Peta -->
-          <div class="flex items-center gap-2">
-            <button id="btnUpdateLocation" type="button"
-              class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
-              <i data-lucide="crosshair" class="h-3.5 w-3.5 text-indigo-600"></i>
-              <span>Perbarui Lokasi GPS</span>
-            </button>
-            <button onclick="window.fitMapBounds()" type="button"
-              class="rounded-xl border border-slate-200 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 shadow-2xs">
-              <i data-lucide="maximize" class="h-3.5 w-3.5 text-slate-600"></i>
-              <span>Pusatkan Peta</span>
-            </button>
-          </div>
+      <!-- Floating Top Search Bar & Filter Popover -->
+      <div class="absolute top-3.5 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[460px] z-[1000] flex flex-col items-center gap-2">
+        <div class="w-full bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-slate-200/80 px-4 py-2.5 flex items-center gap-2.5 transition-all focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:border-blue-400">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 shrink-0"></i>
+          <input id="mapSearchInput" type="text" placeholder="Search Location / Agenda..."
+            class="flex-1 bg-transparent border-none text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none font-medium" />
+          <button id="mapSearchClearBtn" type="button" class="hidden text-slate-400 hover:text-slate-600 p-0.5" title="Hapus pencarian">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+          <div class="h-4 w-[1px] bg-slate-200 shrink-0 mx-0.5"></div>
+          <button id="btnToggleMapFilterPop" type="button"
+            class="p-1 rounded-full text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition shrink-0"
+            title="Pilihan Filter Peta">
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+          </button>
         </div>
 
-        <!-- Panel Pilihan Filter (Poin Agenda & Poin Users) -->
-        <div
-          class="p-3 bg-slate-50/90 rounded-xl border border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
-          <div class="flex items-center gap-2 font-bold text-slate-700">
-            <i data-lucide="sliders-horizontal" class="h-4 w-4 text-indigo-600"></i>
-            <span>Pilihan Tampilan Poin:</span>
+        <!-- Filter Popover Panel (Toggled via button) -->
+        <div id="mapFilterPopover" class="hidden w-full bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-slate-200/90 p-3 space-y-2.5 text-xs animate-in fade-in zoom-in-95 duration-150">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <span class="font-bold text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i>
+              Filter Tampilan Peta
+            </span>
+            <button onclick="window.fitMapBounds()" type="button" class="text-[11px] font-semibold text-blue-600 hover:underline flex items-center gap-1">
+              <i data-lucide="maximize" class="w-3 h-3"></i>
+              <span>Pusatkan Semua</span>
+            </button>
           </div>
-
-          <div class="flex items-center gap-4 flex-wrap">
-            <!-- Pilihan Poin Lokasi Agenda -->
+          <div class="flex items-center justify-between gap-3 flex-wrap pt-0.5">
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="toggleMapAgendas" checked onchange="window.toggleMapFilter('agenda')"
-                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
-              <span class="flex items-center gap-1.5 font-semibold text-slate-800">
-                <span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-indigo-200"></span>
-                Poin Lokasi Agenda
-                <span id="mapAgendaCountBadge"
-                  class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 font-bold">0</span>
+                class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300" />
+              <span class="font-medium text-slate-700 flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-blue-600"></span>
+                Titik Agenda
+                <span id="mapAgendaCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold">0</span>
               </span>
             </label>
-
-            <!-- Pilihan Poin Lokasi Users -->
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" id="toggleMapMembers" checked onchange="window.toggleMapFilter('member')"
-                class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300" />
-              <span class="flex items-center gap-1.5 font-semibold text-slate-800">
-                <span class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-blue-200"></span>
-                Poin Lokasi Users
-                <span id="mapMemberCountBadge"
-                  class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold">0</span>
+                class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300" />
+              <span class="font-medium text-slate-700 flex items-center gap-1.5">
+                <span class="h-2 w-2 rounded-full bg-indigo-600"></span>
+                Lokasi Anggota
+                <span id="mapMemberCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 font-bold">0</span>
               </span>
             </label>
           </div>
         </div>
+      </div>
 
-        <!-- Wadah Map Leaflet Layar Penuh -->
-        <div
-          class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner h-[62vh] min-h-[460px]">
-          <div id="map"></div>
-        </div>
+      <!-- Floating GPS Button (Recenter ke Lokasi User) -->
+      <button id="btnMapFloatingGps" type="button"
+        class="absolute right-4 bottom-32 sm:bottom-36 z-[1000] h-12 w-12 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:shadow-blue-500/30 group"
+        title="Pusatkan ke Lokasi Saya">
+        <i data-lucide="crosshair" class="w-5 h-5 transition-transform group-hover:rotate-45"></i>
+      </button>
 
-        <!-- Daftar Titik Agenda Berlokasi -->
-        <div class="space-y-2 pt-1">
-          <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-            <i data-lucide="map-pin" class="h-3.5 w-3.5 text-indigo-600"></i>
-            <span>Daftar Titik Agenda Pada Peta:</span>
-          </h4>
-          <div id="mapAgendaPillsList" class="flex gap-2 overflow-x-auto pb-1 text-xs hide-scrollbar">
-            <p class="text-slate-400 text-xs py-1">Belum ada agenda yang memiliki titik koordinat peta.</p>
-          </div>
+      <!-- Hidden hook for existing button references if any -->
+      <button id="btnUpdateLocation" type="button" class="hidden"></button>
+      <div id="mapAgendaPillsList" class="hidden"></div>
+
+      <!-- Floating Bottom Agenda Slider Carousel -->
+      <div class="absolute bottom-3 inset-x-0 z-[1000] px-2 sm:px-4 pointer-events-none">
+        <div id="mapAgendaCardsCarousel"
+          class="flex gap-3 overflow-x-auto snap-x snap-mandatory py-2 px-2 hide-scrollbar pointer-events-auto items-stretch">
+          <!-- Diisi via renderMapAgendaCards() -->
         </div>
-      </section>
+      </div>
     </main>
 
     <!-- ==================================================== -->
@@ -2897,11 +3017,19 @@
 
     function initMap() {
       if (map) return;
-      map = L.map('map').setView([-6.9175, 107.6191], 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+      map = L.map('map', { zoomControl: false }).setView([-6.9175, 107.6191], 13);
+      // Modern clean soft-blue map tiles matching mockup
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
       }).addTo(map);
+
+      // Posisi tombol zoom di kanan atas agar tidak tertutup floating bar & card
+      L.control.zoom({ position: 'topright' }).addTo(map);
+
       renderAgendaLocationsOnMap();
+      renderMapAgendaCards();
     }
 
     // Sound Alert Chat Baru
@@ -3557,7 +3685,62 @@
         );
       }
     }
-    document.getElementById("btnUpdateLocation").addEventListener("click", syncLocation);
+    // ----------------------------------------------------
+    // TEMA IKON & WARNA TITIK AGENDA (BENTUK SERAGAM, WARNA BERBEDA)
+    // ----------------------------------------------------
+    const MAP_AGENDA_THEMES = [
+      {
+        name: 'rose',
+        innerStyle: 'background-color: #ffe4e6; color: #e11d48;',
+        cardIconStyle: 'background-color: #ffe4e6; color: #e11d48;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>` // Coffee
+      },
+      {
+        name: 'purple',
+        innerStyle: 'background-color: #f3e8ff; color: #9333ea;',
+        cardIconStyle: 'background-color: #f3e8ff; color: #9333ea;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>` // Bag
+      },
+      {
+        name: 'sky',
+        innerStyle: 'background-color: #e0f2fe; color: #0284c7;',
+        cardIconStyle: 'background-color: #e0f2fe; color: #0284c7;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M14 15a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M2.5 13 5 7c.7-1.3 1.4-2 3-2"/><path d="M21.5 13 19 7c-.7-1.3-1.5-2-3-2"/></svg>` // Glasses
+      },
+      {
+        name: 'emerald',
+        innerStyle: 'background-color: #dcfce7; color: #16a34a;',
+        cardIconStyle: 'background-color: #dcfce7; color: #16a34a;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="m9 20 3-6 3 6"/><path d="m6 12 6-3 6 3"/></svg>` // Walking
+      },
+      {
+        name: 'amber',
+        innerStyle: 'background-color: #fef3c7; color: #d97706;',
+        cardIconStyle: 'background-color: #fef3c7; color: #d97706;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 11v11"/><path d="M6 2v20"/><path d="M9 2v4a3 3 0 0 1-3 3"/></svg>` // Food
+      },
+      {
+        name: 'indigo',
+        innerStyle: 'background-color: #e0e7ff; color: #4f46e5;',
+        cardIconStyle: 'background-color: #e0e7ff; color: #4f46e5;',
+        iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>` // Briefcase
+      }
+    ];
+
+    function getAgendaMapTheme(a) {
+      let hash = 0;
+      const str = (a.id || '') + (a.title || '');
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const idx = Math.abs(hash) % MAP_AGENDA_THEMES.length;
+      return MAP_AGENDA_THEMES[idx];
+    }
+
+    let activeMapAgendaId = null;
+
+    document.getElementById("btnUpdateLocation")?.addEventListener("click", syncLocation);
 
     function listenToLocations() {
       const q = query(collection(db, "locations"), where("pairCode", "==", userProfile.pairCode));
@@ -3572,35 +3755,32 @@
           const latlng = [loc.latitude, loc.longitude];
           bounds.push(latlng);
 
-          const iconColor = loc.gender === 'female' ? '#f43f5e' : '#2563eb';
-          const memberLabel = isMe ? '📍 Lokasi Saya' : `👤 ${escapeHtml(loc.name)}`;
+          // TITIK LOKASI USER: Titik bulat saja dengan efek denyut halus (pulse ring)
+          const userDotIcon = L.divIcon({
+            className: 'user-gps-leaflet-wrapper',
+            html: `
+              <div class="user-gps-marker" title="${isMe ? 'Lokasi Saya' : escapeHtml(loc.name)}">
+                <div class="user-gps-pulse" style="background: ${isMe ? 'rgba(37, 99, 235, 0.28)' : (loc.gender === 'female' ? 'rgba(244, 63, 94, 0.28)' : 'rgba(99, 102, 241, 0.28)')};"></div>
+                <div class="user-gps-dot" style="background: ${isMe ? '#2563eb' : (loc.gender === 'female' ? '#f43f5e' : '#4f46e5')};"></div>
+              </div>
+            `,
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
+          });
 
           if (!markers[loc.uid]) {
-            markers[loc.uid] = L.circleMarker(latlng, {
-              radius: 9,
-              fillColor: iconColor,
-              color: "#ffffff",
-              weight: 2.5,
-              fillOpacity: 0.95
-            }).addTo(map);
-
-            markers[loc.uid].bindTooltip(memberLabel, {
-              permanent: true,
-              direction: "top",
-              offset: [0, -10],
-              className: "member-bubble-tooltip"
-            });
+            markers[loc.uid] = L.marker(latlng, { icon: userDotIcon }).addTo(map);
 
             markers[loc.uid].bindPopup(`
               <div class="text-xs p-1">
-                <b class="text-slate-800 text-sm">${escapeHtml(loc.name)}</b>
+                <b class="text-slate-800 text-sm">${isMe ? '📍 Lokasi Saya' : escapeHtml(loc.name)}</b>
                 <span class="text-slate-500 block text-[11px] mt-0.5">${loc.gender === 'female' ? '👩 Perempuan' : '👨 Laki-laki'}</span>
                 <span class="text-slate-400 font-mono text-[10px] block mt-1">Koordinat: ${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}</span>
               </div>
             `);
           } else {
             markers[loc.uid].setLatLng(latlng);
-            markers[loc.uid].setTooltipContent(memberLabel);
+            markers[loc.uid].setIcon(userDotIcon);
           }
         });
 
@@ -3617,14 +3797,14 @@
           }
         });
 
-        if (bounds.length > 0 && map) {
-          map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+        if (bounds.length > 0 && map && !activeMapAgendaId) {
+          map.fitBounds(bounds, { padding: [60, 60], maxZoom: 15 });
         }
       });
     }
 
     // ----------------------------------------------------
-    // RENDER LOKASI-LOKASI AGENDA PADA PETA DENGAN BUBBLE NAME
+    // RENDER LOKASI-LOKASI AGENDA PADA PETA DENGAN PIN BENTUK SAMA WARNA BERBEDA
     // ----------------------------------------------------
     function renderAgendaLocationsOnMap() {
       if (!map) return;
@@ -3636,7 +3816,6 @@
         const lng = parseFloat(a.locationLng);
         if (isNaN(lat) || isNaN(lng)) return false;
 
-        // Jangan tampilkan pada map jika tanggal akhirnya sudah terlewat (< todayStr)
         const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
         if (aEnd && aEnd < todayStr) {
           return false;
@@ -3645,7 +3824,7 @@
         return true;
       });
 
-      // Bersihkan marker agenda yang sudah dihapus atau tanggal akhirnya sudah terlewat
+      // Bersihkan marker agenda yang sudah dihapus atau kadaluwarsa
       const currentIds = new Set(locatedAgendas.map(a => a.id));
       Object.keys(agendaMarkers).forEach(id => {
         if (!currentIds.has(id)) {
@@ -3655,51 +3834,41 @@
       });
 
       locatedAgendas.forEach(a => {
-        const isSelectedDay = selectedDateStr && a.start && a.start.startsWith(selectedDateStr);
         const latlng = [parseFloat(a.locationLat), parseFloat(a.locationLng)];
+        const theme = getAgendaMapTheme(a);
+        const isActive = activeMapAgendaId === a.id;
 
-        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
-        const bubbleClass = isSelectedDay ? 'agenda-bubble-tooltip active' : 'agenda-bubble-tooltip';
-
+        // Custom pin balon putih seragam dengan lingkaran warna & ikon berbeda
         const agendaPinIcon = L.divIcon({
-          className: 'agenda-custom-pin',
+          className: 'event-pin-leaflet-wrapper',
           html: `
-            <div class="relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
-              <div class="h-8 w-8 rounded-full ${isSelectedDay ? 'bg-indigo-600 ring-4 ring-indigo-200' : 'bg-slate-900 ring-2 ring-white'} text-white flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            <div id="event-pin-${a.id}" class="event-pin-bubble ${isActive ? 'active' : ''}" data-agenda-id="${a.id}">
+              <div class="event-pin-inner" style="${theme.innerStyle}">
+                ${theme.iconSvg}
               </div>
-              <div class="absolute -bottom-1 h-2 w-2 rotate-45 ${isSelectedDay ? 'bg-indigo-600' : 'bg-slate-900'}"></div>
             </div>
           `,
-          iconSize: [32, 36],
-          iconAnchor: [16, 36],
-          tooltipAnchor: [0, -38]
+          iconSize: [44, 48],
+          iconAnchor: [22, 46],
+          popupAnchor: [0, -42]
         });
 
-        const tooltipHtml = `
-          <div class="flex flex-col items-center text-center leading-tight">
-            <div class="flex items-center gap-1 font-bold">
-              <span class="truncate max-w-[130px] sm:max-w-[170px]">${escapeHtml(a.title)}</span>
-              ${timeStr ? `<span class="text-[9px] text-indigo-300 font-mono">(${timeStr})</span>` : ''}
-            </div>
-            <span class="text-[9px] text-slate-300 truncate max-w-[140px] sm:max-w-[180px] mt-0.5 font-normal">📍 ${escapeHtml(a.locationName || 'Lokasi')}</span>
-          </div>
-        `;
+        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
 
         const popupHtml = `
-          <div class="text-xs p-1 space-y-1.5 min-w-[190px]">
+          <div class="text-xs p-1 space-y-1.5 min-w-[200px]">
             <div class="flex items-center gap-1.5">
-              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold ${isSelectedDay ? 'bg-indigo-600 text-white' : 'bg-indigo-100 text-indigo-800'}">Agenda</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800">Agenda</span>
               <h4 class="font-bold text-slate-900 text-sm truncate">${escapeHtml(a.title)}</h4>
             </div>
             <div class="text-slate-700 flex items-start gap-1">
-              <span class="text-indigo-600 font-bold shrink-0">📍</span>
+              <span class="text-blue-600 font-bold shrink-0">📍</span>
               <span class="font-medium">${escapeHtml(a.locationName)}</span>
             </div>
             ${a.locationAddress && a.locationAddress !== a.locationName ? `<div class="text-[10px] text-slate-400">${escapeHtml(a.locationAddress)}</div>` : ''}
             <div class="text-[11px] text-slate-500 font-medium">🕒 ${IndonesianTime.formatDateShort(new Date(a.start))}${timeStr ? `, ${timeStr}` : ''}</div>
             <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button type="button" class="text-[11px] font-semibold text-indigo-600 hover:underline" onclick="openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')">Buka Chat</button>
+              <button type="button" class="text-[11px] font-semibold text-blue-600 hover:underline" onclick="openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')">Buka Chat</button>
               <a href="https://www.google.com/maps/search/?api=1&query=${a.locationLat},${a.locationLng}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-0.5">Google Maps ↗</a>
             </div>
           </div>
@@ -3707,39 +3876,18 @@
 
         if (!agendaMarkers[a.id]) {
           agendaMarkers[a.id] = L.marker(latlng, { icon: agendaPinIcon }).addTo(map);
-          agendaMarkers[a.id].bindTooltip(tooltipHtml, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -10],
-            className: bubbleClass
-          });
           agendaMarkers[a.id].bindPopup(popupHtml);
           agendaMarkers[a.id].on('click', () => {
-            if (a.start) {
-              const dateStr = a.start.split('T')[0];
-              if (dateStr && dateStr !== selectedDateStr) {
-                selectedDateStr = dateStr;
-                currentViewingDate = new Date(dateStr + 'T00:00:00');
-                renderCalendar();
-                renderSelectedDayAgendas();
-              }
-            }
+            selectMapAgenda(a.id, true);
           });
         } else {
           agendaMarkers[a.id].setLatLng(latlng);
           agendaMarkers[a.id].setIcon(agendaPinIcon);
-          agendaMarkers[a.id].setTooltipContent(tooltipHtml);
-          const tt = agendaMarkers[a.id].getTooltip();
-          if (tt) {
-            tt.options.className = bubbleClass;
-            const el = tt.getElement();
-            if (el) {
-              el.className = 'leaflet-tooltip leaflet-zoom-animated ' + bubbleClass;
-            }
-          }
           agendaMarkers[a.id].setPopupContent(popupHtml);
         }
       });
+
+      renderMapAgendaCards();
     }
 
     // ----------------------------------------------------
@@ -4205,38 +4353,15 @@
           const lat = parseFloat(btn.dataset.lat);
           const lng = parseFloat(btn.dataset.lng);
           const agendaId = btn.dataset.agendaId;
-          const title = btn.dataset.title;
-          const locname = btn.dataset.locname;
 
-          if (map && !isNaN(lat) && !isNaN(lng)) {
-            const mapEl = document.getElementById("map");
-            if (mapEl) mapEl.scrollIntoView({ behavior: "smooth", block: "center" });
-            map.setView([lat, lng], 16, { animate: true });
-
-            if (agendaId && agendaMarkers[agendaId]) {
-              const marker = agendaMarkers[agendaId];
-              // Pastikan bubble tooltip mendapatkan gaya active
-              const tt = marker.getTooltip();
-              if (tt && tt.getElement()) {
-                tt.getElement().className = 'leaflet-tooltip leaflet-zoom-animated agenda-bubble-tooltip active';
-              }
-              marker.openPopup();
-              marker.openTooltip();
-            } else {
-              L.popup()
-                .setLatLng([lat, lng])
-                .setContent(`
-                  <div class="text-xs p-1 space-y-1">
-                    <div class="flex items-center gap-1">
-                      <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-indigo-600 text-white">Agenda</span>
-                      <b class="text-slate-900 text-sm">${title}</b>
-                    </div>
-                    <div class="text-slate-700 font-medium">📍 ${locname}</div>
-                  </div>
-                `)
-                .openOn(map);
+          switchMainTab('map');
+          setTimeout(() => {
+            if (agendaId) {
+              selectMapAgenda(agendaId, true, true);
+            } else if (map && !isNaN(lat) && !isNaN(lng)) {
+              map.flyTo([lat, lng], 16, { duration: 0.6 });
             }
-          }
+          }, 200);
         });
       });
 
@@ -6099,47 +6224,257 @@
     }
     window.fitMapBounds = fitMapBounds;
 
-    function updateMapAgendaPills() {
-      const container = document.getElementById("mapAgendaPillsList");
-      if (!container) return;
+    // ====================================================
+    // 4. MAP SLIDER CAROUSEL & SINKRONISASI PIN AGENDA
+    // ====================================================
+    let isProgrammaticScrollingCarousel = false;
+    let carouselScrollDebounceTimer = null;
+
+    function renderMapAgendaCards(filterQuery = '') {
+      const carousel = document.getElementById("mapAgendaCardsCarousel");
+      if (!carousel) return;
+
+      const todayStr = IndonesianTime.getLocalDateString();
+      const q = filterQuery.toLowerCase().trim();
 
       const locatedAgendas = allAgendas.filter(a => {
         const lat = parseFloat(a.locationLat);
         const lng = parseFloat(a.locationLng);
-        return !isNaN(lat) && !isNaN(lng);
+        if (isNaN(lat) || isNaN(lng)) return false;
+
+        const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
+        if (aEnd && aEnd < todayStr) return false;
+
+        if (q) {
+          const matchTitle = (a.title || '').toLowerCase().includes(q);
+          const matchLoc = (a.locationName || '').toLowerCase().includes(q);
+          const matchAddr = (a.locationAddress || '').toLowerCase().includes(q);
+          if (!matchTitle && !matchLoc && !matchAddr) return false;
+        }
+
+        return true;
       });
 
       updateMapCounters();
 
       if (locatedAgendas.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 text-xs py-1">Belum ada agenda yang memiliki titik koordinat peta.</p>`;
+        carousel.innerHTML = `
+          <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-lg border border-slate-200/80 text-center select-none">
+            <p class="text-xs font-semibold text-slate-700">Tidak ada agenda berlokasi</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Agenda dengan koordinat peta akan otomatis tampil di slider ini.</p>
+          </div>
+        `;
         return;
       }
 
-      container.innerHTML = locatedAgendas.map(a => `
-        <button type="button" onclick="window.panToMapAgenda('${a.locationLat}', '${a.locationLng}', '${a.id}')"
-          class="shrink-0 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-indigo-50 hover:border-indigo-300 text-slate-700 hover:text-indigo-700 transition flex items-center gap-1.5 shadow-2xs">
-          <i data-lucide="map-pin" class="w-3 h-3 text-indigo-600"></i>
-          <span class="font-semibold text-xs truncate max-w-[140px]">${escapeHtml(a.title)}</span>
-          <span class="text-[10px] text-slate-400 truncate max-w-[90px]">(${escapeHtml(a.locationName || 'Peta')})</span>
-        </button>
-      `).join("");
+      carousel.innerHTML = locatedAgendas.map(a => {
+        const theme = getAgendaMapTheme(a);
+        const isActive = activeMapAgendaId === a.id;
+        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
+        const dateLabel = a.start ? IndonesianTime.formatDateShort(new Date(a.start)) : '';
 
-      lucide.createIcons();
+        return `
+          <div class="map-agenda-card shrink-0 min-w-[270px] sm:min-w-[310px] max-w-[330px] snap-center bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-lg border border-slate-200/80 hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col justify-between select-none ${isActive ? 'active-card' : ''}"
+            data-card-agenda-id="${a.id}"
+            onclick="window.selectMapAgenda('${a.id}', false)">
+            
+            <div class="flex items-center gap-3">
+              <div class="h-11 w-11 rounded-full flex items-center justify-center shrink-0 shadow-xs ring-2 ring-white" style="${theme.cardIconStyle}">
+                ${theme.iconSvg}
+              </div>
+              <div class="min-w-0 flex-1">
+                <h4 class="font-bold text-slate-900 text-sm truncate leading-snug">${escapeHtml(a.title)}</h4>
+                <p class="text-[11px] text-slate-400 font-medium flex items-center gap-1 mt-0.5">
+                  <span>${timeStr || 'Jadwal'}</span>
+                  ${dateLabel ? `<span>• ${dateLabel}</span>` : ''}
+                </p>
+              </div>
+              <button type="button" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-blue-50 text-slate-400 hover:text-blue-600 flex items-center justify-center shrink-0 transition" title="Lihat Titik">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+
+            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+              <div class="flex items-center gap-1.5 truncate max-w-[210px]">
+                <span class="text-blue-500 font-bold shrink-0">📍</span>
+                <span class="truncate text-[11px] font-medium text-slate-700">${escapeHtml(a.locationName || 'Titik Lokasi')}</span>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); window.openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')"
+                class="text-[11px] font-semibold text-blue-600 hover:underline shrink-0">
+                Chat
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      setupCarouselScrollSync();
+    }
+    window.renderMapAgendaCards = renderMapAgendaCards;
+
+    function setupCarouselScrollSync() {
+      const carousel = document.getElementById("mapAgendaCardsCarousel");
+      if (!carousel || carousel._hasScrollSyncAttached) return;
+      carousel._hasScrollSyncAttached = true;
+
+      // Geser kartu di slider bawah otomatis menyorot titik agenda di peta
+      carousel.addEventListener("scroll", () => {
+        if (isProgrammaticScrollingCarousel) return;
+
+        clearTimeout(carouselScrollDebounceTimer);
+        carouselScrollDebounceTimer = setTimeout(() => {
+          const carouselRect = carousel.getBoundingClientRect();
+          const carouselCenter = carouselRect.left + carouselRect.width / 2;
+          let closestCard = null;
+          let minDiff = Infinity;
+
+          carousel.querySelectorAll("[data-card-agenda-id]").forEach(card => {
+            const cardRect = card.getBoundingClientRect();
+            const cardCenter = cardRect.left + cardRect.width / 2;
+            const diff = Math.abs(carouselCenter - cardCenter);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closestCard = card;
+            }
+          });
+
+          if (closestCard) {
+            const id = closestCard.dataset.cardAgendaId;
+            if (id && id !== activeMapAgendaId) {
+              selectMapAgenda(id, false, false);
+            }
+          }
+        }, 100);
+      }, { passive: true });
     }
 
-    function panToMapAgenda(lat, lng, agendaId) {
-      if (!map) return;
-      const latitude = parseFloat(lat);
-      const longitude = parseFloat(lng);
-      if (isNaN(latitude) || isNaN(longitude)) return;
+    function selectMapAgenda(agendaId, fromMarkerClick = false, scrollCard = true) {
+      activeMapAgendaId = agendaId;
+      const agenda = allAgendas.find(a => a.id === agendaId);
+      if (!agenda) return;
 
-      map.setView([latitude, longitude], 16, { animate: true });
-      if (agendaMarkers[agendaId]) {
-        agendaMarkers[agendaId].openPopup();
+      const lat = parseFloat(agenda.locationLat);
+      const lng = parseFloat(agenda.locationLng);
+
+      // 1. Sorot titik pin pada peta
+      document.querySelectorAll(".event-pin-bubble").forEach(el => {
+        el.classList.toggle("active", el.dataset.agendaId === agendaId);
+      });
+
+      // 2. Sorot kartu pada slider horizontal
+      const carousel = document.getElementById("mapAgendaCardsCarousel");
+      if (carousel) {
+        carousel.querySelectorAll("[data-card-agenda-id]").forEach(card => {
+          card.classList.toggle("active-card", card.dataset.cardAgendaId === agendaId);
+        });
+
+        if (scrollCard) {
+          const targetCard = carousel.querySelector(`[data-card-agenda-id="${agendaId}"]`);
+          if (targetCard) {
+            isProgrammaticScrollingCarousel = true;
+            targetCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            setTimeout(() => {
+              isProgrammaticScrollingCarousel = false;
+            }, 600);
+          }
+        }
+      }
+
+      // 3. Pusatkan peta ke koordinat agenda
+      if (map && !isNaN(lat) && !isNaN(lng)) {
+        map.flyTo([lat, lng], 16, { duration: 0.6 });
+        if (fromMarkerClick && agendaMarkers[agendaId]) {
+          agendaMarkers[agendaId].openPopup();
+        }
+      }
+    }
+    window.selectMapAgenda = selectMapAgenda;
+
+    function panToMapAgenda(lat, lng, agendaId) {
+      if (agendaId) {
+        selectMapAgenda(agendaId, true, true);
+      } else if (map) {
+        const latitude = parseFloat(lat);
+        const longitude = parseFloat(lng);
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+          map.setView([latitude, longitude], 16, { animate: true });
+        }
       }
     }
     window.panToMapAgenda = panToMapAgenda;
+
+    function updateMapAgendaPills() {
+      renderMapAgendaCards();
+      updateMapCounters();
+    }
+    window.updateMapAgendaPills = updateMapAgendaPills;
+
+    // Filter Pencarian Lokasi & Agenda Melayang
+    document.getElementById("mapSearchInput")?.addEventListener("input", (e) => {
+      const q = e.target.value.trim();
+      document.getElementById("mapSearchClearBtn")?.classList.toggle("hidden", !q);
+      renderMapAgendaCards(q);
+
+      // Saring marker pada peta
+      const qLower = q.toLowerCase();
+      Object.keys(agendaMarkers).forEach(id => {
+        const agenda = allAgendas.find(a => a.id === id);
+        if (!agenda) return;
+        const match = !qLower ||
+          (agenda.title || '').toLowerCase().includes(qLower) ||
+          (agenda.locationName || '').toLowerCase().includes(qLower);
+        if (match) {
+          if (!map.hasLayer(agendaMarkers[id]) && showAgendaPins) map.addLayer(agendaMarkers[id]);
+        } else {
+          if (map.hasLayer(agendaMarkers[id])) map.removeLayer(agendaMarkers[id]);
+        }
+      });
+    });
+
+    document.getElementById("mapSearchClearBtn")?.addEventListener("click", () => {
+      const input = document.getElementById("mapSearchInput");
+      if (input) {
+        input.value = "";
+        document.getElementById("mapSearchClearBtn")?.classList.add("hidden");
+        renderMapAgendaCards("");
+        Object.keys(agendaMarkers).forEach(id => {
+          if (!map.hasLayer(agendaMarkers[id]) && showAgendaPins) map.addLayer(agendaMarkers[id]);
+        });
+      }
+    });
+
+    // Toggle Popover Filter
+    document.getElementById("btnToggleMapFilterPop")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const pop = document.getElementById("mapFilterPopover");
+      if (pop) pop.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+      const pop = document.getElementById("mapFilterPopover");
+      const btn = document.getElementById("btnToggleMapFilterPop");
+      if (pop && !pop.classList.contains("hidden")) {
+        if (!pop.contains(e.target) && !btn?.contains(e.target)) {
+          pop.classList.add("hidden");
+        }
+      }
+    });
+
+    // Floating GPS Recenter Button
+    document.getElementById("btnMapFloatingGps")?.addEventListener("click", () => {
+      syncLocation();
+      if (lastKnownUserLocation && map) {
+        map.flyTo([lastKnownUserLocation.latitude, lastKnownUserLocation.longitude], 16, { duration: 0.8 });
+      } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const { latitude, longitude } = pos.coords;
+          lastKnownUserLocation = { latitude, longitude };
+          map.flyTo([latitude, longitude], 16, { duration: 0.8 });
+        }, (err) => {
+          console.warn("Gagal mendapatkan lokasi GPS:", err);
+        });
+      }
+    });
 
     // ====================================================
     // 5. CHAT VIEW (ALL FORUM & PER-AGENDA)
