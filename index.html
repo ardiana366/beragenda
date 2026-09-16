@@ -233,6 +233,17 @@
       background-color: #ffffff !important;
     }
 
+    /* Hapus/Sembunyikan Leaflet Popup Content Wrapper */
+    .leaflet-popup,
+    .leaflet-popup-content,
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip-container {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
     .glass-card {
       background: rgba(255, 255, 255, 0.90);
       backdrop-filter: blur(12px);
@@ -771,7 +782,7 @@
   </div>
 
   <!-- MAIN APP SCREEN -->
-  <div id="appScreen" class="hidden max-w-6xl mx-auto px-4 pt-3 sm:pt-4 space-y-5">
+  <div id="appScreen" class="hidden max-w-6xl mx-auto px-4 pt-3 sm:pt-4 pb-20 md:pb-6 space-y-5">
 
     <!-- Guest Preview Banner (hanya muncul untuk penerima link yang belum login) -->
     <div id="guestStickyBanner"
@@ -1211,12 +1222,12 @@
     <!-- ==================================================== -->
     <!-- TAB 2: MAP (VIEW TAMPILAN MAP PENUH & PILIHAN)       -->
     <!-- ==================================================== -->
-    <main id="tab-map" class="hidden relative w-full h-[calc(100vh-140px)] sm:h-[calc(100vh-150px)] min-h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 bg-slate-100">
+    <main id="tab-map" class="hidden relative w-full h-[calc(100dvh-200px)] md:h-[calc(100vh-150px)] min-h-[460px] sm:min-h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-slate-200/90 bg-slate-100 mb-16 md:mb-0">
       <!-- Wadah Map Leaflet Layar Penuh -->
       <div id="map" class="w-full h-full z-0"></div>
 
       <!-- Floating Top Search Bar & Filter Popover -->
-      <div class="absolute top-3.5 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[460px] z-[1000] flex flex-col items-center gap-2">
+      <div class="absolute top-3.5 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[460px] z-[500] flex flex-col items-center gap-2">
         <div class="w-full bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-slate-200/80 px-4 py-2.5 flex items-center gap-2.5 transition-all focus-within:ring-2 focus-within:ring-blue-500/40 focus-within:border-blue-400">
           <i data-lucide="search" class="w-4 h-4 text-slate-400 shrink-0"></i>
           <input id="mapSearchInput" type="text" placeholder="Search Location / Agenda..."
@@ -1269,7 +1280,7 @@
 
       <!-- Floating GPS Button (Recenter ke Lokasi User) -->
       <button id="btnMapFloatingGps" type="button"
-        class="absolute right-4 bottom-32 sm:bottom-36 z-[1000] h-12 w-12 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:shadow-blue-500/30 group"
+        class="absolute right-4 bottom-28 sm:bottom-36 z-[400] h-12 w-12 rounded-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:shadow-blue-500/30 group"
         title="Pusatkan ke Lokasi Saya">
         <i data-lucide="crosshair" class="w-5 h-5 transition-transform group-hover:rotate-45"></i>
       </button>
@@ -1279,7 +1290,7 @@
       <div id="mapAgendaPillsList" class="hidden"></div>
 
       <!-- Floating Bottom Agenda Slider Carousel -->
-      <div class="absolute bottom-3 inset-x-0 z-[1000] px-2 sm:px-4 pointer-events-none">
+      <div class="absolute bottom-2.5 sm:bottom-4 inset-x-0 z-[400] px-2 sm:px-4 pointer-events-none">
         <div id="mapAgendaCardsCarousel"
           class="flex gap-3 overflow-x-auto snap-x snap-mandatory py-2 px-2 hide-scrollbar pointer-events-auto items-stretch">
           <!-- Diisi via renderMapAgendaCards() -->
@@ -1537,7 +1548,7 @@
   <!-- MOBILE FIXED BOTTOM NAVIGATION BAR (SETELAH LOGIN)   -->
   <!-- ==================================================== -->
   <nav id="mobileBottomNav"
-    class="hidden md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-3 py-2 flex justify-around items-center shadow-lg">
+    class="hidden md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-[2000] px-3 py-2 flex justify-around items-center shadow-lg">
     <button onclick="window.switchMainTab('agenda')" id="mob-nav-btn-agenda"
       class="flex flex-col items-center gap-0.5 text-indigo-600 transition">
       <i data-lucide="calendar" class="w-5 h-5"></i>
@@ -3770,14 +3781,6 @@
 
           if (!markers[loc.uid]) {
             markers[loc.uid] = L.marker(latlng, { icon: userDotIcon }).addTo(map);
-
-            markers[loc.uid].bindPopup(`
-              <div class="text-xs p-1">
-                <b class="text-slate-800 text-sm">${isMe ? '📍 Lokasi Saya' : escapeHtml(loc.name)}</b>
-                <span class="text-slate-500 block text-[11px] mt-0.5">${loc.gender === 'female' ? '👩 Perempuan' : '👨 Laki-laki'}</span>
-                <span class="text-slate-400 font-mono text-[10px] block mt-1">Koordinat: ${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}</span>
-              </div>
-            `);
           } else {
             markers[loc.uid].setLatLng(latlng);
             markers[loc.uid].setIcon(userDotIcon);
@@ -3853,37 +3856,14 @@
           popupAnchor: [0, -42]
         });
 
-        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
-
-        const popupHtml = `
-          <div class="text-xs p-1 space-y-1.5 min-w-[200px]">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-800">Agenda</span>
-              <h4 class="font-bold text-slate-900 text-sm truncate">${escapeHtml(a.title)}</h4>
-            </div>
-            <div class="text-slate-700 flex items-start gap-1">
-              <span class="text-blue-600 font-bold shrink-0">📍</span>
-              <span class="font-medium">${escapeHtml(a.locationName)}</span>
-            </div>
-            ${a.locationAddress && a.locationAddress !== a.locationName ? `<div class="text-[10px] text-slate-400">${escapeHtml(a.locationAddress)}</div>` : ''}
-            <div class="text-[11px] text-slate-500 font-medium">🕒 ${IndonesianTime.formatDateShort(new Date(a.start))}${timeStr ? `, ${timeStr}` : ''}</div>
-            <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button type="button" class="text-[11px] font-semibold text-blue-600 hover:underline" onclick="openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')">Buka Chat</button>
-              <a href="https://www.google.com/maps/search/?api=1&query=${a.locationLat},${a.locationLng}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-0.5">Google Maps ↗</a>
-            </div>
-          </div>
-        `;
-
         if (!agendaMarkers[a.id]) {
           agendaMarkers[a.id] = L.marker(latlng, { icon: agendaPinIcon }).addTo(map);
-          agendaMarkers[a.id].bindPopup(popupHtml);
           agendaMarkers[a.id].on('click', () => {
             selectMapAgenda(a.id, true);
           });
         } else {
           agendaMarkers[a.id].setLatLng(latlng);
           agendaMarkers[a.id].setIcon(agendaPinIcon);
-          agendaMarkers[a.id].setPopupContent(popupHtml);
         }
       });
 
@@ -4151,8 +4131,17 @@
         const creatorName = item.createdByName || (isMine ? (userProfile?.name || 'Saya') : 'Member');
         const creatorInitial = (creatorName.charAt(0) || 'U').toUpperCase();
 
+        let cardBgClass = "bg-white border-slate-100 hover:border-slate-200";
+        if (!isMine) {
+          // AGENDA ANGGOTA LAIN -> Kuning
+          cardBgClass = "bg-amber-50/60 border-amber-200/80 hover:border-amber-300";
+        } else if (isPersonal) {
+          // AGENDA PRIBADI SAYA -> Hijau
+          cardBgClass = "bg-emerald-50/60 border-emerald-200/80 hover:border-emerald-300";
+        }
+
         const card = document.createElement("div");
-        card.className = `bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-xs hover:shadow-md transition-shadow relative cursor-pointer select-none ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/20' : ''}`;
+        card.className = `${cardBgClass} rounded-3xl p-4 sm:p-5 border shadow-xs hover:shadow-md transition-shadow relative cursor-pointer select-none ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/20' : ''}`;
 
         card.addEventListener("click", (e) => {
           if (e.target.closest("button") || e.target.closest(".btn-open-checklist") || e.target.closest(".btn-open-chat") || e.target.closest(".btn-pan-to-agenda-loc") || e.target.closest(".btn-agenda-cashflow")) {
@@ -4170,9 +4159,9 @@
               
               <!-- Timeline Indicator (Dot -> Stem -> Arrow Down) -->
               <div class="flex flex-col items-center my-1.5 space-y-0.5">
-                <span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
-                <div class="w-[1.5px] h-6 sm:h-8 bg-slate-200"></div>
-                <svg class="w-2.5 h-2.5 text-slate-300" viewBox="0 0 10 10" fill="currentColor">
+                <span class="h-1.5 w-1.5 rounded-full ${!isMine ? 'bg-amber-300' : (isPersonal ? 'bg-emerald-300' : 'bg-slate-300')}"></span>
+                <div class="w-[1.5px] h-6 sm:h-8 ${!isMine ? 'bg-amber-200' : (isPersonal ? 'bg-emerald-200' : 'bg-slate-200')}"></div>
+                <svg class="w-2.5 h-2.5 ${!isMine ? 'text-amber-300' : (isPersonal ? 'text-emerald-300' : 'text-slate-300')}" viewBox="0 0 10 10" fill="currentColor">
                   <path d="M5 8.5L1.5 4H8.5L5 8.5Z"/>
                 </svg>
               </div>
@@ -4251,8 +4240,26 @@
                 `;
           })()}
 
-              <!-- Baris Bawah: Avatar Stack & Tombol Aksi Pill (Sesuai Gambar) -->
-              <div class="flex items-center justify-between gap-2 mt-3.5 pt-2.5 border-t border-slate-100 flex-wrap">
+              <!-- Baris Bawah: Tag Tipe/Pembuat (Kiri) & Tombol Aksi Pill (Kanan) -->
+              <div class="flex items-center justify-between gap-2 mt-3.5 pt-2.5 border-t ${!isMine ? 'border-amber-200/60' : (isPersonal ? 'border-emerald-200/60' : 'border-slate-100')} flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  ${!isMine ? `
+                    <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full shadow-2xs">
+                      <span>👤</span>
+                      <span class="truncate max-w-[130px]">${escapeHtml(creatorName)}</span>
+                    </span>
+                  ` : (isPersonal ? `
+                    <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-full shadow-2xs">
+                      <span>🔒</span>
+                      <span>Pribadi Saya</span>
+                    </span>
+                  ` : `
+                    <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full shadow-2xs">
+                      <span>👥</span>
+                      <span>Grup</span>
+                    </span>
+                  `)}
+                </div>
 
                 <!-- Tombol Aksi Pill (Kanan) -->
                 <div class="flex items-center gap-2 shrink-0">
@@ -6294,15 +6301,25 @@
               </button>
             </div>
 
-            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-              <div class="flex items-center gap-1.5 truncate max-w-[210px]">
+            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600 gap-1.5">
+              <div class="flex items-center gap-1.5 truncate flex-1 min-w-0">
                 <span class="text-blue-500 font-bold shrink-0">📍</span>
                 <span class="truncate text-[11px] font-medium text-slate-700">${escapeHtml(a.locationName || 'Titik Lokasi')}</span>
               </div>
-              <button type="button" onclick="event.stopPropagation(); window.openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')"
-                class="text-[11px] font-semibold text-blue-600 hover:underline shrink-0">
-                Chat
-              </button>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <!-- Tombol Buka di Google Maps Langsung dari Kartu -->
+                <a href="https://www.google.com/maps/search/?api=1&query=${a.locationLat},${a.locationLng}"
+                  target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()"
+                  class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[10px] sm:text-[11px] flex items-center gap-1 transition shadow-2xs border border-emerald-200/80 cursor-pointer"
+                  title="Buka rute / lokasi di Google Maps">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                  <span>Google Maps</span>
+                </a>
+                <button type="button" onclick="event.stopPropagation(); window.openChatModal('${a.id}', '${escapeHtml(a.title)}', '${a.start}')"
+                  class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold text-[10px] sm:text-[11px] transition border border-blue-100 cursor-pointer">
+                  Chat
+                </button>
+              </div>
             </div>
           </div>
         `;
@@ -6380,12 +6397,9 @@
         }
       }
 
-      // 3. Pusatkan peta ke koordinat agenda
+      // 3. Pusatkan peta ke koordinat agenda (tanpa popup mengambang)
       if (map && !isNaN(lat) && !isNaN(lng)) {
         map.flyTo([lat, lng], 16, { duration: 0.6 });
-        if (fromMarkerClick && agendaMarkers[agendaId]) {
-          agendaMarkers[agendaId].openPopup();
-        }
       }
     }
     window.selectMapAgenda = selectMapAgenda;
