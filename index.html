@@ -50,8 +50,14 @@
       border-radius: 0.75rem;
     }
 
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
     /* Tooltip Bubble untuk Agenda di Peta */
     .agenda-bubble-tooltip {
@@ -562,24 +568,29 @@
 
       <form id="joinForm" class="space-y-4">
         <!-- Banner Undangan Grup (muncul jika membuka dari tautan share) -->
-        <div id="joinInviteBanner" class="hidden p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-between gap-3 text-xs text-indigo-950">
+        <div id="joinInviteBanner"
+          class="hidden p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-between gap-3 text-xs text-indigo-950">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <div
+              class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
               <i data-lucide="users" class="h-4 w-4"></i>
             </div>
             <div class="overflow-hidden">
               <p class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Tautan Undangan Grup</p>
-              <p class="font-bold text-sm text-slate-900 leading-tight truncate">Bergabung ke <span id="joinInviteCodeText" class="font-mono text-indigo-700 font-extrabold"></span></p>
+              <p class="font-bold text-sm text-slate-900 leading-tight truncate">Bergabung ke <span
+                  id="joinInviteCodeText" class="font-mono text-indigo-700 font-extrabold"></span></p>
             </div>
           </div>
-          <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-bold shrink-0">Otomatis Terisi</span>
+          <span class="text-[10px] bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-bold shrink-0">Otomatis
+            Terisi</span>
         </div>
 
         <div>
           <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Nama Panggilan</label>
           <input id="inputName" type="text" required placeholder="Contoh: Ari"
             class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none" />
-          <p id="inputNameHelpText" class="hidden text-[11px] text-indigo-600 font-medium mt-1.5 flex items-center gap-1">
+          <p id="inputNameHelpText"
+            class="hidden text-[11px] text-indigo-600 font-medium mt-1.5 flex items-center gap-1">
             <span>👉 Cukup ketik nama Anda untuk langsung bergabung ke grup di atas.</span>
           </p>
         </div>
@@ -602,13 +613,15 @@
           <div class="flex items-center justify-between mb-1">
             <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500">Kode Grup (Group
               Code)</label>
-            <span id="joinInviteLockBadge" class="hidden text-[10px] text-indigo-600 font-semibold flex items-center gap-1">
+            <span id="joinInviteLockBadge"
+              class="hidden text-[10px] text-indigo-600 font-semibold flex items-center gap-1">
               <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i> Dari Tautan Undangan
             </span>
           </div>
           <input id="inputPairCode" type="text" required placeholder="Contoh: KELUARGA-BESAR / TIM-RIDE"
             class="w-full rounded-lg border border-slate-300 px-3.5 py-2 text-sm focus:border-slate-800 focus:outline-none uppercase font-mono transition" />
-          <p id="groupCodeHelpText" class="text-[11px] text-slate-400 mt-1">Bagikan kode ini kepada seluruh anggota agar terhubung dalam grup
+          <p id="groupCodeHelpText" class="text-[11px] text-slate-400 mt-1">Bagikan kode ini kepada seluruh anggota agar
+            terhubung dalam grup
             yang sama.</p>
         </div>
 
@@ -645,7 +658,8 @@
         <div class="overflow-hidden">
           <p class="text-xs font-bold leading-tight truncate">Mode Pratinjau Grup: <span id="guestBannerGroupCode"
               class="font-mono text-indigo-200 uppercase font-extrabold"></span></p>
-          <p class="text-[11px] text-indigo-200/80 leading-tight truncate">Anda dapat melihat jadwal. Ketuk untuk bergabung penuh & sinkronisasi lokasi.</p>
+          <p class="text-[11px] text-indigo-200/80 leading-tight truncate">Anda dapat melihat jadwal. Ketuk untuk
+            bergabung penuh & sinkronisasi lokasi.</p>
         </div>
       </div>
       <button id="btnGuestJoinNow" type="button"
@@ -707,8 +721,7 @@
 
       <!-- Area Kosong Rahasia: Ketuk 6 kali untuk membuka fitur hapus grup -->
       <div id="secretHeaderTrigger" class="flex-1 self-stretch mx-2 cursor-default select-none min-h-[42px]"
-        style="-webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;"
-        title=""></div>
+        style="-webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;" title=""></div>
 
       <!-- Header Right: Live Clock & Notification Tray -->
       <div class="flex items-center gap-2 sm:gap-3">
@@ -753,7 +766,8 @@
     <!-- ==================================================== -->
     <!-- MAIN APP NAVIGATION TABS (Desktop & Tablet)          -->
     <!-- ==================================================== -->
-    <nav class="hidden md:flex items-center justify-between p-1.5 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xs">
+    <nav
+      class="hidden md:flex items-center justify-between p-1.5 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-xs">
       <div class="flex items-center gap-2">
         <button onclick="window.switchMainTab('agenda')" id="top-nav-btn-agenda"
           class="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs transition bg-indigo-600 text-white shadow-sm">
@@ -790,7 +804,8 @@
     <!-- ==================================================== -->
     <main id="tab-agenda" class="space-y-4">
       <!-- Agenda Control Bar: Switcher Month vs Week & Tambah Agenda -->
-      <div class="flex items-center justify-between flex-wrap gap-2.5 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
+      <div
+        class="flex items-center justify-between flex-wrap gap-2.5 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
         <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs">
           <button id="btnAgendaViewMonth" onclick="window.switchAgendaView('month')" type="button"
             class="px-3.5 py-1.5 rounded-lg font-bold text-xs bg-indigo-600 text-white shadow-xs flex items-center gap-1.5 transition">
@@ -874,27 +889,42 @@
         <section id="rightSection" class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
           <!-- VIEW 1: Detail Agenda Tanggal -->
           <div id="viewAgendaList" class="space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2">
-              <div>
-                <div class="flex items-center gap-2">
-                  <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Nama Kegiatan & Jadwal</p>
-                  <span id="selectedDayCount"
-                    class="text-[10px] rounded-full bg-indigo-100 text-indigo-800 px-2 py-0.5 font-bold">0 Jadwal</span>
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2 sm:gap-3">
+              <!-- Sisi Kiri Card: Tombol Kembali (<) + Info Tanggal -->
+              <div class="flex items-center gap-2.5 min-w-0">
+                <button id="btnPrevDay" onclick="window.changeSelectedDate(-1)" type="button"
+                  title="Kembali ke tanggal sebelumnya"
+                  class="h-8 w-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center shrink-0 shadow-2xs">
+                  <i data-lucide="chevron-left" class="h-4 w-4"></i>
+                </button>
+                <div class="min-w-0 flex flex-col justify-center">
+                  <h4 id="selectedDateTitle" class="flex flex-col min-w-0">
+                    <span class="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">Pilih Tanggal</span>
+                    <span class="text-[11px] sm:text-xs font-medium text-slate-500 leading-tight truncate mt-0.5">-</span>
+                  </h4>
                 </div>
-                <h4 id="selectedDateTitle" class="text-base font-bold text-slate-900 mt-0.5">Pilih Tanggal</h4>
               </div>
 
-              <!-- Tombol Tambah Agenda Hari Ini -->
-              <button id="btnOpenAddModal" onclick="window.openCreateAgendaModal()"
-                class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm shrink-0">
-                <i data-lucide="plus" class="h-4 w-4"></i>
-                <span>Tambah Agenda</span>
-              </button>
+              <!-- Sisi Kanan Card: Tombol Tambah Agenda + Tombol Selanjutnya (>) -->
+              <div class="flex items-center gap-2 shrink-0">
+                <button id="btnOpenAddModal" onclick="window.openCreateAgendaModal()"
+                  class="rounded-xl bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+                  <i data-lucide="plus" class="h-4 w-4"></i>
+                  <span class="hidden sm:inline">Tambah Agenda</span>
+                  <span class="sm:hidden">Tambah</span>
+                </button>
+                <button id="btnNextDay" onclick="window.changeSelectedDate(1)" type="button"
+                  title="Lanjut ke tanggal selanjutnya"
+                  class="h-8 w-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center shrink-0 shadow-2xs">
+                  <i data-lucide="chevron-right" class="h-4 w-4"></i>
+                </button>
+              </div>
             </div>
 
             <!-- List Kartu Kegiatan / Agenda -->
             <div id="dayAgendaList" class="space-y-3 pt-1 max-h-[520px] overflow-y-auto pr-1">
-              <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender di atas untuk melihat jam dan nama kegiatan.</p>
+              <p class="text-xs text-slate-400 text-center py-10">Klik tanggal pada kalender di atas untuk melihat jam
+                dan nama kegiatan.</p>
             </div>
           </div>
 
@@ -925,13 +955,17 @@
               <div class="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200/70">
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2 overflow-hidden">
-                    <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk Agenda</span>
+                    <span
+                      class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200 shrink-0">Induk
+                      Agenda</span>
                     <h4 id="checklistAgendaTitle" class="text-sm font-bold text-slate-900 truncate">Judul Agenda</h4>
                   </div>
-                  <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0 Selesai</span>
+                  <span id="checklistOverallBadge" class="text-[11px] font-bold text-slate-700 shrink-0">0/0
+                    Selesai</span>
                 </div>
                 <div class="w-full bg-slate-200 rounded-full h-1.5 mt-2 overflow-hidden">
-                  <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                  <div id="checklistOverallBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
+                    style="width: 0%"></div>
                 </div>
               </div>
             </div>
@@ -941,31 +975,40 @@
 
             <!-- Banner Kategori Aktif & Aksi -->
             <div id="checklistCategoryBanner" class="category-banner flex items-center justify-between gap-2">
-              <div class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer min-w-0 flex-1"
+              <div
+                class="category-title flex items-center gap-1.5 text-xs font-bold text-slate-800 cursor-pointer min-w-0 flex-1"
                 id="btnEditCurrentCategory" title="Klik untuk ubah nama kategori">
                 <span id="currentCategoryTitle" class="truncate">Kategori</span>
-                <span class="hint text-[10px] text-slate-400 font-normal shrink-0 hidden sm:inline">(Ketuk untuk edit)</span>
+                <span class="hint text-[10px] text-slate-400 font-normal shrink-0 hidden sm:inline">(Ketuk untuk
+                  edit)</span>
               </div>
               <div class="flex items-center gap-1 shrink-0">
                 <div class="flex items-center bg-slate-200/70 p-0.5 rounded-lg mr-1 text-slate-600">
-                  <button id="btnChecklistLayoutList" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan List">
+                  <button id="btnChecklistLayoutList" type="button"
+                    class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan List">
                     <i data-lucide="list" class="h-3.5 w-3.5"></i>
                   </button>
-                  <button id="btnChecklistLayoutGrid" type="button" class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan Grid">
+                  <button id="btnChecklistLayoutGrid" type="button"
+                    class="p-1 rounded-md transition text-slate-500 hover:text-slate-900" title="Tampilan Grid">
                     <i data-lucide="layout-grid" class="h-3.5 w-3.5"></i>
                   </button>
                 </div>
-                <button id="btnQuickEditCategory" type="button" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Edit Kategori">
+                <button id="btnQuickEditCategory" type="button"
+                  class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  title="Edit Kategori">
                   <i data-lucide="edit-2" class="h-3.5 w-3.5"></i>
                 </button>
-                <button id="btnQuickDeleteCategory" type="button" class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Hapus Kategori">
+                <button id="btnQuickDeleteCategory" type="button"
+                  class="p-1 rounded text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                  title="Hapus Kategori">
                   <i data-lucide="trash" class="h-3.5 w-3.5"></i>
                 </button>
               </div>
             </div>
 
             <!-- Daftar Kartu Item Checklist -->
-            <div id="checklistItemsContainer" class="item-cards-grid max-h-[460px] md:max-h-[480px] overflow-y-auto pr-1 checklist-scroll"></div>
+            <div id="checklistItemsContainer"
+              class="item-cards-grid max-h-[460px] md:max-h-[480px] overflow-y-auto pr-1 checklist-scroll"></div>
           </div>
         </section>
       </div>
@@ -1071,7 +1114,8 @@
         </div>
 
         <!-- Panel Pilihan Filter (Poin Agenda & Poin Users) -->
-        <div class="p-3 bg-slate-50/90 rounded-xl border border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
+        <div
+          class="p-3 bg-slate-50/90 rounded-xl border border-slate-200 flex items-center justify-between flex-wrap gap-3 text-xs">
           <div class="flex items-center gap-2 font-bold text-slate-700">
             <i data-lucide="sliders-horizontal" class="h-4 w-4 text-indigo-600"></i>
             <span>Pilihan Tampilan Poin:</span>
@@ -1085,7 +1129,8 @@
               <span class="flex items-center gap-1.5 font-semibold text-slate-800">
                 <span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-indigo-200"></span>
                 Poin Lokasi Agenda
-                <span id="mapAgendaCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 font-bold">0</span>
+                <span id="mapAgendaCountBadge"
+                  class="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-100 text-indigo-800 font-bold">0</span>
               </span>
             </label>
 
@@ -1096,14 +1141,16 @@
               <span class="flex items-center gap-1.5 font-semibold text-slate-800">
                 <span class="inline-block h-2.5 w-2.5 rounded-full bg-blue-600 ring-2 ring-blue-200"></span>
                 Poin Lokasi Users
-                <span id="mapMemberCountBadge" class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold">0</span>
+                <span id="mapMemberCountBadge"
+                  class="text-[10px] px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-800 font-bold">0</span>
               </span>
             </label>
           </div>
         </div>
 
         <!-- Wadah Map Leaflet Layar Penuh -->
-        <div class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner h-[62vh] min-h-[460px]">
+        <div
+          class="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-inner h-[62vh] min-h-[460px]">
           <div id="map"></div>
         </div>
 
@@ -1148,27 +1195,31 @@
 
         <!-- SUB-VIEW 1: CHAT ALL FORUM (FORUM DISKUSI BERSAMA SELURUH ANGGOTA) -->
         <div id="chatSubViewForum" class="space-y-3">
-          <div class="p-3 bg-indigo-50/80 border border-indigo-100 rounded-xl flex items-center justify-between text-xs text-indigo-900">
+          <div
+            class="p-3 bg-indigo-50/80 border border-indigo-100 rounded-xl flex items-center justify-between text-xs text-indigo-900">
             <div class="flex items-center gap-2">
               <div class="h-7 w-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold">
                 <i data-lucide="users" class="h-3.5 w-3.5"></i>
               </div>
               <div>
                 <p class="font-bold">Ruang Forum Obrolan Grup</p>
-                <p class="text-[11px] text-indigo-700">Terhubung dengan seluruh anggota grup <strong id="forumGroupCodeTitle">-</strong></p>
+                <p class="text-[11px] text-indigo-700">Terhubung dengan seluruh anggota grup <strong
+                    id="forumGroupCodeTitle">-</strong></p>
               </div>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-200 text-indigo-800 font-bold">Forum Umum</span>
           </div>
 
           <!-- Message Area Forum Chat -->
-          <div id="forumChatMessagesList" class="h-[52vh] min-h-[380px] overflow-y-auto p-3 space-y-3 bg-slate-50/60 rounded-2xl border border-slate-200 text-sm">
+          <div id="forumChatMessagesList"
+            class="h-[52vh] min-h-[380px] overflow-y-auto p-3 space-y-3 bg-slate-50/60 rounded-2xl border border-slate-200 text-sm">
             <p class="text-xs text-slate-400 text-center py-10">Memuat obrolan forum...</p>
           </div>
 
           <!-- Form Kirim Pesan Forum -->
           <form id="formForumChat" onsubmit="window.handleSendForumChat(event)" class="flex gap-2 pt-1">
-            <input id="inputForumChat" type="text" required autocomplete="off" placeholder="Tulis pesan ke forum grup..."
+            <input id="inputForumChat" type="text" required autocomplete="off"
+              placeholder="Tulis pesan ke forum grup..."
               class="flex-1 rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-indigo-600 focus:outline-none shadow-2xs" />
             <button type="submit" id="btnSendForumChat"
               class="rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 transition flex items-center gap-1.5 shadow-sm">
@@ -1180,7 +1231,8 @@
 
         <!-- SUB-VIEW 2: CHAT PER-AGENDA (DAFTAR AGENDA DENGAN RUANG OBROLAN) -->
         <div id="chatSubViewAgendas" class="hidden space-y-3">
-          <p class="text-xs text-slate-500">Pilih salah satu agenda di bawah untuk membuka ruang obrolan khusus agenda tersebut:</p>
+          <p class="text-xs text-slate-500">Pilih salah satu agenda di bawah untuk membuka ruang obrolan khusus agenda
+            tersebut:</p>
           <div id="agendaChatCardsList" class="space-y-2.5 max-h-[56vh] overflow-y-auto pr-1"></div>
         </div>
       </section>
@@ -1191,13 +1243,15 @@
     <!-- ==================================================== -->
     <main id="tab-finance" class="space-y-4 hidden">
       <!-- Metrik Saldo Utama Card -->
-      <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
+      <div
+        class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-900 text-white rounded-2xl p-5 shadow-lg relative overflow-hidden">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-xs text-indigo-200 uppercase tracking-wider font-semibold">Total Saldo Kas Grup</p>
             <h2 id="dash-total-balance" class="text-3xl font-extrabold mt-1">Rp 0</h2>
           </div>
-          <span class="px-2.5 py-1 rounded-lg bg-white/10 text-indigo-200 text-xs font-mono font-bold" id="financeRoomCodeBadge">ROOM</span>
+          <span class="px-2.5 py-1 rounded-lg bg-white/10 text-indigo-200 text-xs font-mono font-bold"
+            id="financeRoomCodeBadge">ROOM</span>
         </div>
 
         <div class="grid grid-cols-2 gap-3 mt-4 pt-3 border-t border-indigo-400/30 text-xs">
@@ -1286,7 +1340,8 @@
               <i data-lucide="calendar" class="w-4 h-4 text-indigo-600"></i>
               <span>Arus Kas per-Agenda</span>
             </h3>
-            <span id="dash-agenda-finance-count" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">0 Agenda</span>
+            <span id="dash-agenda-finance-count"
+              class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">0 Agenda</span>
           </div>
           <div id="dash-agenda-finance-list" class="space-y-2.5 text-xs"></div>
         </div>
@@ -1300,7 +1355,8 @@
               <i data-lucide="layers" class="w-4 h-4 text-indigo-600"></i>
               <span>Daftar Budget (Anggaran Kebutuhan)</span>
             </h3>
-            <p class="text-xs text-slate-500">Pantau pemakaian belanja vs alokasi budget (tahan & geser untuk atur urutan)</p>
+            <p class="text-xs text-slate-500">Pantau pemakaian belanja vs alokasi budget (tahan & geser untuk atur
+              urutan)</p>
           </div>
           <button onclick="window.openGoalModal()"
             class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 shadow transition">
@@ -1360,21 +1416,27 @@
   <!-- ==================================================== -->
   <!-- MOBILE FIXED BOTTOM NAVIGATION BAR (SETELAH LOGIN)   -->
   <!-- ==================================================== -->
-  <nav id="mobileBottomNav" class="hidden md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-3 py-2 flex justify-around items-center shadow-lg">
-    <button onclick="window.switchMainTab('agenda')" id="mob-nav-btn-agenda" class="flex flex-col items-center gap-0.5 text-indigo-600 transition">
+  <nav id="mobileBottomNav"
+    class="hidden md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-3 py-2 flex justify-around items-center shadow-lg">
+    <button onclick="window.switchMainTab('agenda')" id="mob-nav-btn-agenda"
+      class="flex flex-col items-center gap-0.5 text-indigo-600 transition">
       <i data-lucide="calendar" class="w-5 h-5"></i>
       <span class="text-[10px] font-bold">Agenda</span>
     </button>
-    <button onclick="window.switchMainTab('map')" id="mob-nav-btn-map" class="flex flex-col items-center gap-0.5 text-slate-400 transition">
+    <button onclick="window.switchMainTab('map')" id="mob-nav-btn-map"
+      class="flex flex-col items-center gap-0.5 text-slate-400 transition">
       <i data-lucide="map" class="w-5 h-5"></i>
       <span class="text-[10px] font-medium">Peta</span>
     </button>
-    <button onclick="window.switchMainTab('chat')" id="mob-nav-btn-chat" class="flex flex-col items-center gap-0.5 text-slate-400 transition relative">
+    <button onclick="window.switchMainTab('chat')" id="mob-nav-btn-chat"
+      class="flex flex-col items-center gap-0.5 text-slate-400 transition relative">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span class="text-[10px] font-medium">Obrolan</span>
-      <span id="mobTabChatBadge" class="hidden absolute top-0 right-1 h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span>
+      <span id="mobTabChatBadge"
+        class="hidden absolute top-0 right-1 h-2 w-2 rounded-full bg-rose-500 badge-unread-ping"></span>
     </button>
-    <button onclick="window.switchMainTab('finance')" id="mob-nav-btn-finance" class="flex flex-col items-center gap-0.5 text-slate-400 transition">
+    <button onclick="window.switchMainTab('finance')" id="mob-nav-btn-finance"
+      class="flex flex-col items-center gap-0.5 text-slate-400 transition">
       <i data-lucide="wallet" class="w-5 h-5"></i>
       <span class="text-[10px] font-medium">Finance</span>
     </button>
@@ -1383,7 +1445,8 @@
   <!-- ==================================================== -->
   <!-- MOBILE BAR: INSTALL DI ANDROID / IOS (SAAT ONBOARDING)-->
   <!-- ==================================================== -->
-  <div id="mobileInstallBar" class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-4 py-2.5 flex items-center justify-between shadow-lg">
+  <div id="mobileInstallBar"
+    class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-lg border-t border-slate-200 z-40 px-4 py-2.5 flex items-center justify-between shadow-lg">
     <div class="flex items-center gap-2.5">
       <div class="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs shrink-0">
         <i data-lucide="download" class="w-4 h-4"></i>
@@ -1433,8 +1496,11 @@
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <label class="block text-xs font-semibold text-slate-700">Koneksi ke Finance & Arus Kas</label>
-            <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs text-indigo-600 font-semibold select-none">
-              <input type="checkbox" id="agendaConnectFinance" checked onchange="window.handleAgendaConnectFinanceToggle(this.checked)" class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5 border-slate-300">
+            <label
+              class="inline-flex items-center gap-1.5 cursor-pointer text-xs text-indigo-600 font-semibold select-none">
+              <input type="checkbox" id="agendaConnectFinance" checked
+                onchange="window.handleAgendaConnectFinanceToggle(this.checked)"
+                class="rounded text-indigo-600 focus:ring-indigo-500 h-3.5 w-3.5 border-slate-300">
               <span>Aktifkan Arus Kas</span>
             </label>
           </div>
@@ -1444,7 +1510,8 @@
             </select>
             <input type="text" id="agendaCategoryCustom" placeholder="Ketik nama kategori baru..."
               class="hidden w-full rounded-lg border border-indigo-300 bg-indigo-50/50 px-3 py-1.5 text-xs focus:border-indigo-600 focus:outline-none" />
-            <p class="text-[11px] text-slate-400">Pilih Pos Anggaran atau Kategori Umum untuk memantau transaksi kas masuk/keluar agenda ini.</p>
+            <p class="text-[11px] text-slate-400">Pilih Pos Anggaran atau Kategori Umum untuk memantau transaksi kas
+              masuk/keluar agenda ini.</p>
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1501,9 +1568,18 @@
           <textarea id="agendaDesc" rows="2" placeholder="Catatan rundown, perlengkapan, atau deskripsi agenda..."
             class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none"></textarea>
         </div>
-        <button id="btnSubmitAgenda" type="submit"
-          class="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">Simpan
-          Agenda</button>
+        <div class="flex items-center justify-between gap-2.5 pt-2 border-t border-slate-100">
+          <button id="btnDeleteAgendaModal" type="button"
+            class="hidden px-4 py-2.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 shrink-0"
+            title="Hapus Agenda">
+            <i data-lucide="trash-2" class="h-4 w-4"></i>
+            <span>Hapus</span>
+          </button>
+          <button id="btnSubmitAgenda" type="submit"
+            class="flex-1 rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 transition">
+            Simpan Agenda
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -1646,6 +1722,60 @@
     </div>
   </div>
 
+  <!-- MODAL CHECKLIST AGENDA (STYLE BARU SESUAI GAMBAR) -->
+  <div id="checklistCardModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
+    <div
+      class="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-6 sm:p-7 shadow-2xl flex flex-col relative animate-in fade-in zoom-in-95 duration-150">
+
+      <!-- Tombol Tutup Silang -->
+      <button id="btnCloseChecklistCardModal" type="button"
+        class="absolute top-5 right-5 h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition flex items-center justify-center"
+        title="Tutup">
+        <i data-lucide="x" class="h-4 w-4"></i>
+      </button>
+
+      <!-- Header: Title & Subtitle -->
+      <div class="pr-8">
+        <span id="checklistCardModalAgendaBadge" class="text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full inline-block mb-1.5 truncate max-w-full">Agenda</span>
+        <h3 id="checklistCardModalTitle" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">Complete your checklist</h3>
+        <p id="checklistCardModalSubtitle" class="text-xs sm:text-sm text-slate-500 mt-1 leading-relaxed">Selesaikan seluruh daftar tugas agenda untuk melacak progres acara Anda.</p>
+      </div>
+
+      <!-- Progress Section: 72% + Mint Green Bar -->
+      <div class="flex items-center gap-3.5 mt-4 mb-4">
+        <span id="checklistCardModalPercent" class="text-base font-bold text-slate-900 shrink-0">0%</span>
+        <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div id="checklistCardModalProgressBar" class="h-2 rounded-full bg-[#52dfa5] transition-all duration-300" style="width: 0%;"></div>
+        </div>
+      </div>
+
+      <!-- Checklist Items Container -->
+      <div id="checklistCardModalItems" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1 py-1">
+        <!-- Item dirender secara dinamis -->
+      </div>
+
+      <!-- Form Tambah Cepat Item Checklist -->
+      <form id="checklistCardModalQuickAddForm" class="flex items-center gap-2 mt-3 pt-2">
+        <input id="checklistCardModalQuickAddInput" type="text" placeholder="+ Tambah tugas baru..."
+          class="flex-1 text-xs sm:text-sm px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-blue-500 bg-slate-50 focus:bg-white transition" />
+        <button type="submit"
+          class="px-3.5 py-2.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition shrink-0 shadow-xs">
+          Tambah
+        </button>
+      </form>
+
+      <!-- Footer: Link View All & Ringkasan -->
+      <div class="mt-3.5 pt-2 border-t border-slate-100 flex items-center justify-between">
+        <button type="button" id="btnChecklistCardModalViewAll" class="text-blue-600 font-bold text-sm hover:underline">
+          View all
+        </button>
+        <span id="checklistCardModalSummary" class="text-xs text-slate-400 font-medium">0 dari 0 selesai</span>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL FORM KATEGORI CHECKLIST -->
   <div id="checklistCategoryModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
@@ -1742,7 +1872,8 @@
   <!-- MODAL BAGIKAN LINK GRUP -->
   <div id="shareGroupModal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
-    <div class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xl space-y-4">
+    <div
+      class="glass-card w-full max-w-md rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-2xl space-y-4">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <h4 class="text-base font-bold text-slate-900 flex items-center gap-2">
           <div class="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
@@ -1760,10 +1891,12 @@
       <div class="p-3.5 rounded-xl bg-indigo-50/80 border border-indigo-100/90 space-y-1.5">
         <div class="flex items-center justify-between">
           <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Kode Grup Aktif</span>
-          <span id="shareModalGroupBadge" class="font-mono text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
+          <span id="shareModalGroupBadge"
+            class="font-mono text-xs font-extrabold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
         </div>
         <p class="text-xs text-indigo-950/80 leading-relaxed">
-          Bagikan tautan ini ke keluarga atau rekan tim. Penerima tautan <strong>hanya tinggal mengetik nama</strong> untuk langsung bergabung ke grup ini.
+          Bagikan tautan ini ke keluarga atau rekan tim. Penerima tautan <strong>hanya tinggal mengetik nama</strong>
+          untuk langsung bergabung ke grup ini.
         </p>
       </div>
 
@@ -1779,7 +1912,8 @@
             <span id="copyShareBtnText">Salin</span>
           </button>
         </div>
-        <p id="shareCopiedFeedback" class="hidden text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
+        <p id="shareCopiedFeedback"
+          class="hidden text-[11px] text-emerald-600 font-semibold flex items-center gap-1 mt-1">
           <i data-lucide="check-circle-2" class="h-3.5 w-3.5"></i> Tautan berhasil disalin ke clipboard!
         </p>
       </div>
@@ -1789,7 +1923,8 @@
         <a id="btnShareWhatsApp" href="#" target="_blank" rel="noopener noreferrer"
           class="w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition shadow-sm">
           <svg class="h-4 w-4 fill-current" viewBox="0 0 24 24">
-            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+            <path
+              d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z" />
           </svg>
           <span>Kirim Undangan via WhatsApp</span>
         </a>
@@ -1817,7 +1952,8 @@
           </div>
         </div>
         <button id="btnCloseIdentityModal" type="button"
-          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition" title="Tutup dan lanjut melihat">
+          class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition"
+          title="Tutup dan lanjut melihat">
           <i data-lucide="x" class="h-5 w-5"></i>
         </button>
       </div>
@@ -1828,7 +1964,8 @@
           <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span class="text-xs text-slate-600 font-medium">Grup Tujuan:</span>
         </div>
-        <span id="identityModalGroupBadge" class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
+        <span id="identityModalGroupBadge"
+          class="font-mono text-xs font-bold px-2.5 py-0.5 rounded-md bg-indigo-600 text-white shadow-2xs"></span>
       </div>
 
       <form id="identityForm" class="space-y-4">
@@ -1900,7 +2037,9 @@
           <span>Peringatan Bahaya! Tindakan Tidak Dapat Dibatalkan</span>
         </div>
         <p class="leading-relaxed">
-          Menghapus grup <span class="font-mono font-bold text-rose-950 px-1.5 py-0.5 bg-rose-200/70 rounded" id="deleteModalGroupBadge">-</span> akan menghapus seluruh data secara permanen dari <strong>Database (Cloud Firestore)</strong> dan <strong>LocalStorage perangkat</strong>:
+          Menghapus grup <span class="font-mono font-bold text-rose-950 px-1.5 py-0.5 bg-rose-200/70 rounded"
+            id="deleteModalGroupBadge">-</span> akan menghapus seluruh data secara permanen dari <strong>Database (Cloud
+            Firestore)</strong> dan <strong>LocalStorage perangkat</strong>:
         </p>
         <ul class="list-disc list-inside space-y-1 text-[11px] text-rose-700 pl-1 font-medium">
           <li>Seluruh agenda &amp; jadwal kegiatan di <strong>Database</strong></li>
@@ -1912,7 +2051,8 @@
 
       <div class="space-y-2">
         <label class="block text-xs font-semibold text-slate-600">
-          Ketik kode grup <span id="deleteModalRequiredCode" class="font-mono font-bold text-rose-600 uppercase"></span> untuk konfirmasi:
+          Ketik kode grup <span id="deleteModalRequiredCode" class="font-mono font-bold text-rose-600 uppercase"></span>
+          untuk konfirmasi:
         </label>
         <input id="deleteGroupConfirmInput" type="text" autocomplete="off" placeholder="Ketik kode grup di sini..."
           class="w-full text-center font-mono uppercase tracking-widest text-sm font-bold rounded-xl border border-slate-300 focus:border-rose-600 focus:ring-2 focus:ring-rose-200 py-2.5 px-3 outline-none transition" />
@@ -1935,10 +2075,12 @@
   <!-- ==================================================== -->
   <!-- MODAL FINANCE 1: TAMBAH / EDIT BUDGET               -->
   <!-- ==================================================== -->
-  <dialog id="modal-goal" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+  <dialog id="modal-goal"
+    class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
     <div class="flex justify-between items-center mb-3">
       <h3 id="modal-goal-title" class="font-bold text-slate-800 text-base">Tambah Pos Budget</h3>
-      <button type="button" onclick="document.getElementById('modal-goal').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+      <button type="button" onclick="document.getElementById('modal-goal').close()"
+        class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
@@ -1955,8 +2097,10 @@
           class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
       </div>
       <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
-        <button type="button" onclick="document.getElementById('modal-goal').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
-        <button type="submit" id="goal-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Budget</button>
+        <button type="button" onclick="document.getElementById('modal-goal').close()"
+          class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="goal-submit-btn"
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Budget</button>
       </div>
     </form>
   </dialog>
@@ -1964,10 +2108,12 @@
   <!-- ==================================================== -->
   <!-- MODAL FINANCE 2: SETUP SKEMA PEMBAGIAN MEMBER       -->
   <!-- ==================================================== -->
-  <dialog id="modal-scheme" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+  <dialog id="modal-scheme"
+    class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
     <div class="flex justify-between items-center mb-3">
       <h3 id="modal-scheme-title" class="font-bold text-slate-800 text-base">Setup Skema Pembagian</h3>
-      <button type="button" onclick="document.getElementById('modal-scheme').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+      <button type="button" onclick="document.getElementById('modal-scheme').close()"
+        class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
@@ -1980,7 +2126,8 @@
       </div>
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Tipe Pembagian</label>
-        <select id="member-split-type" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none bg-white">
+        <select id="member-split-type"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none bg-white">
           <option value="fixed">Fixed Nominal (Rp Tetap)</option>
           <option value="percent">Persentase (%) dari Total Budget</option>
         </select>
@@ -1991,8 +2138,10 @@
           class="w-full px-3.5 py-2 border border-slate-300 rounded-xl focus:border-indigo-600 focus:outline-none" />
       </div>
       <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
-        <button type="button" onclick="document.getElementById('modal-scheme').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
-        <button type="submit" id="scheme-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Skema</button>
+        <button type="button" onclick="document.getElementById('modal-scheme').close()"
+          class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="scheme-submit-btn"
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Skema</button>
       </div>
     </form>
   </dialog>
@@ -2000,16 +2149,18 @@
   <!-- ==================================================== -->
   <!-- MODAL FINANCE 3: CATAT TRANSAKSI KAS REALISASI      -->
   <!-- ==================================================== -->
-  <dialog id="modal-tx" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
+  <dialog id="modal-tx"
+    class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-md border border-slate-200">
     <div class="flex justify-between items-center mb-3">
       <h3 id="modal-tx-title" class="font-bold text-slate-800 text-base">Catat Transaksi Kas Realisasi</h3>
-      <button type="button" onclick="document.getElementById('modal-tx').close()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+      <button type="button" onclick="document.getElementById('modal-tx').close()"
+        class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
     <form id="form-tx" onsubmit="window.handleTxSubmit(event)" class="space-y-3.5 text-sm">
       <input type="hidden" id="tx-id" value="" />
-      
+
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Judul Transaksi</label>
         <input type="text" id="tx-title" required placeholder="Contoh: Belanja Pasar, Bayar Villa, Setoran Awal"
@@ -2019,7 +2170,8 @@
       <div class="grid grid-cols-2 gap-2.5">
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Mutasi</label>
-          <select id="tx-type" class="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:border-indigo-600 focus:outline-none bg-white">
+          <select id="tx-type"
+            class="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium focus:border-indigo-600 focus:outline-none bg-white">
             <option value="expense">Expense (- Pengeluaran)</option>
             <option value="income">Income (+ Saldo Masuk)</option>
           </select>
@@ -2033,14 +2185,18 @@
 
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Hubungkan ke Agenda (Opsional)</label>
-        <select id="tx-agenda-id" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none text-xs font-medium" onchange="window.handleTxAgendaSelectChange(this.value)">
+        <select id="tx-agenda-id"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none text-xs font-medium"
+          onchange="window.handleTxAgendaSelectChange(this.value)">
           <option value="">-- Tanpa Agenda Khusus --</option>
         </select>
       </div>
 
       <div>
         <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Transaksi</label>
-        <select id="tx-category-select" class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none font-medium" onchange="window.handleFinanceCategorySelectChange(this.value)">
+        <select id="tx-category-select"
+          class="w-full px-3.5 py-2 border border-slate-300 rounded-xl bg-slate-50 focus:border-indigo-600 focus:outline-none font-medium"
+          onchange="window.handleFinanceCategorySelectChange(this.value)">
         </select>
         <input type="text" id="tx-category-custom" placeholder="Ketik nama kategori baru..."
           class="hidden w-full mt-2 px-3.5 py-2 border border-indigo-300 rounded-xl bg-indigo-50/50 text-xs focus:ring-1 focus:ring-indigo-500" />
@@ -2060,8 +2216,10 @@
       </div>
 
       <div class="flex justify-end gap-2 pt-2 text-xs font-semibold">
-        <button type="button" onclick="document.getElementById('modal-tx').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
-        <button type="submit" id="tx-submit-btn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Transaksi</button>
+        <button type="button" onclick="document.getElementById('modal-tx').close()"
+          class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50">Batal</button>
+        <button type="submit" id="tx-submit-btn"
+          class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-sm">Simpan Transaksi</button>
       </div>
     </form>
   </dialog>
@@ -2069,24 +2227,28 @@
   <!-- ==================================================== -->
   <!-- MODAL: RINCIAN ARUS KAS PER AGENDA                   -->
   <!-- ==================================================== -->
-  <dialog id="modal-agenda-cashflow" class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-lg border border-slate-200">
+  <dialog id="modal-agenda-cashflow"
+    class="rounded-2xl p-5 backdrop:bg-slate-900/40 shadow-2xl w-11/12 max-w-lg border border-slate-200">
     <div class="flex justify-between items-center pb-3 border-b border-slate-100">
       <div>
         <span class="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">Mutasi Kas Agenda</span>
         <h3 id="modal-cashflow-agenda-title" class="font-bold text-slate-900 text-base">Arus Kas Agenda</h3>
       </div>
-      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
+      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()"
+        class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
     </div>
-    
+
     <div id="modal-cashflow-content" class="py-4 space-y-3.5 text-xs">
       <!-- Diisi secara dinamis -->
     </div>
 
     <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
-      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()" class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50 font-semibold text-xs">Tutup</button>
-      <button id="modal-cashflow-add-btn" type="button" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition">
+      <button type="button" onclick="document.getElementById('modal-agenda-cashflow').close()"
+        class="px-4 py-2 border rounded-xl text-slate-600 hover:bg-slate-50 font-semibold text-xs">Tutup</button>
+      <button id="modal-cashflow-add-btn" type="button"
+        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs inline-flex items-center gap-1.5 shadow-sm transition">
         <i data-lucide="plus" class="w-3.5 h-3.5"></i> Catat Transaksi Baru
       </button>
     </div>
@@ -2095,14 +2257,16 @@
   <!-- ==================================================== -->
   <!-- MODAL PWA INSTALLATION GUIDE                         -->
   <!-- ==================================================== -->
-  <dialog id="modal-install-pwa" class="rounded-2xl p-6 backdrop:bg-slate-900/50 shadow-2xl w-11/12 max-w-sm border border-slate-200">
+  <dialog id="modal-install-pwa"
+    class="rounded-2xl p-6 backdrop:bg-slate-900/50 shadow-2xl w-11/12 max-w-sm border border-slate-200">
     <div class="text-center space-y-3">
       <div class="inline-flex p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl">
         <i data-lucide="download-cloud" class="w-8 h-8"></i>
       </div>
       <h3 class="font-bold text-slate-900 text-base">Install Aplikasi Beragenda</h3>
       <p class="text-xs text-slate-500 leading-relaxed">
-        Aplikasi ini mendukung PWA (Progressive Web App) dan dapat diinstall di layar utama Android dan iOS tanpa unduhan dari App Store/Play Store.
+        Aplikasi ini mendukung PWA (Progressive Web App) dan dapat diinstall di layar utama Android dan iOS tanpa
+        unduhan dari App Store/Play Store.
       </p>
 
       <div class="bg-slate-50 p-3.5 rounded-xl text-left text-xs space-y-2 text-slate-700 border border-slate-200">
@@ -2119,7 +2283,8 @@
           <span>🤖 Untuk Pengguna Android / Chrome:</span>
         </p>
         <p class="text-[11px] text-slate-600">
-          Ketuk tombol <strong>"Install Sekarang"</strong> di bawah atau pilih menu browser ⋮ &gt; <em>Install App / Tambahkan ke Layar Utama</em>.
+          Ketuk tombol <strong>"Install Sekarang"</strong> di bawah atau pilih menu browser ⋮ &gt; <em>Install App /
+            Tambahkan ke Layar Utama</em>.
         </p>
       </div>
 
@@ -2318,6 +2483,9 @@
     // State Forum Chat Realtime
     let forumChats = [];
     let forumChatUnsubscribe = null;
+
+    // State Firestore Agendas & Notifikasi
+    let initialLoadDone = false;
 
     // State Finance (dari patungan-main)
     let financeState = {
@@ -3234,7 +3402,12 @@
     function openCreateAgendaModal() {
       document.getElementById("editAgendaId").value = "";
       document.getElementById("agendaModalTitle").innerHTML = `<i data-lucide="calendar-plus" class="h-4 w-4 text-slate-700"></i> Tambah Agenda Baru`;
-      document.getElementById("btnSubmitAgenda").textContent = "Simpan Agenda";
+      const submitBtn = document.getElementById("btnSubmitAgenda");
+      if (submitBtn) {
+        submitBtn.classList.remove("hidden");
+        submitBtn.textContent = "Simpan Agenda";
+      }
+      document.getElementById("btnDeleteAgendaModal")?.classList.add("hidden");
 
       const defaultStart = `${selectedDateStr}T09:00`;
       const defaultEnd = `${selectedDateStr}T11:00`;
@@ -3243,7 +3416,7 @@
       document.getElementById("agendaEnd").value = defaultEnd;
       document.getElementById("editAgendaId").value = "";
       LocationPicker.clearAgendaLocation();
-      
+
       const connectFinanceEl = document.getElementById("agendaConnectFinance");
       if (connectFinanceEl) connectFinanceEl.checked = true;
       const financeOpts = document.getElementById("agendaFinanceOptions");
@@ -3271,7 +3444,37 @@
       agendaModal.classList.add("hidden");
       document.getElementById("agendaForm").reset();
       document.getElementById("editAgendaId").value = "";
+      document.getElementById("btnDeleteAgendaModal")?.classList.add("hidden");
       LocationPicker.clearAgendaLocation();
+    });
+
+    document.getElementById("btnDeleteAgendaModal")?.addEventListener("click", async () => {
+      const editId = document.getElementById("editAgendaId").value.trim();
+      if (!editId) return;
+
+      const targetAgenda = allAgendas.find(a => a.id === editId);
+      if (!targetAgenda) return;
+
+      if (targetAgenda.type === "private" && targetAgenda.createdBy !== userProfile?.uid) {
+        alert("Agenda pribadi hanya bisa dihapus oleh pembuatnya.");
+        return;
+      }
+
+      if (confirm(`Yakin ingin menghapus agenda "${targetAgenda.title}"?`)) {
+        try {
+          if (currentActiveChecklistAgendaId === editId) {
+            closeChecklistView();
+          }
+          await deleteDoc(doc(db, "agendas", editId));
+          agendaModal.classList.add("hidden");
+          document.getElementById("agendaForm").reset();
+          document.getElementById("editAgendaId").value = "";
+          document.getElementById("btnDeleteAgendaModal")?.classList.add("hidden");
+          LocationPicker.clearAgendaLocation();
+        } catch (err) {
+          alert("Gagal menghapus: " + err.message);
+        }
+      }
     });
 
     // ----------------------------------------------------
@@ -3580,6 +3783,32 @@
       renderSelectedDayAgendas();
     });
 
+    function changeSelectedDate(offsetDays) {
+      if (offsetDays === 0) {
+        selectedDateStr = IndonesianTime.getLocalDateString();
+        const now = new Date();
+        currentViewingDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      } else {
+        if (!selectedDateStr) {
+          selectedDateStr = IndonesianTime.getLocalDateString();
+        }
+        const parts = selectedDateStr.split("-").map(Number);
+        const targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        targetDate.setDate(targetDate.getDate() + offsetDays);
+
+        selectedDateStr = IndonesianTime.getLocalDateString(targetDate);
+        currentViewingDate = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+      }
+
+      closeChecklistView();
+      renderCalendar();
+      renderSelectedDayAgendas();
+      if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+      }
+    }
+    window.changeSelectedDate = changeSelectedDate;
+
     function renderCalendar() {
       const year = currentViewingDate.getFullYear();
       const month = currentViewingDate.getMonth();
@@ -3716,8 +3945,15 @@
       const countEl = document.getElementById("selectedDayCount");
 
       const dateObj = new Date(selectedDateStr + "T00:00:00");
-      const formattedTitle = IndonesianTime.formatDateFull(dateObj);
-      titleEl.textContent = formattedTitle;
+      const p = IndonesianTime.getDateParts(dateObj);
+      const dayName = p.dayName || "";
+      const dateFormatted = `${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+      if (titleEl) {
+        titleEl.innerHTML = `
+          <span class="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">${dayName}</span>
+          <span class="text-[11px] sm:text-xs font-medium text-slate-500 leading-tight truncate mt-0.5">${dateFormatted}</span>
+        `;
+      }
 
       renderAgendaLocationsOnMap();
 
@@ -3727,15 +3963,23 @@
         return selectedDateStr >= aStart && selectedDateStr <= aEnd;
       });
 
-      countEl.textContent = `${dayEvents.length} Jadwal`;
+      if (countEl) countEl.textContent = `${dayEvents.length} Jadwal`;
+      if (!listEl) return;
       listEl.innerHTML = "";
 
       if (dayEvents.length === 0) {
         listEl.innerHTML = `
-          <div class="text-center py-12 space-y-2">
-            <p class="text-xs text-slate-400">Tidak ada agenda pada tanggal ini.</p>
-            <button id="btnQuickAdd" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition">
-              + Buat Agenda untuk Tanggal Ini
+          <div class="text-center py-12 px-4 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+            <div class="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-2xs">
+              <i data-lucide="calendar" class="h-6 w-6"></i>
+            </div>
+            <div class="space-y-1">
+              <h4 class="text-sm font-bold text-slate-900">Belum Ada Agenda</h4>
+              <p class="text-xs text-slate-400">Tidak ada jadwal kegiatan pada tanggal yang dipilih.</p>
+            </div>
+            <button id="btnQuickAdd" class="rounded-full bg-slate-900 text-white px-4 py-2 text-xs font-semibold hover:bg-slate-800 transition shadow-xs inline-flex items-center gap-1.5">
+              <i data-lucide="plus" class="h-3.5 w-3.5"></i>
+              <span>Buat Agenda Baru</span>
             </button>
           </div>
         `;
@@ -3751,37 +3995,24 @@
         const durationText = calculateDuration(item.start, item.end);
         const hasUnread = checkHasUnreadChat(item);
 
-        const startTime = IndonesianTime.formatTime(new Date(item.start));
-        const endTime = IndonesianTime.formatTime(new Date(item.end));
+        const startDate = new Date(item.start);
+        const rawHrs = isNaN(startDate.getTime()) ? 9 : startDate.getHours();
+        const rawMins = isNaN(startDate.getTime()) ? 0 : startDate.getMinutes();
+        const hours12 = rawHrs % 12 || 12;
+        const minsStr = String(rawMins).padStart(2, '0');
+        const displayTime = `${hours12}:${minsStr}`;
+        const amPm = rawHrs >= 12 ? 'PM' : 'AM';
 
-        let badgeLabel = '';
-        let badgeClass = '';
-        let cardBgClass = '';
+        const endDate = new Date(item.end);
+        const eRawHrs = isNaN(endDate.getTime()) ? rawHrs + 1 : endDate.getHours();
+        const eRawMins = isNaN(endDate.getTime()) ? 0 : endDate.getMinutes();
+        const eHours12 = eRawHrs % 12 || 12;
+        const eMinsStr = String(eRawMins).padStart(2, '0');
+        const eDisplayTime = `${eHours12}:${eMinsStr}`;
+        const eAmPm = eRawHrs >= 12 ? 'PM' : 'AM';
 
-        if (!isPersonal) {
-          badgeLabel = 'Agenda Grup (Bersama)';
-          badgeClass = 'bg-indigo-100 text-indigo-800 border border-indigo-200';
-          cardBgClass = 'bg-white border-slate-200 hover:border-slate-300';
-        } else if (isMine) {
-          badgeLabel = `Personal (Saya)`;
-          badgeClass = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-          cardBgClass = 'bg-emerald-50/40 border-emerald-200';
-        } else {
-          badgeLabel = `Personal (${item.createdByName || 'Anggota'})`;
-          badgeClass = 'bg-amber-100 text-amber-900 border border-amber-200';
-          cardBgClass = 'bg-amber-50/50 border-amber-200';
-        }
-
-        const creatorActionsHtml = isMine ? `
-          <div class="flex items-center gap-0.5">
-            <button data-edit-id="${item.id}" type="button" title="Edit Agenda" class="btn-edit-agenda p-1.5 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition">
-              <i data-lucide="edit-3" class="h-3.5 w-3.5"></i>
-            </button>
-            <button data-delete-id="${item.id}" data-delete-title="${item.title}" type="button" title="Hapus Agenda" class="btn-delete-agenda p-1.5 rounded-lg text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition">
-              <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
-            </button>
-          </div>
-        ` : '';
+        const startTime = IndonesianTime.formatTime(startDate);
+        const endTime = IndonesianTime.formatTime(endDate);
 
         const categories = item.checklistCategories || [];
         const chkItems = item.checklistItems || [];
@@ -3789,113 +4020,132 @@
         const doneChk = chkItems.filter(i => i.completed).length;
         const hasChk = totalChk > 0;
 
+        const creatorName = item.createdByName || (isMine ? (userProfile?.name || 'Saya') : 'Member');
+        const creatorInitial = (creatorName.charAt(0) || 'U').toUpperCase();
+
         const card = document.createElement("div");
-        card.className = `rounded-xl border p-3.5 sm:p-4 transition shadow-sm ${cardBgClass} ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/50' : ''}`;
+        card.className = `bg-white rounded-3xl p-4 sm:p-5 border border-slate-100 shadow-xs hover:shadow-md transition-shadow relative cursor-pointer select-none ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/20' : ''}`;
+
+        card.addEventListener("click", (e) => {
+          if (e.target.closest("button") || e.target.closest(".btn-open-checklist") || e.target.closest(".btn-open-chat") || e.target.closest(".btn-pan-to-agenda-loc") || e.target.closest(".btn-agenda-cashflow")) {
+            return;
+          }
+          openAgendaEditModal(item.id);
+        });
 
         card.innerHTML = `
-          <!-- Baris 1: Badge, Judul Agenda, dan Tombol Edit/Hapus -->
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-1.5">
-                <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold shrink-0 ${badgeClass}">
-                  ${badgeLabel}
-                </span>
-                ${item.category ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">💼 ${escapeHtml(item.category)}</span>` : ''}
-                <h4 class="font-bold text-slate-900 text-sm break-words">${item.title}</h4>
+          <div class="flex items-start gap-3.5 sm:gap-5">
+            <!-- Kolom Kiri: Waktu Mulai, Timeline Arrow & Waktu Akhir -->
+            <div class="flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none pt-0.5">
+              <span class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">${displayTime}</span>
+              <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-1">${amPm}</span>
+              
+              <!-- Timeline Indicator (Dot -> Stem -> Arrow Down) -->
+              <div class="flex flex-col items-center my-1.5 space-y-0.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-300"></span>
+                <div class="w-[1.5px] h-6 sm:h-8 bg-slate-200"></div>
+                <svg class="w-2.5 h-2.5 text-slate-300" viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M5 8.5L1.5 4H8.5L5 8.5Z"/>
+                </svg>
               </div>
-              <p class="text-xs text-slate-500 mt-1 break-words">${item.desc || 'Tidak ada catatan tambahan'}</p>
+
+              <!-- Jam Akhir (Mirip Jam Mulai) -->
+              <span class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">${eDisplayTime}</span>
+              <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-1">${eAmPm}</span>
+              <span class="text-[9px] text-slate-400 font-medium mt-1">${durationText}</span>
+            </div>
+
+            <!-- Kolom Kanan: Detail Konten Agenda -->
+            <div class="flex-1 min-w-0">
+              <!-- Judul Agenda -->
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 leading-snug break-words">${escapeHtml(item.title)}</h4>
+              </div>
+
+              <!-- Deskripsi Catatan (Hanya tampil jika ada kata) -->
+              ${(item.desc && item.desc.trim()) ? `
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2 break-words">
+                  ${escapeHtml(item.desc.trim())}
+                </p>
+              ` : ''}
+
+              <!-- Lokasi Agenda (jika ada) -->
               ${item.locationName ? `
-                <div class="mt-2 py-1.5 px-2.5 rounded-lg bg-indigo-50/70 border border-indigo-100/80 flex items-center text-xs text-indigo-950 gap-2 ${(item.locationLat && item.locationLng) ? 'btn-pan-to-agenda-loc cursor-pointer hover:bg-indigo-100/90 hover:border-indigo-300 transition group select-none' : ''}" ${(item.locationLat && item.locationLng) ? `data-agenda-id="${item.id}" data-lat="${item.locationLat}" data-lng="${item.locationLng}" data-title="${escapeHtml(item.title)}" data-locname="${escapeHtml(item.locationName)}" title="Klik nama lokasi untuk melihat di peta"` : ''}>
-                  <div class="flex items-center gap-1.5 min-w-0 flex-1">
-                    <i data-lucide="map-pin" class="h-3.5 w-3.5 text-indigo-600 shrink-0 group-hover:scale-110 transition-transform"></i>
-                    <span class="font-semibold truncate text-slate-800 group-hover:text-indigo-700 transition-colors">${escapeHtml(item.locationName)}</span>
-                    ${item.locationAddress && item.locationAddress !== item.locationName ? `<span class="text-[10px] text-slate-400 truncate hidden sm:inline">• ${escapeHtml(item.locationAddress)}</span>` : ''}
-                  </div>
+                <div class="flex items-center gap-1.5 mt-2 text-xs text-indigo-600 font-semibold ${(item.locationLat && item.locationLng) ? 'btn-pan-to-agenda-loc cursor-pointer hover:underline' : ''}" ${(item.locationLat && item.locationLng) ? `data-agenda-id="${item.id}" data-lat="${item.locationLat}" data-lng="${item.locationLng}" data-title="${escapeHtml(item.title)}" data-locname="${escapeHtml(item.locationName)}" title="Lihat di peta"` : ''}>
+                  <i data-lucide="map-pin" class="h-3.5 w-3.5 shrink-0"></i>
+                  <span class="truncate max-w-[200px] sm:max-w-[280px]">${escapeHtml(item.locationName)}</span>
                 </div>
               ` : ''}
-            </div>
-            ${creatorActionsHtml ? `<div class="shrink-0 flex items-center gap-0.5 -mt-1 -mr-1">${creatorActionsHtml}</div>` : ''}
-          </div>
 
-          <!-- Baris 2: Informasi Waktu & Durasi -->
-          <div class="mt-3 py-1.5 px-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex items-center justify-between text-xs text-slate-600">
-            <div class="flex items-center gap-1.5 font-medium">
-              <i data-lucide="clock" class="h-3.5 w-3.5 text-slate-400 shrink-0"></i>
-              <span>${startTime} - ${endTime}</span>
-            </div>
-            <div class="text-[11px] font-semibold text-slate-700 shrink-0">
-              Durasi: ${durationText}
-            </div>
-          </div>
-
-          ${(() => {
+              ${(() => {
             const cf = getAgendaCashFlow(item.id);
             if (!cf) return '';
-            const isOver = cf.hasBudget && cf.budgetRemaining < 0;
+
+            const totalTicks = 26;
+            let percent = 0;
+            if (cf.hasBudget && cf.budgetAmount > 0) {
+              percent = Math.min(Math.round((cf.budgetUsed / cf.budgetAmount) * 100), 100);
+            } else if (cf.expense > 0 || cf.income > 0) {
+              const maxVal = Math.max(cf.income, cf.expense, 1);
+              percent = Math.min(Math.round((cf.expense / maxVal) * 100), 100);
+            } else {
+              percent = 0;
+            }
+
+            const activeTicks = Math.max(0, Math.min(totalTicks, Math.round((percent / 100) * totalTicks)));
+
+            const ticksHtml = Array.from({ length: totalTicks }).map((_, i) => {
+              const isActive = i < activeTicks;
+              return `<span class="flex-1 h-3.5 sm:h-4 rounded-full ${isActive ? 'bg-[#5b7bfb]' : 'bg-[#252833]'} transition-all"></span>`;
+            }).join('');
+
+            const displayAmount = cf.hasBudget ? formatRp(cf.budgetAmount) : (cf.expense > 0 ? formatRp(cf.expense) : formatRp(cf.net));
+
             return `
-              <!-- Baris Arus Kas Agenda (Terkoneksi ke Finance) -->
-              <div class="mt-2.5 p-2.5 rounded-xl bg-slate-50/90 border border-indigo-100/90 space-y-1.5">
-                <div class="flex items-center justify-between gap-1 flex-wrap">
-                  <div class="flex items-center gap-1.5 text-xs font-bold text-slate-800">
-                    <span class="p-1 rounded-md bg-indigo-100 text-indigo-700"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></span>
-                    <span>Arus Kas Agenda</span>
-                    ${cf.hasBudget ? `<span class="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Budget: ${formatRp(cf.budgetAmount)}</span>` : ''}
-                  </div>
-                  <div class="flex items-center gap-1">
-                    <button onclick="window.openTxForAgenda('${item.id}')" type="button" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold transition inline-flex items-center gap-1 shadow-2xs" title="Catat Pengeluaran/Pemasukan untuk Agenda Ini">
-                      <i data-lucide="plus" class="w-3 h-3"></i> Catat Kas
-                    </button>
-                    <button onclick="window.openAgendaCashflowModal('${item.id}')" type="button" class="px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-[10px] font-semibold transition" title="Lihat Rincian Mutasi Kas">
-                      Rincian (${cf.txCount})
-                    </button>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1.5 pt-1 text-center">
-                  <div class="bg-white p-1 rounded-lg border border-slate-100">
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Masuk</span>
-                    <span class="text-[11px] font-bold text-emerald-600">+${formatRp(cf.income)}</span>
-                  </div>
-                  <div class="bg-white p-1 rounded-lg border border-slate-100">
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Keluar</span>
-                    <span class="text-[11px] font-bold text-rose-600">-${formatRp(cf.expense)}</span>
-                  </div>
-                  <div class="bg-white p-1 rounded-lg border border-slate-100">
-                    <span class="text-[9px] uppercase font-bold text-slate-400 block">Saldo Kas</span>
-                    <span class="text-[11px] font-bold ${cf.net >= 0 ? 'text-slate-800' : 'text-rose-600'}">${formatRp(cf.net)}</span>
-                  </div>
-                </div>
-
-                ${cf.hasBudget ? `
-                  <div class="pt-0.5">
-                    <div class="flex justify-between text-[10px] text-slate-500 font-medium mb-1">
-                      <span>Terpakai: ${formatRp(cf.budgetUsed)} (${cf.budgetPercent}%)</span>
-                      <span class="${isOver ? 'text-rose-600 font-bold' : 'text-emerald-700 font-semibold'}">
-                        ${isOver ? `Over ${formatRp(Math.abs(cf.budgetRemaining))}` : `Sisa ${formatRp(cf.budgetRemaining)}`}
+                  <div onclick="event.stopPropagation(); window.openAgendaCashflowModal('${item.id}')"
+                    class="btn-agenda-cashflow mt-3 p-3 sm:p-3.5 rounded-2xl bg-[#0f1117] border border-slate-800 text-white shadow-xs cursor-pointer hover:border-indigo-500/70 hover:bg-[#151821] transition-all select-none group"
+                    title="Klik untuk melihat rincian mutasi kas agenda">
+                    <!-- Baris Atas: Nama Kategori (Kiri) & Nominal (Kanan) -->
+                    <div class="flex items-center justify-between gap-2">
+                      <span class="text-xs sm:text-sm font-semibold text-slate-200 tracking-tight truncate group-hover:text-white transition-colors">
+                        ${escapeHtml(cf.category || 'Transfers')}
+                      </span>
+                      <span class="text-xs sm:text-sm font-bold text-white tracking-tight shrink-0 font-mono">
+                        ${displayAmount}
                       </span>
                     </div>
-                    <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                      <div class="h-full rounded-full transition-all ${isOver ? 'bg-rose-500' : (cf.budgetPercent > 80 ? 'bg-amber-500' : 'bg-indigo-600')}" style="width: ${Math.min(cf.budgetPercent, 100)}%"></div>
+
+                    <!-- Baris Bawah: Segmented Bar (Garis Kapsul Vertikal Berjejer) -->
+                    <div class="flex items-center gap-1 sm:gap-1.5 w-full mt-2.5">
+                      ${ticksHtml}
                     </div>
                   </div>
-                ` : ''}
-              </div>
-            `;
+                `;
           })()}
 
-          <!-- Baris 3: Tombol Aksi Checklist & Chat (Rapi & Responsif) -->
-          <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2">
-            <button data-checklist-id="${item.id}" type="button" class="btn-open-checklist flex-1 justify-center rounded-lg border border-slate-200 bg-white py-2 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition flex items-center gap-1.5 shadow-sm" title="Lihat & kelola checklist agenda ini">
-              <i data-lucide="check-square" class="h-3.5 w-3.5 text-indigo-600 shrink-0"></i>
-              <span>Checklist</span>
-              ${hasChk ? `<span class="text-[10px] px-1.5 py-0.2 rounded-full font-bold ${doneChk === totalChk ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'}">${doneChk}/${totalChk}</span>` : '<span class="text-[10px] text-slate-400 font-bold">+</span>'}
-            </button>
-            <button data-chat-id="${item.id}" data-chat-title="${item.title}" data-chat-start="${item.start}" type="button" class="btn-open-chat flex-1 justify-center relative rounded-lg ${hasUnread ? 'bg-rose-600 text-white hover:bg-rose-700 font-bold' : 'bg-slate-900 text-white hover:bg-slate-800'
-          } py-2 px-3 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
-              <i data-lucide="message-square" class="h-3.5 w-3.5 shrink-0"></i>
-              <span>Chat</span>
-              ${hasUnread ? '<span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span></span>' : ''}
-            </button>
+              <!-- Baris Bawah: Avatar Stack & Tombol Aksi Pill (Sesuai Gambar) -->
+              <div class="flex items-center justify-between gap-2 mt-3.5 pt-2.5 border-t border-slate-100 flex-wrap">
+
+                <!-- Tombol Aksi Pill (Kanan) -->
+                <div class="flex items-center gap-2 shrink-0">
+                  <button data-checklist-id="${item.id}" type="button"
+                    class="btn-open-checklist inline-flex items-center gap-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition"
+                    title="Lihat & kelola checklist">
+                    <i data-lucide="check-square" class="h-3.5 w-3.5"></i>
+                    <span>Checklist</span>
+                    ${hasChk ? `<span class="text-[10px] bg-white/20 text-white px-1.5 py-0.2 rounded-full font-bold">${doneChk}/${totalChk}</span>` : ''}
+                  </button>
+
+                  <button data-chat-id="${item.id}" data-chat-title="${escapeHtml(item.title)}" data-chat-start="${item.start}" type="button"
+                    class="btn-open-chat inline-flex items-center gap-1.5 rounded-full ${hasUnread ? 'bg-rose-600 hover:bg-rose-700' : 'bg-blue-600 hover:bg-blue-700'} text-white px-4 py-1.5 text-xs font-semibold shadow-xs transition relative"
+                    title="Buka obrolan agenda">
+                    <i data-lucide="message-square" class="h-3.5 w-3.5"></i>
+                    <span>Chat</span>
+                    ${hasUnread ? '<span class="h-2 w-2 rounded-full bg-white animate-ping ml-0.5"></span>' : ''}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         `;
         listEl.appendChild(card);
@@ -3920,39 +4170,55 @@
         });
       });
 
-      document.querySelectorAll(".btn-edit-agenda").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const agendaId = btn.dataset.editId;
-          const item = allAgendas.find(a => a.id === agendaId);
-          if (!item) return;
+    function openAgendaEditModal(agendaId) {
+      const item = allAgendas.find(a => a.id === agendaId);
+      if (!item) return;
 
-          document.getElementById("editAgendaId").value = item.id;
-          document.getElementById("agendaTitle").value = item.title;
-          document.getElementById("agendaType").value = item.type;
-          document.getElementById("agendaStart").value = item.start;
-          document.getElementById("agendaEnd").value = item.end;
-          document.getElementById("agendaDesc").value = item.desc || "";
-          document.getElementById("agendaLocationName").value = item.locationName || "";
-          document.getElementById("agendaLocationLat").value = item.locationLat || "";
-          document.getElementById("agendaLocationLng").value = item.locationLng || "";
-          document.getElementById("agendaLocationAddress").value = item.locationAddress || "";
+      const isPersonal = item.type === "private";
+      const isMine = item.createdBy === userProfile?.uid;
+      const canModify = !isPersonal || isMine;
 
-          const isConnected = item.connectFinance !== false;
-          const connectFinanceEl = document.getElementById("agendaConnectFinance");
-          if (connectFinanceEl) connectFinanceEl.checked = isConnected;
-          const financeOpts = document.getElementById("agendaFinanceOptions");
-          if (financeOpts) financeOpts.classList.toggle("hidden", !isConnected);
+      document.getElementById("editAgendaId").value = item.id;
+      document.getElementById("agendaTitle").value = item.title;
+      document.getElementById("agendaType").value = item.type;
+      document.getElementById("agendaStart").value = item.start;
+      document.getElementById("agendaEnd").value = item.end;
+      document.getElementById("agendaDesc").value = item.desc || "";
+      document.getElementById("agendaLocationName").value = item.locationName || "";
+      document.getElementById("agendaLocationLat").value = item.locationLat || "";
+      document.getElementById("agendaLocationLng").value = item.locationLng || "";
+      document.getElementById("agendaLocationAddress").value = item.locationAddress || "";
 
-          updateAgendaCategoryDropdown(item.category || "Umum");
-          LocationPicker.updateAgendaFormPreview(item.locationName, item.locationLat, item.locationLng);
+      const isConnected = item.connectFinance !== false;
+      const connectFinanceEl = document.getElementById("agendaConnectFinance");
+      if (connectFinanceEl) connectFinanceEl.checked = isConnected;
+      const financeOpts = document.getElementById("agendaFinanceOptions");
+      if (financeOpts) financeOpts.classList.toggle("hidden", !isConnected);
 
-          document.getElementById("agendaModalTitle").innerHTML = `<i data-lucide="edit-3" class="h-4 w-4 text-slate-700"></i> Edit Agenda`;
-          document.getElementById("btnSubmitAgenda").textContent = "Update Perubahan";
+      updateAgendaCategoryDropdown(item.category || "Umum");
+      LocationPicker.updateAgendaFormPreview(item.locationName, item.locationLat, item.locationLng);
 
-          agendaModal.classList.remove("hidden");
-          lucide.createIcons();
-        });
-      });
+      const titleEl = document.getElementById("agendaModalTitle");
+      const submitBtn = document.getElementById("btnSubmitAgenda");
+      const deleteBtn = document.getElementById("btnDeleteAgendaModal");
+
+      if (canModify) {
+        titleEl.innerHTML = `<i data-lucide="edit-3" class="h-4 w-4 text-slate-700"></i> Edit Agenda`;
+        if (submitBtn) {
+          submitBtn.classList.remove("hidden");
+          submitBtn.textContent = "Update Perubahan";
+        }
+        if (deleteBtn) deleteBtn.classList.remove("hidden");
+      } else {
+        titleEl.innerHTML = `<i data-lucide="lock" class="h-4 w-4 text-amber-600"></i> Detail Agenda Pribadi`;
+        if (submitBtn) submitBtn.classList.add("hidden");
+        if (deleteBtn) deleteBtn.classList.add("hidden");
+      }
+
+      agendaModal.classList.remove("hidden");
+      lucide.createIcons();
+    }
+    window.openAgendaEditModal = openAgendaEditModal;
 
       document.querySelectorAll(".btn-pan-to-agenda-loc").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -3998,6 +4264,11 @@
         btn.addEventListener("click", async () => {
           const agendaId = btn.dataset.deleteId;
           const title = btn.dataset.deleteTitle;
+          const targetAgenda = allAgendas.find(a => a.id === agendaId);
+          if (targetAgenda && targetAgenda.type === "private" && targetAgenda.createdBy !== userProfile?.uid) {
+            alert("Agenda pribadi hanya bisa dihapus oleh pembuatnya.");
+            return;
+          }
           if (confirm(`Yakin ingin menghapus agenda "${title}"?`)) {
             try {
               if (currentActiveChecklistAgendaId === agendaId) {
@@ -4162,6 +4433,8 @@
       }
     }
 
+    let checklistModalViewAllExpanded = false;
+
     function openChecklistView(agendaId) {
       currentActiveChecklistAgendaId = agendaId;
       const agenda = allAgendas.find(a => a.id === agendaId);
@@ -4182,20 +4455,208 @@
         activeChecklistTabId = null;
       }
 
-      document.getElementById("viewAgendaList").classList.add("hidden");
-      document.getElementById("viewChecklist").classList.remove("hidden");
-
-      renderChecklistForActiveAgenda();
+      const cardModal = document.getElementById("checklistCardModal");
+      if (cardModal) {
+        cardModal.classList.remove("hidden");
+        checklistModalViewAllExpanded = false;
+        renderChecklistCardModal();
+      }
     }
+    window.openChecklistView = openChecklistView;
 
-    function closeChecklistView() {
+    function closeChecklistCardModal() {
+      const cardModal = document.getElementById("checklistCardModal");
+      if (cardModal) cardModal.classList.add("hidden");
       currentActiveChecklistAgendaId = null;
-      document.getElementById("viewChecklist").classList.add("hidden");
-      document.getElementById("viewAgendaList").classList.remove("hidden");
       renderSelectedDayAgendas();
     }
 
-    document.getElementById("btnBackToAgendas").addEventListener("click", closeChecklistView);
+    function closeChecklistView() {
+      closeChecklistCardModal();
+      document.getElementById("viewChecklist")?.classList.add("hidden");
+      document.getElementById("viewAgendaList")?.classList.remove("hidden");
+      renderSelectedDayAgendas();
+    }
+
+    document.getElementById("btnBackToAgendas")?.addEventListener("click", closeChecklistView);
+    document.getElementById("btnCloseChecklistCardModal")?.addEventListener("click", closeChecklistCardModal);
+    document.getElementById("checklistCardModal")?.addEventListener("click", (e) => {
+      if (e.target.id === "checklistCardModal") {
+        closeChecklistCardModal();
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const modal = document.getElementById("checklistCardModal");
+        if (modal && !modal.classList.contains("hidden")) {
+          closeChecklistCardModal();
+        }
+      }
+    });
+
+    document.getElementById("btnChecklistCardModalViewAll")?.addEventListener("click", () => {
+      checklistModalViewAllExpanded = !checklistModalViewAllExpanded;
+      renderChecklistCardModal();
+    });
+
+    document.getElementById("checklistCardModalQuickAddForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("checklistCardModalQuickAddInput");
+      const title = input ? input.value.trim() : "";
+      if (!title) return;
+
+      if (!currentActiveChecklistAgendaId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+
+      if (!agenda.checklistCategories || agenda.checklistCategories.length === 0) {
+        agenda.checklistCategories = [{ id: "cat-general", name: "Umum" }];
+      }
+      if (!agenda.checklistItems) agenda.checklistItems = [];
+
+      const newItem = {
+        id: "chk-" + Date.now() + "-" + Math.random().toString(36).substr(2, 5),
+        categoryId: agenda.checklistCategories[0].id,
+        title: title,
+        completed: false,
+        start: "",
+        end: ""
+      };
+
+      agenda.checklistItems.push(newItem);
+      saveAgendaChecklist(agenda.id, agenda.checklistCategories, agenda.checklistItems);
+      input.value = "";
+      renderChecklistCardModal();
+      renderChecklistForActiveAgenda();
+      renderSelectedDayAgendas();
+    });
+
+    function renderChecklistCardModal() {
+      const modal = document.getElementById("checklistCardModal");
+      if (!modal || modal.classList.contains("hidden")) return;
+      if (!currentActiveChecklistAgendaId) return;
+
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) {
+        closeChecklistCardModal();
+        return;
+      }
+
+      const items = agenda.checklistItems || [];
+      const totalItems = items.length;
+      const completedItems = items.filter(i => i.completed).length;
+      const percent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+
+      const badgeEl = document.getElementById("checklistCardModalAgendaBadge");
+      const percentEl = document.getElementById("checklistCardModalPercent");
+      const barEl = document.getElementById("checklistCardModalProgressBar");
+      const summaryEl = document.getElementById("checklistCardModalSummary");
+      const itemsContainer = document.getElementById("checklistCardModalItems");
+      const viewAllBtn = document.getElementById("btnChecklistCardModalViewAll");
+
+      if (badgeEl) badgeEl.textContent = agenda.title || "Agenda";
+      if (percentEl) percentEl.textContent = `${percent}%`;
+      if (barEl) barEl.style.width = `${percent}%`;
+      if (summaryEl) summaryEl.textContent = `${completedItems} dari ${totalItems} selesai`;
+
+      if (!itemsContainer) return;
+      itemsContainer.innerHTML = "";
+
+      if (items.length === 0) {
+        itemsContainer.innerHTML = `
+          <div class="text-center py-8 px-4 bg-slate-50/70 border border-dashed border-slate-200 rounded-2xl space-y-2">
+            <div class="h-10 w-10 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+              <i data-lucide="check-square" class="h-5 w-5"></i>
+            </div>
+            <p class="text-xs font-semibold text-slate-700">Belum ada tugas di checklist</p>
+            <p class="text-[11px] text-slate-400">Tambahkan tugas baru melalui form di bawah.</p>
+          </div>
+        `;
+        if (viewAllBtn) {
+          viewAllBtn.textContent = "View all";
+          viewAllBtn.classList.add("opacity-40", "pointer-events-none");
+        }
+        lucide.createIcons();
+        return;
+      }
+
+      if (viewAllBtn) {
+        if (items.length <= 4) {
+          viewAllBtn.textContent = "View all";
+          viewAllBtn.classList.add("opacity-40", "pointer-events-none");
+        } else {
+          viewAllBtn.classList.remove("opacity-40", "pointer-events-none");
+          viewAllBtn.textContent = checklistModalViewAllExpanded ? "Tampilkan ringkas" : `View all (${items.length})`;
+        }
+      }
+
+      const displayItems = (checklistModalViewAllExpanded || items.length <= 4) ? items : items.slice(0, 4);
+
+      displayItems.forEach(item => {
+        const row = document.createElement("div");
+        row.className = `checklist-modal-row group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border ${
+          item.completed
+            ? "border-slate-200/70 bg-slate-50/50"
+            : "border-slate-200/90 bg-white hover:border-slate-300"
+        } transition cursor-pointer select-none shadow-2xs`;
+
+        row.onclick = (e) => {
+          if (e.target.closest(".btn-delete-item")) return;
+          toggleChecklistItem(item.id);
+        };
+
+        row.innerHTML = `
+          <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="shrink-0 flex items-center justify-center">
+              ${
+                item.completed
+                  ? '<i data-lucide="check-circle-2" class="h-6 w-6 text-blue-600"></i>'
+                  : '<i data-lucide="check-circle-2" class="h-6 w-6 text-slate-400"></i>'
+              }
+            </div>
+            <span class="text-sm font-medium ${
+              item.completed ? "line-through text-slate-400" : "text-slate-800 font-semibold"
+            } truncate flex-1">
+              ${escapeHtml(item.title)}
+            </span>
+          </div>
+
+          <div class="flex items-center gap-2 shrink-0 ml-2">
+            <button type="button" class="btn-delete-item opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition" title="Hapus tugas">
+              <i data-lucide="trash-2" class="h-3.5 w-3.5"></i>
+            </button>
+            <div class="shrink-0">
+              ${
+                item.completed
+                  ? '<div class="h-7 w-7 rounded-full border border-slate-300 flex items-center justify-center text-slate-400"><i data-lucide="arrow-right" class="h-4 w-4"></i></div>'
+                  : '<div class="h-7 w-7 rounded-full border-2 border-blue-600 flex items-center justify-center text-blue-600"><i data-lucide="arrow-right" class="h-4 w-4"></i></div>'
+              }
+            </div>
+          </div>
+        `;
+
+        row.querySelector(".btn-delete-item")?.addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteChecklistItemDirect(item.id);
+        });
+
+        itemsContainer.appendChild(row);
+      });
+
+      lucide.createIcons();
+    }
+
+    function deleteChecklistItemDirect(itemId) {
+      if (!currentActiveChecklistAgendaId) return;
+      const agenda = allAgendas.find(a => a.id === currentActiveChecklistAgendaId);
+      if (!agenda) return;
+      agenda.checklistItems = (agenda.checklistItems || []).filter(i => i.id !== itemId);
+      saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], agenda.checklistItems);
+      renderChecklistCardModal();
+      renderChecklistForActiveAgenda();
+      renderSelectedDayAgendas();
+    }
 
     function renderChecklistForActiveAgenda() {
       if (!currentActiveChecklistAgendaId) return;
@@ -4436,7 +4897,9 @@
       if (itm) {
         itm.completed = !itm.completed;
         saveAgendaChecklist(agenda.id, agenda.checklistCategories || [], items);
+        renderChecklistCardModal();
         renderChecklistForActiveAgenda();
+        renderSelectedDayAgendas();
       }
     }
 
@@ -4715,7 +5178,6 @@
     // ----------------------------------------------------
     // FIRESTORE AGENDA LISTENER
     // ----------------------------------------------------
-    let initialLoadDone = false;
     function listenToAgendas() {
       const q = query(
         collection(db, "agendas"),
@@ -4837,6 +5299,13 @@
 
       try {
         if (editId) {
+          const existingItem = allAgendas.find(a => a.id === editId);
+          if (existingItem && existingItem.type === "private" && existingItem.createdBy !== userProfile?.uid) {
+            alert("Agenda pribadi hanya bisa diubah oleh pembuatnya.");
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = "Update Perubahan";
+            return;
+          }
           await updateDoc(doc(db, "agendas", editId), {
             title,
             type,
@@ -5130,7 +5599,7 @@
           clearTimeout(secretHeaderClickTimer);
 
           if (navigator.vibrate) {
-            try { navigator.vibrate([40, 50, 60]); } catch (e) {}
+            try { navigator.vibrate([40, 50, 60]); } catch (e) { }
           }
           openDeleteGroupModal();
         }
@@ -5211,12 +5680,12 @@
             if (userProfile?.uid) {
               try {
                 await deleteDoc(doc(db, "locations", `${code}_${userProfile.uid}`));
-              } catch (e) {}
+              } catch (e) { }
             }
             // 4. Hapus data Finance grup dari Firestore
             try {
               await deleteDoc(doc(db, "finance", code));
-            } catch (e) {}
+            } catch (e) { }
 
             // 5. Hapus data Forum Chat grup dari Firestore
             try {
@@ -5224,7 +5693,7 @@
               if (!forumSnap.empty) {
                 await Promise.all(forumSnap.docs.map(d => deleteDoc(d.ref)));
               }
-            } catch (e) {}
+            } catch (e) { }
           }
 
           // 6. Hapus seluruh data sesi dan profil grup dari LocalStorage & SessionStorage
@@ -5400,13 +5869,12 @@
 
         const card = document.createElement("button");
         card.type = "button";
-        card.className = `flex-1 min-w-[58px] py-2 px-1 rounded-xl flex flex-col items-center justify-center transition border text-xs cursor-pointer ${
-          isSelected
-            ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-            : (isToday
-                ? 'bg-indigo-50 border-indigo-300 text-indigo-900 font-bold'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50')
-        }`;
+        card.className = `flex-1 min-w-[58px] py-2 px-1 rounded-xl flex flex-col items-center justify-center transition border text-xs cursor-pointer ${isSelected
+          ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+          : (isToday
+            ? 'bg-indigo-50 border-indigo-300 text-indigo-900 font-bold'
+            : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50')
+          }`;
 
         card.innerHTML = `
           <span class="text-[10px] uppercase font-semibold opacity-75">${dayName}</span>
@@ -5508,17 +5976,15 @@
           const hasUnread = checkHasUnreadChat(item);
 
           const card = document.createElement("div");
-          card.className = `p-3 rounded-xl border transition shadow-2xs ${
-            isPersonal ? (isMine ? 'bg-emerald-50/40 border-emerald-200' : 'bg-amber-50/50 border-amber-200') : 'bg-white border-slate-200 hover:border-slate-300'
-          } ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/40' : ''}`;
+          card.className = `p-3 rounded-xl border transition shadow-2xs ${isPersonal ? (isMine ? 'bg-emerald-50/40 border-emerald-200' : 'bg-amber-50/50 border-amber-200') : 'bg-white border-slate-200 hover:border-slate-300'
+            } ${hasUnread ? 'ring-2 ring-rose-500 bg-rose-50/40' : ''}`;
 
           card.innerHTML = `
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0 flex-1 space-y-1">
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold ${
-                    isPersonal ? (isMine ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900') : 'bg-indigo-100 text-indigo-800'
-                  }">
+                  <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold ${isPersonal ? (isMine ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900') : 'bg-indigo-100 text-indigo-800'
+            }">
                     ${isPersonal ? (isMine ? 'Personal (Saya)' : `Personal (${item.createdByName || 'Anggota'})`) : 'Grup Bersama'}
                   </span>
                   ${item.category ? `<span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200/80">💼 ${escapeHtml(item.category)}</span>` : ''}
@@ -5798,8 +6264,7 @@
 
         bubble.innerHTML = `
           <span class="text-[10px] text-slate-400 mb-0.5 px-1">${escapeHtml(msg.senderName || 'Anggota')} (${msg.senderGender === 'female' ? '👩' : '👨'})</span>
-          <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words shadow-2xs ${
-            isMine ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
+          <div class="max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed break-words shadow-2xs ${isMine ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
           }">
             ${parseMessageWithLinks(msg.text, isMine)}
           </div>
@@ -5827,8 +6292,7 @@
         const formattedDate = item.start ? IndonesianTime.formatDateStandard(new Date(item.start)) : '-';
 
         return `
-          <div class="p-3.5 rounded-xl border transition shadow-2xs flex items-center justify-between gap-3 bg-white hover:border-slate-300 ${
-            hasUnread ? 'border-rose-400 bg-rose-50/40' : 'border-slate-200'
+          <div class="p-3.5 rounded-xl border transition shadow-2xs flex items-center justify-between gap-3 bg-white hover:border-slate-300 ${hasUnread ? 'border-rose-400 bg-rose-50/40' : 'border-slate-200'
           }">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
@@ -5840,9 +6304,8 @@
             </div>
 
             <button type="button" onclick="window.openChatModal('${item.id}', '${escapeHtml(item.title)}', '${item.start}')"
-              class="px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 transition flex items-center gap-1.5 shadow-2xs ${
-                hasUnread ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold' : 'bg-slate-900 hover:bg-slate-800 text-white'
-              }">
+              class="px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 transition flex items-center gap-1.5 shadow-2xs ${hasUnread ? 'bg-rose-600 hover:bg-rose-700 text-white font-bold' : 'bg-slate-900 hover:bg-slate-800 text-white'
+          }">
               <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
               <span>Buka Obrolan</span>
               ${hasUnread ? '<span class="h-2 w-2 rounded-full bg-white badge-unread-ping ml-0.5"></span>' : ''}
@@ -5892,7 +6355,7 @@
             ? data.categories
             : ["Umum", "Konsumsi", "Transportasi", "Penginapan", "Acara"];
           const goalNamesLower = (financeState.goals || []).map(g => (g.name || '').toLowerCase());
-          financeState.categories = rawCats.filter(c => 
+          financeState.categories = rawCats.filter(c =>
             c && c.toLowerCase() !== "anggaran" && !goalNamesLower.includes(c.toLowerCase())
           );
           if (financeState.categories.length === 0) {
@@ -6312,14 +6775,14 @@
       const cards = container.querySelectorAll(".goal-card");
       cards.forEach(card => {
         // Desktop HTML5 Drag and Drop
-        card.addEventListener("dragstart", function(e) {
+        card.addEventListener("dragstart", function (e) {
           draggedGoalId = this.dataset.id;
           this.classList.add("dragging");
           e.dataTransfer.effectAllowed = "move";
           e.dataTransfer.setData("text/plain", this.dataset.id);
         });
 
-        card.addEventListener("dragover", function(e) {
+        card.addEventListener("dragover", function (e) {
           e.preventDefault();
           e.dataTransfer.dropEffect = "move";
           const bounding = this.getBoundingClientRect();
@@ -6333,11 +6796,11 @@
           }
         });
 
-        card.addEventListener("dragleave", function() {
+        card.addEventListener("dragleave", function () {
           this.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
         });
 
-        card.addEventListener("drop", function(e) {
+        card.addEventListener("drop", function (e) {
           e.preventDefault();
           this.classList.remove("border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
           const targetId = this.dataset.id;
@@ -6363,7 +6826,7 @@
           }
         });
 
-        card.addEventListener("dragend", function() {
+        card.addEventListener("dragend", function () {
           this.classList.remove("dragging", "border-t-2", "border-t-indigo-600", "border-b-2", "border-b-indigo-600");
           draggedGoalId = null;
         });
@@ -6374,13 +6837,13 @@
           let touchStartY = 0;
           let currentTargetCard = null;
 
-          handle.addEventListener("touchstart", function(e) {
+          handle.addEventListener("touchstart", function (e) {
             draggedGoalId = card.dataset.id;
             touchStartY = e.touches[0].clientY;
             card.classList.add("dragging");
           }, { passive: true });
 
-          handle.addEventListener("touchmove", function(e) {
+          handle.addEventListener("touchmove", function (e) {
             const touchY = e.touches[0].clientY;
             const touchX = e.touches[0].clientX;
             const elemBelow = document.elementFromPoint(touchX, touchY);
@@ -6399,7 +6862,7 @@
             }
           }, { passive: true });
 
-          handle.addEventListener("touchend", function() {
+          handle.addEventListener("touchend", function () {
             card.classList.remove("dragging");
             if (currentTargetCard && draggedGoalId && currentTargetCard.dataset.id !== draggedGoalId) {
               const targetId = currentTargetCard.dataset.id;
@@ -6513,7 +6976,7 @@
 
       const budgetCategories = financeState.goals.map(g => g.name);
       // Saring kategori umum: jangan ada 'Anggaran' dan jangan duplikasi dengan pos budget
-      const generalCategories = financeState.categories.filter(c => 
+      const generalCategories = financeState.categories.filter(c =>
         c && c.toLowerCase() !== "anggaran" &&
         !budgetCategories.some(bg => bg.toLowerCase() === c.toLowerCase())
       );
@@ -6575,7 +7038,7 @@
       document.getElementById("tx-amount").value = "";
       document.getElementById("tx-inputer").value = userProfile?.name || "";
       document.getElementById("tx-datetime").value = getLocalDateTime();
-      
+
       const customInput = document.getElementById("tx-category-custom");
       if (customInput) {
         customInput.classList.add("hidden");
@@ -6641,7 +7104,7 @@
       const type = document.getElementById("tx-type").value;
       const amount = Number(document.getElementById("tx-amount").value);
       const inputer = document.getElementById("tx-inputer").value.trim() || userProfile?.name || "Member";
-      
+
       const dtVal = document.getElementById("tx-datetime").value;
       const dateObj = dtVal ? new Date(dtVal) : new Date();
       const date = isNaN(dateObj.getTime()) ? new Date().toISOString() : dateObj.toISOString();
@@ -6673,15 +7136,15 @@
       if (id) {
         const idx = financeState.transactions.findIndex(tx => tx.id === id);
         if (idx !== -1) {
-          financeState.transactions[idx] = { 
-            ...financeState.transactions[idx], 
-            title, 
-            type, 
-            amount, 
-            category, 
-            agendaId: agendaId || null, 
-            inputer, 
-            date 
+          financeState.transactions[idx] = {
+            ...financeState.transactions[idx],
+            title,
+            type,
+            amount,
+            category,
+            agendaId: agendaId || null,
+            inputer,
+            date
           };
         }
       } else {
@@ -6714,7 +7177,7 @@
 
       const budgetCategories = financeState.goals.map(g => g.name);
       // Saring kategori umum: jangan ada 'Anggaran' dan jangan duplikasi dengan pos budget
-      const generalCategories = financeState.categories.filter(c => 
+      const generalCategories = financeState.categories.filter(c =>
         c && c.toLowerCase() !== "anggaran" &&
         !budgetCategories.some(bg => bg.toLowerCase() === c.toLowerCase())
       );
