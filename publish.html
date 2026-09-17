@@ -18,24 +18,22 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
-    /* ==================== MAP ==================== */
-    #publishMap {
-      height: 420px;
+    /* ==================== MAP MODAL ==================== */
+    #modalMap {
+      height: 320px;
       width: 100%;
-      border-radius: 1rem;
+      border-radius: 0.875rem;
     }
 
-    @media (min-width: 1024px) {
-      #publishMap {
-        height: 100%;
-        min-height: 500px;
-        border-radius: 1rem;
+    @media (min-width: 640px) {
+      #modalMap {
+        height: 380px;
       }
     }
 
     /* ==================== GLASS CARD ==================== */
     .glass-card {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
@@ -48,42 +46,15 @@
       color: #ffffff !important;
       border: 1px solid rgba(255, 255, 255, 0.25) !important;
       border-radius: 0.75rem !important;
-      padding: 4px 10px !important;
+      padding: 6px 12px !important;
       font-size: 11px !important;
       font-weight: 600 !important;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
       white-space: nowrap !important;
-      pointer-events: auto !important;
     }
 
     .agenda-bubble-tooltip::before {
       border-top-color: rgba(15, 23, 42, 0.94) !important;
-    }
-
-    .agenda-bubble-tooltip.highlight {
-      background: rgba(49, 46, 129, 0.96) !important;
-      border: 1.5px solid #818cf8 !important;
-      box-shadow: 0 0 16px rgba(99, 102, 241, 0.45) !important;
-    }
-
-    .agenda-bubble-tooltip.highlight::before {
-      border-top-color: #818cf8 !important;
-    }
-
-    /* ==================== RUNDOWN CARD ==================== */
-    .rundown-card {
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
-
-    .rundown-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
-
-    .rundown-card.active-highlight {
-      border-color: #818cf8 !important;
-      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25), 0 4px 16px rgba(99, 102, 241, 0.15);
     }
 
     /* ==================== DATE DIVIDER ==================== */
@@ -102,17 +73,12 @@
     }
 
     /* ==================== SCROLLBAR ==================== */
-    .rundown-scroll::-webkit-scrollbar {
-      width: 4px;
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-
-    .rundown-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .rundown-scroll::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 100px;
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
 
     /* ==================== PULSE ANIMATION ==================== */
@@ -161,7 +127,7 @@
 
   <!-- ==================== HEADER ==================== -->
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/80 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
+    <div class="max-w-4xl mx-auto px-4 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-sm">
           <i data-lucide="calendar-range" class="h-4.5 w-4.5"></i>
@@ -172,12 +138,12 @@
             <span id="publishGroupBadge"
               class="text-[10px] font-bold font-mono px-2 py-0.5 rounded-md bg-indigo-600 text-white uppercase tracking-wider shadow-xs"></span>
           </h1>
-          <p class="text-[11px] text-slate-500">Rundown Agenda & Peta Lokasi Kegiatan</p>
+          <p class="text-[11px] text-slate-500">Rundown Agenda & Navigasi Lokasi Kegiatan</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <span id="publishAgendaCount"
-          class="text-[10px] px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 shadow-xs">
+          class="text-[10px] sm:text-xs px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 shadow-xs">
           0 Agenda
         </span>
       </div>
@@ -185,54 +151,141 @@
   </header>
 
   <!-- ==================== MAIN CONTENT ==================== -->
-  <main class="max-w-7xl mx-auto px-4 py-5 space-y-5 lg:space-y-0 lg:grid lg:grid-cols-12 lg:gap-5">
+  <main class="max-w-4xl mx-auto px-4 py-6">
 
-    <!-- PETA (Left/Top) -->
-    <section class="lg:col-span-7 lg:sticky lg:top-[72px] lg:self-start">
-      <div class="glass-card rounded-2xl border border-slate-200 p-4 shadow-sm space-y-2">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-            <i data-lucide="map" class="h-4 w-4 text-indigo-600"></i>
-            Peta Lokasi Agenda
-          </h3>
-          <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
-            <span class="flex items-center gap-1">
-              <span class="inline-block h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white shadow-2xs"></span>
-              Titik Agenda
+    <!-- Kolom Rundown: Detail Agenda Sesuai Index.html rightSection -->
+    <section id="rightSection" class="glass-card rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-4">
+      <!-- VIEW 1: Detail Agenda Tanggal -->
+      <div id="viewAgendaList" class="space-y-4">
+        <!-- Header: Navigasi Tanggal (<), Judul Tanggal, Total Jadwal, dan Navigasi (>) -->
+        <div class="flex items-center justify-between border-b border-slate-200 pb-3 gap-2 sm:gap-3">
+          <!-- Sisi Kiri Card: Tombol Kembali (<) + Info Tanggal -->
+          <div class="flex items-center gap-2.5 min-w-0">
+            <button id="btnPrevDay" type="button"
+              title="Kembali ke tanggal sebelumnya"
+              class="h-8 w-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center shrink-0 shadow-2xs">
+              <i data-lucide="chevron-left" class="h-4 w-4"></i>
+            </button>
+            <div class="min-w-0 flex flex-col justify-center">
+              <h4 id="selectedDateTitle" class="flex flex-col min-w-0">
+                <span class="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">Pilih Tanggal</span>
+                <span class="text-[11px] sm:text-xs font-medium text-slate-500 leading-tight truncate mt-0.5">-</span>
+              </h4>
+            </div>
+          </div>
+
+          <!-- Sisi Kanan Card: Jumlah Jadwal + Tombol Selanjutnya (>) -->
+          <div class="flex items-center gap-2 shrink-0">
+            <span id="selectedDayCount"
+              class="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+              0 Jadwal
             </span>
+            <button id="btnNextDay" type="button"
+              title="Lanjut ke tanggal selanjutnya"
+              class="h-8 w-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition flex items-center justify-center shrink-0 shadow-2xs">
+              <i data-lucide="chevron-right" class="h-4 w-4"></i>
+            </button>
           </div>
         </div>
-        <div id="publishMap"></div>
-      </div>
-    </section>
 
-    <!-- RUNDOWN (Right/Bottom) -->
-    <section class="lg:col-span-5">
-      <div class="glass-card rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Rundown Agenda</h3>
-            <p class="text-base font-bold text-slate-900 mt-0.5">Jadwal Mendatang</p>
-          </div>
-          <span id="rundownCount"
-            class="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold border border-slate-200">0
-            Kegiatan</span>
+        <!-- Quick Filter Pills: Semua Agenda vs Tanggal Terdaftar -->
+        <div id="datePillsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar pt-0.5">
+          <!-- Rendered dynamically -->
         </div>
 
-        <div id="rundownList" class="space-y-3">
+        <!-- List Kartu Kegiatan / Agenda (Format seperti index.html) -->
+        <div id="dayAgendaList" class="space-y-3 pt-1">
           <!-- Loading skeleton -->
           <div class="space-y-3">
-            <div class="skeleton h-5 w-36"></div>
-            <div class="skeleton h-24 w-full"></div>
-            <div class="skeleton h-24 w-full"></div>
-            <div class="skeleton h-5 w-28 mt-4"></div>
-            <div class="skeleton h-24 w-full"></div>
+            <div class="skeleton h-28 w-full rounded-3xl"></div>
+            <div class="skeleton h-28 w-full rounded-3xl"></div>
           </div>
         </div>
       </div>
     </section>
 
   </main>
+
+  <!-- ==================== MODAL MAPS & RUTE NAVIGASI ==================== -->
+  <div id="mapModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity">
+    <div class="glass-card bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Header Modal -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/80">
+        <div class="min-w-0 pr-3">
+          <div class="flex items-center gap-1.5 text-xs text-indigo-600 font-bold mb-0.5">
+            <i data-lucide="map-pin" class="h-3.5 w-3.5 shrink-0"></i>
+            <span id="modalAgendaTitle" class="truncate">Judul Agenda</span>
+          </div>
+          <h3 id="modalLocationName" class="text-base sm:text-lg font-bold text-slate-900 truncate">Nama Lokasi</h3>
+          <p id="modalLocationAddress" class="text-xs text-slate-500 truncate mt-0.5 hidden"></p>
+        </div>
+        <button id="btnCloseMapModal" type="button"
+          class="h-8 w-8 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center transition shrink-0 shadow-2xs">
+          <i data-lucide="x" class="h-4 w-4"></i>
+        </button>
+      </div>
+
+      <!-- Peta Modal -->
+      <div class="p-3 sm:p-4 bg-slate-50/50">
+        <div id="modalMap"></div>
+      </div>
+
+      <!-- Footer Modal: Aksi Rute Navigasi Google Maps -->
+      <div class="p-4 border-t border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="text-xs text-slate-500 flex items-center gap-1.5 self-start sm:self-center">
+          <i data-lucide="navigation" class="h-3.5 w-3.5 text-indigo-500 shrink-0"></i>
+          <span id="modalCoordinatesText" class="font-mono text-[11px]">-</span>
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <a id="btnGoogleMapsSearch" href="#" target="_blank" rel="noopener noreferrer"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition shadow-xs">
+            <i data-lucide="external-link" class="h-3.5 w-3.5"></i>
+            <span>Buka di GMaps</span>
+          </a>
+          <a id="btnGoogleMapsRoute" href="#" target="_blank" rel="noopener noreferrer"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm">
+            <i data-lucide="navigation-2" class="h-4 w-4"></i>
+            <span>Rute Navigasi Google Maps</span>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL CHECKLIST ==================== -->
+  <div id="checklistModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity">
+    <div class="glass-card bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/80">
+        <div class="min-w-0 pr-3">
+          <span class="text-[10px] px-2 py-0.5 rounded-md font-semibold bg-purple-100 text-purple-800 border border-purple-200">Checklist Kegiatan</span>
+          <h3 id="modalChecklistTitle" class="text-base font-bold text-slate-900 truncate mt-1">Judul Agenda</h3>
+        </div>
+        <button id="btnCloseChecklistModal" type="button"
+          class="h-8 w-8 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 flex items-center justify-center transition shrink-0 shadow-2xs">
+          <i data-lucide="x" class="h-4 w-4"></i>
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="px-4 py-3 bg-slate-50 border-b border-slate-100">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
+          <span>Progress Keseluruhan</span>
+          <span id="modalChecklistProgressText">0/0 Selesai</span>
+        </div>
+        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+          <div id="modalChecklistProgressBar" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Checklist Items Container -->
+      <div id="modalChecklistItems" class="p-4 space-y-2 overflow-y-auto max-h-[50vh]">
+        <!-- Rendered items -->
+      </div>
+    </div>
+  </div>
 
   <!-- ==================== NO GROUP OVERLAY ==================== -->
   <div id="noGroupOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-100 p-6">
@@ -260,7 +313,6 @@
       doc,
       addDoc,
       updateDoc,
-      deleteDoc,
       query,
       where,
       onSnapshot,
@@ -282,7 +334,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ---- Indonesian Time Helpers ----
+    // ---- Indonesian Time Helpers (Identik dengan index.html) ----
     const IndonesianTime = {
       days: ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"],
       months: [
@@ -336,6 +388,7 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    // Durasi identik dengan index.html
     function calculateDuration(startStr, endStr) {
       if (!startStr || !endStr) return "-";
       const s = new Date(startStr);
@@ -347,11 +400,13 @@
       const hours = Math.floor(diff / 3600000);
       diff %= 3600000;
       const mins = Math.floor(diff / 60000);
-      const parts = [];
-      if (days > 0) parts.push(`${days} hari`);
-      if (hours > 0) parts.push(`${hours} jam`);
-      if (mins > 0) parts.push(`${mins} menit`);
-      return parts.join(" ") || "-";
+
+      const remHrs = hours;
+      const diffHrs = Math.floor((e - s) / 3600000);
+      const diffMins = Math.floor(((e - s) % 3600000) / 60000);
+
+      if (days > 0) return `${days} hari ${remHrs} jam`;
+      return `${diffHrs} jam ${diffMins} mnt`;
     }
 
     // ---- Extract Group Code from URL ----
@@ -367,34 +422,21 @@
 
     const groupCode = getGroupCodeFromUrl();
 
+    // Global state
+    let allUpcomingAgendas = [];
+    let selectedDateStr = IndonesianTime.getLocalDateString();
+    let isAllDatesMode = false;
+    const openedCommentAgendaIds = new Set();
+    const commentListeners = {};
+
     if (!groupCode) {
       document.getElementById("noGroupOverlay").classList.remove("hidden");
     } else {
       document.getElementById("publishGroupBadge").textContent = groupCode;
-
       initPublishRoom(groupCode);
     }
 
     lucide.createIcons();
-
-    // ---- Initialize Map ----
-    let publishMap = null;
-    let agendaMarkers = {};
-    let highlightedAgendaId = null;
-
-    function initMap() {
-      publishMap = L.map("publishMap", {
-        zoomControl: true,
-        scrollWheelZoom: true,
-        attributionControl: false
-      }).setView([-2.5, 118], 5);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-      }).addTo(publishMap);
-    }
-
-    initMap();
 
     // ---- Main Publish Room Logic ----
     function initPublishRoom(pairCode) {
@@ -405,35 +447,47 @@
 
       onSnapshot(q, (snapshot) => {
         const todayStr = IndonesianTime.getLocalDateString();
-        let allAgendas = [];
+        let agendas = [];
 
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
-          allAgendas.push({ id: docSnap.id, ...data });
+          agendas.push({ id: docSnap.id, ...data });
         });
 
         // Filter: hanya agenda yang akan datang (tanggal akhir >= hari ini)
-        const upcomingAgendas = allAgendas.filter(a => {
+        allUpcomingAgendas = agendas.filter(a => {
           const aEnd = a.end ? a.end.split('T')[0] : (a.start ? a.start.split('T')[0] : '');
           return !aEnd || aEnd >= todayStr;
         });
 
         // Urutkan berdasarkan tanggal & waktu mulai
-        upcomingAgendas.sort((a, b) => {
+        allUpcomingAgendas.sort((a, b) => {
           const aTime = a.start ? new Date(a.start).getTime() : 0;
           const bTime = b.start ? new Date(b.start).getTime() : 0;
           return aTime - bTime;
         });
 
-        // Update count badges
-        document.getElementById("publishAgendaCount").textContent = `${upcomingAgendas.length} Agenda`;
-        document.getElementById("rundownCount").textContent = `${upcomingAgendas.length} Kegiatan`;
+        // Jika tidak ada agenda di selectedDateStr saat ini tapi ada agenda mendatang,
+        // prioritaskan tanggal agenda pertama jika hari ini kosong
+        const hasTodayAgendas = allUpcomingAgendas.some(a => {
+          const aStart = a.start ? a.start.split('T')[0] : '';
+          const aEnd = a.end ? a.end.split('T')[0] : aStart;
+          return selectedDateStr >= aStart && selectedDateStr <= aEnd;
+        });
 
-        renderAgendaPins(upcomingAgendas, todayStr);
-        renderRundown(upcomingAgendas, todayStr);
+        if (!hasTodayAgendas && allUpcomingAgendas.length > 0 && !isAllDatesMode) {
+          const firstDate = allUpcomingAgendas[0].start ? allUpcomingAgendas[0].start.split('T')[0] : todayStr;
+          if (firstDate) selectedDateStr = firstDate;
+        }
+
+        // Update count badges
+        document.getElementById("publishAgendaCount").textContent = `${allUpcomingAgendas.length} Agenda`;
+
+        renderDatePills();
+        renderSelectedDayAgendas();
       }, (error) => {
         console.error("Gagal memuat agenda:", error);
-        document.getElementById("rundownList").innerHTML = `
+        document.getElementById("dayAgendaList").innerHTML = `
           <div class="text-center py-10 space-y-2">
             <i data-lucide="alert-circle" class="h-8 w-8 text-rose-400 mx-auto"></i>
             <p class="text-sm text-rose-600 font-semibold">Gagal memuat data agenda</p>
@@ -444,288 +498,359 @@
       });
     }
 
-    // ---- Render Agenda Pins on Map ----
-    function renderAgendaPins(agendas, todayStr) {
-      if (!publishMap) return;
+    // ---- Date Navigation Handler (< and >) ----
+    function changeSelectedDate(offsetDays) {
+      isAllDatesMode = false;
+      const parts = selectedDateStr.split("-").map(Number);
+      const targetDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      targetDate.setDate(targetDate.getDate() + offsetDays);
 
-      const locatedAgendas = agendas.filter(a => {
-        const lat = parseFloat(a.locationLat);
-        const lng = parseFloat(a.locationLng);
-        return !isNaN(lat) && !isNaN(lng);
-      });
-
-      // Bersihkan marker yang sudah tidak ada
-      const currentIds = new Set(locatedAgendas.map(a => a.id));
-      Object.keys(agendaMarkers).forEach(id => {
-        if (!currentIds.has(id)) {
-          if (agendaMarkers[id]) publishMap.removeLayer(agendaMarkers[id]);
-          delete agendaMarkers[id];
-        }
-      });
-
-      const bounds = [];
-
-      locatedAgendas.forEach(a => {
-        const latlng = [parseFloat(a.locationLat), parseFloat(a.locationLng)];
-        bounds.push(latlng);
-
-        const isHighlighted = highlightedAgendaId === a.id;
-        const timeStr = a.start ? IndonesianTime.formatTime(new Date(a.start)) : '';
-        const bubbleClass = isHighlighted ? 'agenda-bubble-tooltip highlight' : 'agenda-bubble-tooltip';
-
-        const pinIcon = L.divIcon({
-          className: 'agenda-custom-pin',
-          html: `
-            <div class="relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110">
-              <div class="h-8 w-8 rounded-full ${isHighlighted ? 'bg-indigo-600 ring-4 ring-indigo-200' : 'bg-slate-900 ring-2 ring-white'} text-white flex items-center justify-center shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
-              </div>
-              <div class="absolute -bottom-1 h-2 w-2 rotate-45 ${isHighlighted ? 'bg-indigo-600' : 'bg-slate-900'}"></div>
-            </div>
-          `,
-          iconSize: [32, 36],
-          iconAnchor: [16, 36],
-          tooltipAnchor: [0, -38]
-        });
-
-        const tooltipHtml = `
-          <div class="flex flex-col items-center text-center leading-tight">
-            <div class="flex items-center gap-1 font-bold">
-              <span class="truncate max-w-[130px] sm:max-w-[170px]">${escapeHtml(a.title)}</span>
-              ${timeStr ? `<span class="text-[9px] text-indigo-300 font-mono">(${timeStr})</span>` : ''}
-            </div>
-            <span class="text-[9px] text-slate-300 truncate max-w-[140px] sm:max-w-[180px] mt-0.5 font-normal">📍 ${escapeHtml(a.locationName || 'Lokasi')}</span>
-          </div>
-        `;
-
-        const popupHtml = `
-          <div class="text-xs p-1 space-y-1.5 min-w-[190px]">
-            <div class="flex items-center gap-1.5">
-              <span class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-indigo-100 text-indigo-800">Agenda</span>
-              <h4 class="font-bold text-slate-900 text-sm truncate">${escapeHtml(a.title)}</h4>
-            </div>
-            <div class="text-slate-700 flex items-start gap-1">
-              <span class="text-indigo-600 font-bold shrink-0">📍</span>
-              <span class="font-medium">${escapeHtml(a.locationName)}</span>
-            </div>
-            ${a.locationAddress && a.locationAddress !== a.locationName ? `<div class="text-[10px] text-slate-400">${escapeHtml(a.locationAddress)}</div>` : ''}
-            <div class="text-[11px] text-slate-500 font-medium">🕒 ${IndonesianTime.formatDateShort(new Date(a.start))}${timeStr ? `, ${timeStr}` : ''}</div>
-            ${a.end ? `<div class="text-[10px] text-slate-400">Sampai: ${IndonesianTime.formatDateShort(new Date(a.end))}, ${IndonesianTime.formatTime(new Date(a.end))}</div>` : ''}
-            ${a.desc ? `<div class="text-[10px] text-slate-500 pt-1 border-t border-slate-100 mt-1">${escapeHtml(a.desc)}</div>` : ''}
-            <div class="pt-1.5 border-t border-slate-100">
-              <a href="https://www.google.com/maps/search/?api=1&query=${a.locationLat},${a.locationLng}" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-0.5">Buka di Google Maps ↗</a>
-            </div>
-          </div>
-        `;
-
-        if (!agendaMarkers[a.id]) {
-          agendaMarkers[a.id] = L.marker(latlng, { icon: pinIcon }).addTo(publishMap);
-          agendaMarkers[a.id].bindTooltip(tooltipHtml, {
-            permanent: true,
-            direction: 'top',
-            offset: [0, -10],
-            className: bubbleClass
-          });
-          agendaMarkers[a.id].bindPopup(popupHtml);
-        } else {
-          agendaMarkers[a.id].setLatLng(latlng);
-          agendaMarkers[a.id].setIcon(pinIcon);
-          agendaMarkers[a.id].setTooltipContent(tooltipHtml);
-          const tt = agendaMarkers[a.id].getTooltip();
-          if (tt) {
-            tt.options.className = bubbleClass;
-            const el = tt.getElement();
-            if (el) {
-              el.className = 'leaflet-tooltip leaflet-zoom-animated ' + bubbleClass;
-            }
-          }
-          agendaMarkers[a.id].setPopupContent(popupHtml);
-        }
-      });
-
-      if (bounds.length > 0) {
-        publishMap.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-      }
+      selectedDateStr = IndonesianTime.getLocalDateString(targetDate);
+      renderDatePills();
+      renderSelectedDayAgendas();
     }
 
-    // Simpan agenda ID yang komentar-nya sedang dibuka agar tidak collapse saat data re-render
-    const openedCommentAgendaIds = new Set();
+    document.getElementById("btnPrevDay").addEventListener("click", () => changeSelectedDate(-1));
+    document.getElementById("btnNextDay").addEventListener("click", () => changeSelectedDate(1));
 
-    // ---- Render Rundown List (Grouped by Date) ----
-    function renderRundown(agendas, todayStr) {
-      const listEl = document.getElementById("rundownList");
+    // ---- Render Date Filter Pills ----
+    function renderDatePills() {
+      const container = document.getElementById("datePillsContainer");
+      if (!container) return;
 
-      if (agendas.length === 0) {
+      const todayStr = IndonesianTime.getLocalDateString();
+      const uniqueDates = new Set();
+      allUpcomingAgendas.forEach(a => {
+        if (a.start) uniqueDates.add(a.start.split('T')[0]);
+      });
+      const sortedDates = Array.from(uniqueDates).sort();
+
+      let pillsHtml = `
+        <button type="button" data-date-filter="all"
+          class="date-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shadow-2xs ${isAllDatesMode ? 'bg-slate-900 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}">
+          Semua (${allUpcomingAgendas.length})
+        </button>
+      `;
+
+      sortedDates.forEach(dateKey => {
+        const count = allUpcomingAgendas.filter(a => {
+          const aStart = a.start ? a.start.split('T')[0] : '';
+          const aEnd = a.end ? a.end.split('T')[0] : aStart;
+          return dateKey >= aStart && dateKey <= aEnd;
+        }).length;
+
+        const dateObj = new Date(dateKey + 'T00:00:00');
+        const p = IndonesianTime.getDateParts(dateObj);
+        const isToday = dateKey === todayStr;
+        const label = isToday ? `Hari Ini (${p.day} ${p.monthShort})` : `${p.day} ${p.monthShort}`;
+        const isSelected = !isAllDatesMode && selectedDateStr === dateKey;
+
+        pillsHtml += `
+          <button type="button" data-date-filter="${dateKey}"
+            class="date-pill px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all shadow-2xs ${isSelected ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}">
+            ${label} <span class="text-[10px] opacity-80">(${count})</span>
+          </button>
+        `;
+      });
+
+      container.innerHTML = pillsHtml;
+
+      container.querySelectorAll("[data-date-filter]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const filter = btn.dataset.dateFilter;
+          if (filter === "all") {
+            isAllDatesMode = true;
+          } else {
+            isAllDatesMode = false;
+            selectedDateStr = filter;
+          }
+          renderDatePills();
+          renderSelectedDayAgendas();
+        });
+      });
+    }
+
+    // ---- Render Day Agendas (Tampilan Sesuai index.html #rightSection) ----
+    function renderSelectedDayAgendas() {
+      const listEl = document.getElementById("dayAgendaList");
+      const titleEl = document.getElementById("selectedDateTitle");
+      const countEl = document.getElementById("selectedDayCount");
+      const todayStr = IndonesianTime.getLocalDateString();
+
+      let dayEvents = [];
+
+      if (isAllDatesMode) {
+        dayEvents = [...allUpcomingAgendas];
+        if (titleEl) {
+          titleEl.innerHTML = `
+            <span class="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate">Semua Agenda</span>
+            <span class="text-[11px] sm:text-xs font-medium text-slate-500 leading-tight truncate mt-0.5">Seluruh Jadwal Kegiatan Mendatang</span>
+          `;
+        }
+      } else {
+        const dateObj = new Date(selectedDateStr + "T00:00:00");
+        const p = IndonesianTime.getDateParts(dateObj);
+        const dayName = p.dayName || "";
+        const dateFormatted = `${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+        const isToday = selectedDateStr === todayStr;
+
+        if (titleEl) {
+          titleEl.innerHTML = `
+            <span class="text-base sm:text-lg font-bold text-slate-900 leading-tight truncate flex items-center gap-1.5">
+              ${dayName}
+              ${isToday ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">HARI INI</span>' : ''}
+            </span>
+            <span class="text-[11px] sm:text-xs font-medium text-slate-500 leading-tight truncate mt-0.5">${dateFormatted}</span>
+          `;
+        }
+
+        dayEvents = allUpcomingAgendas.filter(a => {
+          const aStart = a.start ? a.start.split('T')[0] : '';
+          const aEnd = a.end ? a.end.split('T')[0] : aStart;
+          return selectedDateStr >= aStart && selectedDateStr <= aEnd;
+        });
+      }
+
+      if (countEl) countEl.textContent = `${dayEvents.length} Jadwal`;
+      if (!listEl) return;
+      listEl.innerHTML = "";
+
+      // Empty state persis index.html
+      if (dayEvents.length === 0) {
         listEl.innerHTML = `
-          <div class="text-center py-14 space-y-3">
-            <div class="h-14 w-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
-              <i data-lucide="calendar-x" class="h-7 w-7"></i>
+          <div class="text-center py-12 px-4 rounded-3xl bg-white border border-slate-100 shadow-xs space-y-3">
+            <div class="h-12 w-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-2xs">
+              <i data-lucide="calendar" class="h-6 w-6"></i>
             </div>
-            <p class="text-sm font-semibold text-slate-600">Belum Ada Agenda Mendatang</p>
-            <p class="text-xs text-slate-400">Tidak ada jadwal yang aktif atau akan datang saat ini.</p>
+            <div class="space-y-1">
+              <h4 class="text-sm font-bold text-slate-900">Belum Ada Agenda</h4>
+              <p class="text-xs text-slate-400">Tidak ada jadwal kegiatan pada tanggal yang dipilih.</p>
+            </div>
           </div>
         `;
         lucide.createIcons();
         return;
       }
 
-      // Group by date
-      const grouped = {};
-      agendas.forEach(a => {
-        const dateKey = a.start ? a.start.split('T')[0] : 'no-date';
-        if (!grouped[dateKey]) grouped[dateKey] = [];
-        grouped[dateKey].push(a);
-      });
+      let lastDateKey = null;
 
-      let html = '';
+      dayEvents.forEach((item) => {
+        // Jika mode "Semua Tanggal", tampilkan pemisah tanggal
+        if (isAllDatesMode) {
+          const itemDateKey = item.start ? item.start.split('T')[0] : 'no-date';
+          if (itemDateKey !== lastDateKey) {
+            lastDateKey = itemDateKey;
+            const dateObj = itemDateKey !== 'no-date' ? new Date(itemDateKey + 'T00:00:00') : null;
+            const isToday = itemDateKey === todayStr;
+            const dateLabel = dateObj ? IndonesianTime.formatDateFull(dateObj) : 'Tanggal Tidak Diketahui';
 
-      Object.keys(grouped).sort().forEach(dateKey => {
-        const items = grouped[dateKey];
-        const dateObj = dateKey !== 'no-date' ? new Date(dateKey + 'T00:00:00') : null;
+            const dividerEl = document.createElement("div");
+            dividerEl.className = "date-divider pt-2 pb-1";
+            dividerEl.innerHTML = `
+              <div class="flex items-center gap-2">
+                ${isToday ? '<span class="h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-soft shrink-0"></span>' : '<span class="h-2 w-2 rounded-full bg-slate-300 shrink-0"></span>'}
+                <span class="text-xs font-bold ${isToday ? 'text-emerald-700' : 'text-slate-600'} whitespace-nowrap">
+                  ${dateLabel}
+                  ${isToday ? '<span class="text-[9px] ml-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">HARI INI</span>' : ''}
+                </span>
+              </div>
+            `;
+            listEl.appendChild(dividerEl);
+          }
+        }
 
-        const isToday = dateKey === todayStr;
-        const dateLabel = dateObj
-          ? IndonesianTime.formatDateFull(dateObj)
-          : 'Tanggal Tidak Diketahui';
+        const isPersonal = item.type === "private";
+        const durationText = calculateDuration(item.start, item.end);
 
-        html += `
-          <div class="date-divider mt-1">
-            <div class="flex items-center gap-2">
-              ${isToday ? '<span class="h-2.5 w-2.5 rounded-full bg-emerald-500 pulse-soft shrink-0"></span>' : '<span class="h-2 w-2 rounded-full bg-slate-300 shrink-0"></span>'}
-              <span class="text-xs font-bold ${isToday ? 'text-emerald-700' : 'text-slate-600'} whitespace-nowrap">
-                ${dateLabel}
-                ${isToday ? '<span class="text-[9px] ml-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">HARI INI</span>' : ''}
-              </span>
+        const startDate = new Date(item.start);
+        const rawHrs = isNaN(startDate.getTime()) ? 9 : startDate.getHours();
+        const rawMins = isNaN(startDate.getTime()) ? 0 : startDate.getMinutes();
+        const hours12 = rawHrs % 12 || 12;
+        const minsStr = String(rawMins).padStart(2, '0');
+        const displayTime = `${hours12}:${minsStr}`;
+        const amPm = rawHrs >= 12 ? 'PM' : 'AM';
+
+        const endDate = new Date(item.end);
+        const eRawHrs = isNaN(endDate.getTime()) ? rawHrs + 1 : endDate.getHours();
+        const eRawMins = isNaN(endDate.getTime()) ? 0 : endDate.getMinutes();
+        const eHours12 = eRawHrs % 12 || 12;
+        const eMinsStr = String(eRawMins).padStart(2, '0');
+        const eDisplayTime = `${eHours12}:${eMinsStr}`;
+        const eAmPm = eRawHrs >= 12 ? 'PM' : 'AM';
+
+        const chkItems = item.checklistItems || [];
+        const totalChk = chkItems.length;
+        const doneChk = chkItems.filter(i => i.completed).length;
+        const hasChk = totalChk > 0;
+
+        const creatorName = item.createdByName || 'Member';
+        const isCommentsOpen = openedCommentAgendaIds.has(item.id);
+        const hasLocation = Boolean(item.locationLat && item.locationLng);
+
+        let cardBgClass = "bg-white border-slate-100 hover:border-slate-200";
+        if (isPersonal) {
+          cardBgClass = "bg-amber-50/60 border-amber-200/80 hover:border-amber-300";
+        }
+
+        const card = document.createElement("div");
+        card.className = `${cardBgClass} rounded-3xl p-4 sm:p-5 border shadow-xs hover:shadow-md transition-shadow relative select-none`;
+
+        card.innerHTML = `
+          <div class="flex items-start gap-3.5 sm:gap-5">
+            <!-- Kolom Kiri: Waktu Mulai, Timeline Arrow & Waktu Akhir (Persis index.html) -->
+            <div class="flex flex-col items-center shrink-0 w-16 sm:w-20 text-center select-none pt-0.5">
+              <span class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">${displayTime}</span>
+              <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-1">${amPm}</span>
+              
+              <!-- Timeline Indicator (Dot -> Stem -> Arrow Down) -->
+              <div class="flex flex-col items-center my-1.5 space-y-0.5">
+                <span class="h-1.5 w-1.5 rounded-full ${isPersonal ? 'bg-amber-300' : 'bg-slate-300'}"></span>
+                <div class="w-[1.5px] h-6 sm:h-8 ${isPersonal ? 'bg-amber-200' : 'bg-slate-200'}"></div>
+                <svg class="w-2.5 h-2.5 ${isPersonal ? 'text-amber-300' : 'text-slate-300'}" viewBox="0 0 10 10" fill="currentColor">
+                  <path d="M5 8.5L1.5 4H8.5L5 8.5Z"/>
+                </svg>
+              </div>
+
+              <!-- Jam Akhir -->
+              <span class="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none">${eDisplayTime}</span>
+              <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 mt-1">${eAmPm}</span>
+              <span class="text-[9px] text-slate-400 font-medium mt-1">${durationText}</span>
             </div>
-          </div>
-        `;
 
-        items.forEach(item => {
-          const startTime = item.start ? IndonesianTime.formatTime(new Date(item.start)) : '-';
-          const endTime = item.end ? IndonesianTime.formatTime(new Date(item.end)) : '-';
-          const duration = calculateDuration(item.start, item.end);
-          const hasLocation = item.locationLat && item.locationLng;
-
-          const isPersonal = item.type === "private";
-          const borderAccent = isPersonal ? 'border-l-emerald-500' : 'border-l-indigo-500';
-
-          const isCommentsOpen = openedCommentAgendaIds.has(item.id);
-
-          html += `
-            <div class="rundown-card rounded-xl border border-slate-200 bg-white p-3.5 border-l-4 ${borderAccent} ${hasLocation ? '' : 'opacity-80'}"
-                 data-agenda-id="${item.id}"
-                 ${hasLocation ? `data-lat="${item.locationLat}" data-lng="${item.locationLng}"` : ''}>
-              <div class="rundown-card-header flex items-start justify-between gap-2">
-                <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-1.5">
-                    <h4 class="font-bold text-slate-900 text-sm break-words">${escapeHtml(item.title)}</h4>
-                  </div>
-                  ${item.desc ? `<p class="text-xs text-slate-500 mt-1 break-words line-clamp-2">${escapeHtml(item.desc)}</p>` : ''}
-                </div>
-                ${hasLocation ? `
-                  <div class="shrink-0 h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center" title="Lihat di peta">
-                    <i data-lucide="map-pin" class="h-3.5 w-3.5"></i>
-                  </div>
-                ` : ''}
+            <!-- Kolom Kanan: Detail Konten Agenda -->
+            <div class="flex-1 min-w-0">
+              <!-- Judul Agenda -->
+              <div class="flex items-start justify-between gap-2">
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 leading-snug break-words">${escapeHtml(item.title)}</h4>
               </div>
 
-              <!-- Time & Duration -->
-              <div class="mt-2.5 py-1.5 px-2.5 rounded-lg bg-slate-50/80 border border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                <div class="flex items-center gap-1.5 font-medium">
-                  <i data-lucide="clock" class="h-3.5 w-3.5 text-slate-400 shrink-0"></i>
-                  <span>${startTime} — ${endTime}</span>
-                </div>
-                <span class="text-[11px] font-semibold text-slate-700">${duration}</span>
-              </div>
+              <!-- Deskripsi Catatan (Hanya tampil jika ada kata) -->
+              ${(item.desc && item.desc.trim()) ? `
+                <p class="text-xs text-slate-500 mt-1 leading-relaxed line-clamp-2 break-words">
+                  ${escapeHtml(item.desc.trim())}
+                </p>
+              ` : ''}
 
+              <!-- Lokasi Agenda (Klik untuk membuka Modal Maps & Rute Google Maps) -->
               ${item.locationName ? `
-                <div class="mt-2 flex items-center gap-1.5 text-xs text-slate-600">
-                  <i data-lucide="map-pin" class="h-3 w-3 text-indigo-500 shrink-0"></i>
-                  <span class="font-medium truncate">${escapeHtml(item.locationName)}</span>
-                  ${item.locationAddress && item.locationAddress !== item.locationName ? `<span class="text-[10px] text-slate-400 truncate hidden sm:inline">• ${escapeHtml(item.locationAddress)}</span>` : ''}
+                <div class="flex items-center gap-1.5 mt-2 text-xs text-indigo-600 font-semibold ${hasLocation ? 'btn-open-map cursor-pointer hover:underline hover:text-indigo-800' : ''}"
+                  ${hasLocation ? `
+                    data-agenda-id="${item.id}"
+                    data-title="${escapeHtml(item.title)}"
+                    data-locname="${escapeHtml(item.locationName)}"
+                    data-locaddress="${escapeHtml(item.locationAddress || '')}"
+                    data-lat="${item.locationLat}"
+                    data-lng="${item.locationLng}"
+                    title="Klik untuk melihat peta & rute navigasi"` : ''}>
+                  <i data-lucide="map-pin" class="h-3.5 w-3.5 shrink-0 text-indigo-600"></i>
+                  <span class="truncate max-w-[200px] sm:max-w-[300px]">${escapeHtml(item.locationName)}</span>
+                  ${hasLocation ? `
+                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-600 text-[10px] font-medium border border-indigo-200 shrink-0">
+                      <i data-lucide="navigation" class="h-2.5 w-2.5"></i>
+                      <span>Peta & Rute</span>
+                    </span>
+                  ` : ''}
                 </div>
               ` : ''}
 
-              <!-- Comment Toggle Button -->
-              <div class="mt-2.5 pt-2 border-t border-slate-100">
-                <button type="button" class="btn-toggle-comments w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition" data-agenda-id="${item.id}">
-                  <i data-lucide="message-circle" class="h-3.5 w-3.5"></i>
-                  <span class="comment-toggle-label">Komentar</span>
-                  <span class="comment-count-badge text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 font-bold" data-count-for="${item.id}">0</span>
-                </button>
+              <!-- Baris Bawah: Tag Tipe (Kiri) & Tombol Aksi Pill (Kanan) -->
+              <div class="flex items-center justify-between gap-2 mt-3.5 pt-2.5 border-t ${isPersonal ? 'border-amber-200/60' : 'border-slate-100'} flex-wrap">
+                <div class="flex items-center gap-1.5">
+                  ${isPersonal ? `
+                    <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full shadow-2xs">
+                      <span>👤</span>
+                      <span class="truncate max-w-[130px]">${escapeHtml(creatorName)}</span>
+                    </span>
+                  ` : `
+                    <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full shadow-2xs">
+                      <span>👥</span>
+                      <span>Grup</span>
+                    </span>
+                  `}
+                </div>
+
+                <!-- Tombol Aksi Pill (Checklist & Komentar) -->
+                <div class="flex items-center gap-2 shrink-0">
+                  ${hasChk ? `
+                    <button data-checklist-id="${item.id}" type="button"
+                      class="btn-open-checklist inline-flex items-center gap-1.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition"
+                      title="Lihat checklist">
+                      <i data-lucide="check-square" class="h-3.5 w-3.5"></i>
+                      <span>Checklist</span>
+                      <span class="text-[10px] bg-white/20 text-white px-1.5 py-0.2 rounded-full font-bold">${doneChk}/${totalChk}</span>
+                    </button>
+                  ` : ''}
+
+                  <button data-agenda-id="${item.id}" type="button"
+                    class="btn-toggle-comments inline-flex items-center gap-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 text-xs font-semibold shadow-xs transition"
+                    title="Buka komentar/obrolan agenda">
+                    <i data-lucide="message-square" class="h-3.5 w-3.5"></i>
+                    <span>Komentar</span>
+                    <span class="comment-count-badge text-[10px] bg-white/20 text-white px-1.5 py-0.2 rounded-full font-bold" data-count-for="${item.id}">0</span>
+                  </button>
+                </div>
               </div>
 
               <!-- Expandable Comment Section -->
               <div class="comment-section ${isCommentsOpen ? 'open' : ''}" id="comments-${item.id}">
-                <div class="mt-2 space-y-2">
-                  <div class="comment-messages space-y-1.5" id="commentList-${item.id}">
-                    <p class="text-[11px] text-slate-400 text-center py-3">Memuat komentar...</p>
+                <div class="mt-3 pt-3 border-t border-slate-100 space-y-2.5">
+                  <div class="comment-messages space-y-1.5 max-h-48 overflow-y-auto pr-1" id="commentList-${item.id}">
+                    <p class="text-[11px] text-slate-400 text-center py-2">Memuat komentar...</p>
                   </div>
                   <form class="comment-form flex items-center gap-2" data-agenda-id="${item.id}">
                     <input type="text" placeholder="Tulis komentar..." required
-                      class="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-200 transition" />
+                      class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs focus:border-indigo-400 focus:outline-none focus:ring-1 focus:ring-indigo-200 transition" />
                     <button type="submit"
-                      class="shrink-0 rounded-lg bg-slate-900 text-white px-3 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1">
+                      class="shrink-0 rounded-xl bg-slate-900 text-white px-3.5 py-2 text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1 shadow-xs">
                       <i data-lucide="send" class="h-3 w-3"></i>
                     </button>
                   </form>
                   <p class="text-[9px] text-slate-400 text-center">Komentar dapat dilihat semua anggota grup</p>
                 </div>
               </div>
+
             </div>
-          `;
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+
+      lucide.createIcons();
+
+      // Attach click handlers untuk membuka Map Modal
+      listEl.querySelectorAll(".btn-open-map").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const lat = parseFloat(btn.dataset.lat);
+          const lng = parseFloat(btn.dataset.lng);
+          const title = btn.dataset.title;
+          const locName = btn.dataset.locname;
+          const locAddress = btn.dataset.locaddress;
+          if (!isNaN(lat) && !isNaN(lng)) {
+            openMapModal({ lat, lng, title, locName, locAddress });
+          }
         });
       });
 
-      listEl.innerHTML = html;
-      lucide.createIcons();
+      // Attach click handlers untuk membuka Checklist Modal
+      listEl.querySelectorAll(".btn-open-checklist").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const agendaId = btn.dataset.checklistId;
+          const agenda = allUpcomingAgendas.find(a => a.id === agendaId);
+          if (agenda) {
+            openChecklistModal(agenda);
+          }
+        });
+      });
 
-      // Re-attach listeners untuk semua komentar yang sedang terbuka
+      // Re-attach comment listeners untuk semua komentar yang sedang terbuka
       openedCommentAgendaIds.forEach(agendaId => {
         stopCommentListener(agendaId);
         startCommentListener(agendaId);
       });
 
-      // Attach click handlers for pan-to-map (on header area only, not comment section)
-      listEl.querySelectorAll(".rundown-card[data-lat][data-lng]").forEach(card => {
-        const headerArea = card.querySelector(".rundown-card-header");
-        if (headerArea) {
-          headerArea.style.cursor = "pointer";
-          headerArea.addEventListener("click", () => {
-            const lat = parseFloat(card.dataset.lat);
-            const lng = parseFloat(card.dataset.lng);
-            const agendaId = card.dataset.agendaId;
-
-            if (isNaN(lat) || isNaN(lng)) return;
-
-            listEl.querySelectorAll(".rundown-card").forEach(c => c.classList.remove("active-highlight"));
-            card.classList.add("active-highlight");
-
-            highlightedAgendaId = agendaId;
-            publishMap.flyTo([lat, lng], 16, { duration: 0.8 });
-
-            if (agendaMarkers[agendaId]) {
-              agendaMarkers[agendaId].openPopup();
-              const tt = agendaMarkers[agendaId].getTooltip();
-              if (tt) {
-                const el = tt.getElement();
-                if (el) {
-                  document.querySelectorAll('.agenda-bubble-tooltip.highlight').forEach(t => {
-                    t.className = t.className.replace('highlight', '').trim();
-                  });
-                  el.className = 'leaflet-tooltip leaflet-zoom-animated agenda-bubble-tooltip highlight';
-                }
-              }
-            }
-
-            if (window.innerWidth < 1024) {
-              document.getElementById("publishMap").scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-          });
-        }
-      });
-
-      // Fetch initial comment counts for cards
+      // Fetch comment counts
       listEl.querySelectorAll(".comment-count-badge[data-count-for]").forEach(badge => {
         const agendaId = badge.dataset.countFor;
         if (!agendaId) return;
@@ -757,7 +882,7 @@
         });
       });
 
-      // Attach comment form submit handlers
+      // Attach comment submit handlers
       listEl.querySelectorAll(".comment-form").forEach(form => {
         form.addEventListener("submit", async (e) => {
           e.preventDefault();
@@ -767,7 +892,6 @@
           const text = input.value.trim();
           if (!text || !agendaId) return;
 
-          // Pastikan tetap terbuka saat dan setelah komentar dikirim
           openedCommentAgendaIds.add(agendaId);
           const section = document.getElementById(`comments-${agendaId}`);
           if (section) section.classList.add("open");
@@ -787,7 +911,6 @@
               timestamp: serverTimestamp()
             });
 
-            // Update dokumen agenda agar realtime listener & notifikasi di index.html terpicu
             await updateDoc(doc(db, "agendas", agendaId), {
               lastChatTime: nowMs,
               lastChatSenderId: "anonymous",
@@ -813,11 +936,168 @@
       });
     }
 
-    // ---- Comment Listeners per Agenda ----
-    const commentListeners = {};
+    // ---- Map Modal Logic with Google Maps Navigation Route ----
+    let modalMap = null;
+    let modalMarker = null;
 
+    function openMapModal({ lat, lng, title, locName, locAddress }) {
+      const modal = document.getElementById("mapModal");
+      const titleEl = document.getElementById("modalAgendaTitle");
+      const nameEl = document.getElementById("modalLocationName");
+      const addressEl = document.getElementById("modalLocationAddress");
+      const coordsEl = document.getElementById("modalCoordinatesText");
+      const btnRoute = document.getElementById("btnGoogleMapsRoute");
+      const btnSearch = document.getElementById("btnGoogleMapsSearch");
+
+      titleEl.textContent = title || "Agenda";
+      nameEl.textContent = locName || "Lokasi Kegiatan";
+      
+      if (locAddress && locAddress !== locName) {
+        addressEl.textContent = locAddress;
+        addressEl.classList.remove("hidden");
+      } else {
+        addressEl.classList.add("hidden");
+      }
+
+      coordsEl.textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+      // Link Google Maps
+      // 1. Rute navigasi otomatis dengan Google Maps Directions API
+      btnRoute.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+      // 2. Pencarian lokasi Google Maps
+      btnSearch.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+
+      // Setup Leaflet map
+      if (!modalMap) {
+        modalMap = L.map("modalMap", {
+          zoomControl: true,
+          scrollWheelZoom: true,
+          attributionControl: false
+        }).setView([lat, lng], 16);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19
+        }).addTo(modalMap);
+      } else {
+        modalMap.setView([lat, lng], 16);
+      }
+
+      // Pin Icon kustom
+      const pinIcon = L.divIcon({
+        className: 'agenda-custom-pin',
+        html: `
+          <div class="relative flex items-center justify-center cursor-pointer">
+            <div class="h-9 w-9 rounded-full bg-indigo-600 ring-4 ring-indigo-200 text-white flex items-center justify-center shadow-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+            </div>
+            <div class="absolute -bottom-1 h-2.5 w-2.5 rotate-45 bg-indigo-600"></div>
+          </div>
+        `,
+        iconSize: [36, 40],
+        iconAnchor: [18, 40]
+      });
+
+      if (modalMarker) {
+        modalMap.removeLayer(modalMarker);
+      }
+
+      modalMarker = L.marker([lat, lng], { icon: pinIcon }).addTo(modalMap);
+
+      const popupHtml = `
+        <div class="text-xs p-1 space-y-1">
+          <h4 class="font-bold text-slate-900">${escapeHtml(locName)}</h4>
+          <p class="text-slate-500">${escapeHtml(title)}</p>
+          <div class="pt-1.5 mt-1 border-t border-slate-100">
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" target="_blank" rel="noopener noreferrer"
+               class="text-indigo-600 font-bold hover:underline flex items-center gap-1">
+              Petunjuk Arah ↗
+            </a>
+          </div>
+        </div>
+      `;
+      modalMarker.bindPopup(popupHtml).openPopup();
+
+      // Trigger redraw Leaflet setelah container modal muncul
+      setTimeout(() => {
+        if (modalMap) {
+          modalMap.invalidateSize();
+          modalMap.panTo([lat, lng]);
+        }
+      }, 200);
+    }
+
+    function closeMapModal() {
+      const modal = document.getElementById("mapModal");
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("btnCloseMapModal").addEventListener("click", closeMapModal);
+    document.getElementById("mapModal").addEventListener("click", (e) => {
+      if (e.target.id === "mapModal") closeMapModal();
+    });
+
+    // ---- Checklist Modal Logic ----
+    function openChecklistModal(agenda) {
+      const modal = document.getElementById("checklistModal");
+      const titleEl = document.getElementById("modalChecklistTitle");
+      const progressText = document.getElementById("modalChecklistProgressText");
+      const progressBar = document.getElementById("modalChecklistProgressBar");
+      const itemsContainer = document.getElementById("modalChecklistItems");
+
+      titleEl.textContent = agenda.title || "Agenda";
+
+      const items = agenda.checklistItems || [];
+      const total = items.length;
+      const done = items.filter(i => i.completed).length;
+      const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+      progressText.textContent = `${done}/${total} Selesai (${percent}%)`;
+      progressBar.style.width = `${percent}%`;
+
+      if (items.length === 0) {
+        itemsContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Belum ada item checklist.</p>`;
+      } else {
+        itemsContainer.innerHTML = items.map(item => `
+          <div class="flex items-center gap-2.5 p-2.5 rounded-xl border border-slate-100 ${item.completed ? 'bg-slate-50 text-slate-400' : 'bg-white text-slate-800'}">
+            <span class="h-5 w-5 rounded-lg flex items-center justify-center ${item.completed ? 'bg-emerald-500 text-white' : 'border border-slate-300 text-transparent'}">
+              <i data-lucide="check" class="h-3 w-3"></i>
+            </span>
+            <span class="text-xs font-medium flex-1 break-words ${item.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(item.text)}</span>
+          </div>
+        `).join('');
+      }
+
+      modal.classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      lucide.createIcons();
+    }
+
+    function closeChecklistModal() {
+      const modal = document.getElementById("checklistModal");
+      modal.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("btnCloseChecklistModal").addEventListener("click", closeChecklistModal);
+    document.getElementById("checklistModal").addEventListener("click", (e) => {
+      if (e.target.id === "checklistModal") closeChecklistModal();
+    });
+
+    // Close modals on Escape key
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeMapModal();
+        closeChecklistModal();
+      }
+    });
+
+    // ---- Realtime Comment Listeners per Agenda ----
     function startCommentListener(agendaId) {
-      if (commentListeners[agendaId]) return; // already listening
+      if (commentListeners[agendaId]) return;
 
       const chatsRef = collection(db, "agendas", agendaId, "chats");
       commentListeners[agendaId] = onSnapshot(chatsRef, (snapshot) => {
@@ -826,7 +1106,7 @@
         if (!listEl) return;
 
         if (snapshot.empty) {
-          listEl.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-3">Belum ada komentar. Jadilah yang pertama!</p>`;
+          listEl.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">Belum ada komentar. Jadilah yang pertama!</p>`;
           if (countBadge) countBadge.textContent = "0";
           return;
         }
@@ -863,11 +1143,9 @@
 
           const genderIcon = msg.senderGender === 'female' ? '👩' : (msg.senderGender === 'unknown' ? '👤' : '👨');
           const senderLabel = isAnon ? '' : `${genderIcon} ${escapeHtml(msg.senderName || 'User')}`;
-          const bubbleBg = isAnon ? 'bg-slate-50 border border-slate-100' : 'bg-slate-50 border border-slate-100';
-          const nameColor = 'text-slate-600';
 
           const el = document.createElement("div");
-          el.className = `comment-bubble rounded-lg px-3 py-2 ${bubbleBg}`;
+          el.className = "comment-bubble rounded-xl p-2.5 bg-slate-50 border border-slate-100";
           if (isAnon) {
             el.innerHTML = `
               <div class="flex items-center justify-end">
@@ -878,7 +1156,7 @@
           } else {
             el.innerHTML = `
               <div class="flex items-center justify-between gap-2">
-                <span class="text-[10px] font-semibold ${nameColor}">${senderLabel}</span>
+                <span class="text-[10px] font-semibold text-slate-700">${senderLabel}</span>
                 <span class="text-[9px] text-slate-400 shrink-0">${time}${dateStr ? ` • ${dateStr}` : ''}</span>
               </div>
               <p class="text-xs text-slate-800 mt-0.5 break-words leading-relaxed">${escapeHtml(msg.text)}</p>
