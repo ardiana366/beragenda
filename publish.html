@@ -432,6 +432,56 @@
           monthNameEn: this.monthsEn[validDate.getMonth()]
         };
       },
+      formatDateFull(date = new Date()) {
+        if (!date) return "";
+        const p = this.getDateParts(date);
+        return `${p.dayName}, ${parseInt(p.day, 10)} ${p.monthName} ${p.year}`;
+      },
+      formatDateDisplay(startDate, endDate) {
+        if (!startDate || isNaN(startDate.getTime())) return "";
+        const sDateStr = this.getLocalDateString(startDate);
+        const todayStr = this.getLocalDateString();
+        const eDateStr = (endDate && !isNaN(endDate.getTime())) ? this.getLocalDateString(endDate) : sDateStr;
+        const sp = this.getDateParts(startDate);
+
+        if (sDateStr === eDateStr) {
+          const full = `${sp.dayName}, ${parseInt(sp.day, 10)} ${sp.monthName} ${sp.year}`;
+          return sDateStr === todayStr ? `${full} (Hari Ini)` : full;
+        } else {
+          const ep = this.getDateParts(endDate);
+          const sm = sp.monthName.slice(0, 3);
+          const em = ep.monthName.slice(0, 3);
+          if (sp.year === ep.year) {
+            return `${parseInt(sp.day, 10)} ${sm} – ${parseInt(ep.day, 10)} ${em} ${sp.year}`;
+          }
+          return `${parseInt(sp.day, 10)} ${sm} ${sp.year} – ${parseInt(ep.day, 10)} ${em} ${ep.year}`;
+        }
+      },
+      calculateDuration(startStr, endStr) {
+        if (!startStr) return "";
+        const s = new Date(startStr);
+        if (isNaN(s.getTime())) return "";
+        const e = endStr ? new Date(endStr) : null;
+        if (!e || isNaN(e.getTime())) return "";
+        const diffMs = e.getTime() - s.getTime();
+        if (diffMs <= 0) return "";
+        const totalMins = Math.round(diffMs / (1000 * 60));
+        const days = Math.floor(totalMins / (24 * 60));
+        const remMins = totalMins % (24 * 60);
+        const hrs = Math.floor(remMins / 60);
+        const mins = remMins % 60;
+
+        if (days > 0) {
+          return hrs > 0 ? `${days} hari ${hrs} jam` : `${days} hari`;
+        }
+        if (hrs > 0 && mins > 0) {
+          return `${hrs} jam ${mins} mnt`;
+        }
+        if (hrs > 0) {
+          return `${hrs} jam`;
+        }
+        return `${mins} mnt`;
+      },
       formatTime12(date) {
         if (!date) return { time: "--:--", ampm: "" };
         const d = date instanceof Date ? date : new Date(date);
@@ -444,6 +494,7 @@
       },
       formatTime24(date = new Date()) {
         const d = date instanceof Date ? date : new Date(date);
+        if (isNaN(d.getTime())) return "--:--";
         const hrs = String(d.getHours()).padStart(2, '0');
         const mins = String(d.getMinutes()).padStart(2, '0');
         return `${hrs}:${mins}`;
@@ -616,6 +667,15 @@
           end: fmtIso(nextEnd),
           pairCode: "DEMO",
           createdByName: "Michael"
+        },
+        {
+          id: "demo-5",
+          title: "Workshop & Review Sprint",
+          desc: "Review sprint mingguan bersama tim pengembang.",
+          start: fmtIso(new Date(now.getTime() + (26 * 60 * 60 * 1000))),
+          end: fmtIso(new Date(now.getTime() + (28.5 * 60 * 60 * 1000))),
+          pairCode: "DEMO",
+          createdByName: "Sarah"
         }
       ];
 
@@ -708,6 +768,8 @@
         btn.addEventListener("click", () => {
           isAllDatesMode = false;
           selectedDateStr = dateStr;
+          const label = document.getElementById("toggleAllAgendasText");
+          if (label) label.textContent = "Lihat Semua Agenda";
           renderWeekStrip();
           renderAgendas();
         });
@@ -730,6 +792,8 @@
     document.getElementById("btnJumpToday").addEventListener("click", () => {
       weekOffset = 0;
       isAllDatesMode = false;
+      const label = document.getElementById("toggleAllAgendasText");
+      if (label) label.textContent = "Lihat Semua Agenda";
       selectedDateStr = IndonesianTime.getLocalDateString();
       renderWeekStrip();
       renderAgendas();
@@ -760,7 +824,11 @@
       let dayEvents = [];
 
       if (isAllDatesMode) {
-        dayEvents = [...allAgendas];
+        dayEvents = [...allAgendas].sort((a, b) => {
+          const aTime = a.start ? new Date(a.start).getTime() : 0;
+          const bTime = b.start ? new Date(b.start).getTime() : 0;
+          return aTime - bTime;
+        });
         if (dateLabelEl) dateLabelEl.textContent = "Semua Jadwal Kegiatan";
         if (mainTitleEl) mainTitleEl.textContent = "Semua Agenda";
       } else {
@@ -786,6 +854,10 @@
           const aStart = a.start ? a.start.split('T')[0] : '';
           const aEnd = a.end ? a.end.split('T')[0] : aStart;
           return selectedDateStr >= aStart && selectedDateStr <= aEnd;
+        }).sort((a, b) => {
+          const aTime = a.start ? new Date(a.start).getTime() : 0;
+          const bTime = b.start ? new Date(b.start).getTime() : 0;
+          return aTime - bTime;
         });
       }
 
@@ -811,22 +883,62 @@
         return;
       }
 
+      let lastDateGroup = "";
+
       dayEvents.forEach((item, index) => {
         const startDate = item.start ? new Date(item.start) : null;
         const endDate = item.end ? new Date(item.end) : null;
 
-        const startMs = startDate ? startDate.getTime() : 0;
+        const startMs = startDate && !isNaN(startDate.getTime()) ? startDate.getTime() : 0;
         // Jika tidak ada waktu end, asumsikan durasi 1 jam dari start
-        const endMs = endDate ? endDate.getTime() : (startMs ? startMs + (60 * 60 * 1000) : 0);
+        const endMs = (endDate && !isNaN(endDate.getTime())) ? endDate.getTime() : (startMs ? startMs + (60 * 60 * 1000) : 0);
 
-        // "Ketika sudah waktunya AGENDA, AGENDA menjadi warna biru"
         // Evaluasi apakah agenda sedang aktif saat ini
         const isCurrentAgenda = Boolean(startMs && endMs && nowMs >= startMs && nowMs <= endMs);
 
-        // Format waktu seperti referensi: 7:00 AM, 8:00 AM, 9:00 AM
-        const formattedStart = IndonesianTime.formatTime12(startDate);
-        const formattedEnd = IndonesianTime.formatTime12(endDate);
-        const timeDisplay = `${formattedStart.time} ${formattedStart.ampm}`;
+        // Durasi jam: dari jam berapa sampai jam berapa
+        let timeRangeDisplay = "--:--";
+        let durationText = "";
+
+        if (startDate && !isNaN(startDate.getTime())) {
+          const startTime = IndonesianTime.formatTime24(startDate);
+
+          if (endDate && !isNaN(endDate.getTime()) && endDate.getTime() !== startDate.getTime()) {
+            const endTime = IndonesianTime.formatTime24(endDate);
+            const isDiffDay = IndonesianTime.getLocalDateString(startDate) !== IndonesianTime.getLocalDateString(endDate);
+            timeRangeDisplay = `${startTime} – ${endTime}${isDiffDay ? ' (+1h)' : ''}`;
+            durationText = IndonesianTime.calculateDuration(item.start, item.end);
+          } else {
+            const fallbackEnd = new Date(startDate.getTime() + (60 * 60 * 1000));
+            const endTime = IndonesianTime.formatTime24(fallbackEnd);
+            timeRangeDisplay = `${startTime} – ${endTime}`;
+            durationText = "1 jam";
+          }
+        }
+
+        // Tampilkan tanggal jika dalam mode 'Lihat Semua Agenda'
+        const dateDisplay = isAllDatesMode ? IndonesianTime.formatDateDisplay(startDate, endDate) : "";
+
+        // Tambahkan pembatas tanggal (group divider) jika 'Lihat Semua Agenda' dan berganti tanggal
+        if (isAllDatesMode && startDate && !isNaN(startDate.getTime())) {
+          const dateGroupKey = IndonesianTime.getLocalDateString(startDate);
+          if (dateGroupKey !== lastDateGroup) {
+            lastDateGroup = dateGroupKey;
+            const p = IndonesianTime.getDateParts(startDate);
+            const isGroupToday = (dateGroupKey === todayStr);
+            const groupTitle = `${p.dayName}, ${parseInt(p.day, 10)} ${p.monthName} ${p.year}${isGroupToday ? ' • Hari Ini' : ''}`;
+
+            const divider = document.createElement("div");
+            divider.className = "agenda-date-divider flex items-center gap-2.5 pl-12 py-2 select-none";
+            divider.innerHTML = `
+              <span class="text-[11px] font-extrabold uppercase tracking-wider ${isGroupToday ? 'text-blue-600' : 'text-slate-400'}">
+                ${groupTitle}
+              </span>
+              <div class="flex-1 h-px bg-slate-200/80"></div>
+            `;
+            listEl.appendChild(divider);
+          }
+        }
 
         const hasLocation = Boolean(item.locationLat && item.locationLng);
         const isCommentsOpen = openedCommentAgendaIds.has(item.id);
@@ -844,12 +956,12 @@
           <!-- KOLOM KIRI: TIMELINE NODE ICON -->
           <div class="w-10 flex flex-col items-center pt-5 shrink-0 relative select-none">
             ${isCurrentAgenda ? `
-              <!-- Double Concentric Circle (Active Agenda Node in Reference UI) -->
+              <!-- Double Concentric Circle (Active Agenda Node) -->
               <div class="h-6 w-6 rounded-full border-[2.5px] border-blue-500 bg-white flex items-center justify-center z-10 ring-4 ring-blue-100 shadow-xs timeline-node">
                 <span class="h-2.5 w-2.5 rounded-full bg-blue-600"></span>
               </div>
             ` : `
-              <!-- Standard Outline Circle Node (Wakeup, Exercise, Breakfast) -->
+              <!-- Standard Outline Circle Node -->
               <div class="h-5 w-5 rounded-full border-[2.5px] border-blue-400/80 bg-white z-10 shadow-2xs timeline-node"></div>
             `}
           </div>
@@ -858,23 +970,42 @@
           <div class="flex-1 min-w-0">
             <div class="${isCurrentAgenda ? 'active-agenda-card text-white p-5 rounded-3xl' : 'bg-white hover:bg-slate-50/70 border border-slate-100/90 text-slate-800 p-5 rounded-3xl shadow-2xs hover:shadow-xs'} transition-all duration-300">
               
-              <!-- Header Baris Kartu: Judul di Kiri & Jam di Kanan -->
-              <div class="flex items-baseline justify-between gap-3">
-                <h3 class="text-base sm:text-lg font-bold leading-snug break-words ${isCurrentAgenda ? 'text-white' : 'text-slate-900'}">
-                  ${escapeHtml(item.title)}
-                </h3>
-                <span class="text-xs sm:text-sm font-semibold shrink-0 tracking-tight ${isCurrentAgenda ? 'text-blue-100' : 'text-slate-400'}">
-                  ${timeDisplay}
-                </span>
+              <!-- Header Baris Kartu: Judul & Tanggal di Kiri, Durasi Jam di Kanan -->
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                  ${isAllDatesMode && dateDisplay ? `
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-[11px] font-bold mb-1.5 ${
+                      isCurrentAgenda ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-100'
+                    }">
+                      <i data-lucide="calendar" class="h-3 w-3 shrink-0"></i>
+                      <span>${dateDisplay}</span>
+                    </div>
+                  ` : ''}
+                  <h3 class="text-base sm:text-lg font-bold leading-snug break-words ${isCurrentAgenda ? 'text-white' : 'text-slate-900'}">
+                    ${escapeHtml(item.title)}
+                  </h3>
+                </div>
+
+                <div class="text-right shrink-0">
+                  <div class="text-xs sm:text-sm font-bold tracking-tight ${isCurrentAgenda ? 'text-white' : 'text-slate-900'} flex items-center justify-end gap-1">
+                    <i data-lucide="clock" class="h-3.5 w-3.5 ${isCurrentAgenda ? 'text-blue-200' : 'text-slate-400'} shrink-0"></i>
+                    <span>${timeRangeDisplay}</span>
+                  </div>
+                  ${durationText ? `
+                    <div class="text-[10px] sm:text-[11px] font-semibold ${isCurrentAgenda ? 'text-blue-100/90' : 'text-slate-400'} mt-0.5">
+                      ${durationText}
+                    </div>
+                  ` : ''}
+                </div>
               </div>
 
               <!-- Subtitle / Deskripsi Kegiatan Sesuai Referensi -->
               ${(item.desc && item.desc.trim()) ? `
-                <p class="text-xs sm:text-sm mt-1 leading-relaxed break-words ${isCurrentAgenda ? 'text-blue-50/90' : 'text-slate-400'}">
+                <p class="text-xs sm:text-sm mt-2 leading-relaxed break-words ${isCurrentAgenda ? 'text-blue-50/90' : 'text-slate-500'}">
                   ${escapeHtml(item.desc.trim())}
                 </p>
               ` : `
-                <p class="text-xs sm:text-sm mt-1 leading-relaxed ${isCurrentAgenda ? 'text-blue-100/70' : 'text-slate-300'} italic">
+                <p class="text-xs sm:text-sm mt-2 leading-relaxed ${isCurrentAgenda ? 'text-blue-100/70' : 'text-slate-300'} italic">
                   Tidak ada catatan tambahan.
                 </p>
               `}
@@ -883,7 +1014,7 @@
               <div class="flex items-center justify-end gap-2 mt-3 pt-1">
                 <!-- Action Buttons: Maps, Comments -->
                 <div class="flex items-center gap-1.5 shrink-0">
-                  <!-- White Squircle Quick Action Button (as seen in active Meeting card) -->
+                  <!-- White Squircle Quick Action Button -->
                   ${hasLocation ? `
                     <button type="button"
                       class="btn-open-map ${isCurrentAgenda ? 'bg-white text-blue-600 shadow-md hover:bg-blue-50' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'} h-8 w-8 rounded-2xl flex items-center justify-center transition"
